@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <title>Stream Recorder</title>
+</head>
+
+<body>
+  <div class="card mb-3" style="max-width: 600px;">
+    <div class="card-body">
+      <h5 class="card-title">Record new stream</h5>
+      <div class="form-row">
+        <div class="form-group col">
+          <label for="inputURL">URL</label>
+          <input type="url" class="form-control js-url-input" id="inputURL">
+        </div>
+        <div class="form-group col" style="max-width: 100px;">
+          <label for="inputDuration">Minutes</label>
+          <input type="number" min="1" value="60" class="form-control js-duration-input" id="inputDuration">
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary js-record-btn">Record</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Recorders</h5>
+      <ol class="recorder-items m-0 p-0"></ol>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+  <script src="/script.js"></script>
+</body>
+
+</html>
