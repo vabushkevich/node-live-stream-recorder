@@ -2,9 +2,9 @@ const { Readable } = require('stream');
 const fs = require('fs');
 const path = require('path');
 const { addMilliseconds, differenceInMilliseconds } = require('date-fns');
-const { formatDate, saveLastFrame } = require('lib/utils');
+const { formatDate, saveLastFrame, getBrowser } = require('lib/utils');
 const { nanoid } = require('nanoid');
-const PageHandle = require('lib/site-handles/PageHandle');
+const StreamPage = require('lib/StreamPage');
 
 const SCREENSHOT_FREQ = 10000;
 
@@ -32,14 +32,10 @@ class StreamRecorder {
     }, differenceInMilliseconds(this.finishDate, new Date()));
   }
 
-  setQuality(quality) {
-    return this.pageHandle.setQuality(quality)
-      .then(quality => {
-        this.log(`Quality has been set to: ${quality}`);
-      })
-      .catch(err => {
-        this.log(`Can't set quality: ${err}`);
-      });
+  async setQuality(quality) {
+    await this.streamPage.setQuality(quality)
+      .then(quality => this.log(`Quality has been set to: ${quality}`))
+      .catch(err => this.log(`Can't set quality: ${err}`));
   }
 
   async saveData(buffer) {
@@ -55,9 +51,13 @@ class StreamRecorder {
   async start(duration) {
     this.state = "starting";
     this.log("Starting recorder");
-    this.pageHandle = await PageHandle.create(this.url);
 
-    this.pageHandle.once("data", async () => {
+    const page = await getBrowser().then(browser => browser.newPage());
+    await page.goto(this.url);
+    this.streamPage = new StreamPage(page);
+    this.streamPage.startStream();
+
+    this.streamPage.once("data", async () => {
       this.state = "recording";
       this.startedDate = new Date();
       this.lastScreenshotDate = new Date();
@@ -66,7 +66,7 @@ class StreamRecorder {
       this.setQuality(this.quality);
     });
 
-    this.pageHandle.on("data", buffer => {
+    this.streamPage.on("data", buffer => {
       this.saveData(buffer).catch(err => {
         this.log(`Can't save data: ${err}. Retry after 1s`);
         setTimeout(() => this.saveData(buffer), 1000);
@@ -77,24 +77,24 @@ class StreamRecorder {
       }
     });
 
-    this.pageHandle.on("qualityreset", () => {
+    this.streamPage.on("qualityreset", () => {
       this.setQuality(this.quality);
     });
 
-    this.pageHandle.on("offline", () => {
+    this.streamPage.on("offline", () => {
       this.state = "paused";
       this.pausedDate = new Date();
       clearTimeout(this.plannedFinishTimeout);
       this.log("Recorder is paused due to stream inactivity");
     });
 
-    this.pageHandle.on("online", () => {
+    this.streamPage.on("online", () => {
       this.state = "recording";
       this.prolong(differenceInMilliseconds(this.pausedDate, new Date()));
       this.log("Stream is now active");
     });
 
-    this.pageHandle.on("message", message => {
+    this.streamPage.on("message", message => {
       this.log(message);
     });
   }
@@ -103,7 +103,7 @@ class StreamRecorder {
     this.state = "stopped";
     clearTimeout(this.plannedFinishTimeout);
     this.log("Stopping recorder");
-    await this.pageHandle.close();
+    await this.streamPage.close();
   }
 
   prolong(duration) {
