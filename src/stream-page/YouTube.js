@@ -1,18 +1,24 @@
-const StreamPageUtils = require('lib/stream-page-utils/StreamPageUtils');
+const StreamPage = require('lib/stream-page/StreamPage');
 
-class Twitch extends StreamPageUtils {
+class YouTube extends StreamPage {
   constructor(page) {
     super(page);
   }
 
   async startStream() {
     const closeDialogBox = () => this.page
-      .waitForSelector("#close_dialog")
+      .waitForSelector("#close_modal")
+      .then(el => this.page.waitForTimeout(1000).then(() => el.click()));
+    const startVideo = () => this.page
+      .waitForSelector(".player [data-quality]")
       .then(el => this.page.waitForTimeout(1000).then(() => el.click()));
 
     await closeDialogBox()
       .then(() => this.emit("message", "Dialog box closed"))
-      .catch(() => this.emit("message", "Unable close dialog box"));
+      .catch(() => this.emit("message", "Unable close dialog box"))
+      .then(startVideo)
+      .then(() => this.emit("message", "Video started manually"))
+      .catch(() => this.emit("message", "Unable to start video manually"));
   }
 
   setQuality(quality) {
@@ -60,4 +66,4 @@ function isButtonSelected(button) {
   return button.matches("[class~='selected']");
 }
 
-module.exports = Twitch;
+module.exports = YouTube;

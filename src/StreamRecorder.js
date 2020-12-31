@@ -4,7 +4,8 @@ const path = require('path');
 const { addMilliseconds, differenceInMilliseconds } = require('date-fns');
 const { formatDate, saveLastFrame, getBrowser } = require('lib/utils');
 const { nanoid } = require('nanoid');
-const StreamPage = require('lib/StreamPage');
+const StreamPage = require('lib/stream-page/StreamPage');
+const StreamPageController = require('lib/StreamPageController');
 
 const SCREENSHOT_FREQ = 10000;
 
@@ -33,7 +34,7 @@ class StreamRecorder {
   }
 
   async setQuality(quality) {
-    await this.streamPage.setQuality(quality)
+    await this.streamPageController.setQuality(quality)
       .then(quality => this.log(`Quality has been set to: ${quality}`))
       .catch(err => this.log(`Can't set quality: ${err}`));
   }
@@ -54,8 +55,9 @@ class StreamRecorder {
 
     const page = await getBrowser().then(browser => browser.newPage());
     await page.goto(this.url);
-    this.streamPage = new StreamPage(page);
-    this.streamPage.startStream();
+    this.streamPage = StreamPage.create(page);
+    this.streamPageController = new StreamPageController(this.streamPage);
+    this.streamPageController.startStream();
 
     this.streamPage.once("data", async () => {
       this.state = "recording";
@@ -77,7 +79,7 @@ class StreamRecorder {
       }
     });
 
-    this.streamPage.on("qualityreset", () => {
+    this.streamPageController.on("qualityreset", () => {
       this.setQuality(this.quality);
     });
 
@@ -94,16 +96,15 @@ class StreamRecorder {
       this.log("Stream is now active");
     });
 
-    this.streamPage.on("message", message => {
-      this.log(message);
-    });
+    this.streamPage.on("message", msg => this.log(msg));
+    this.streamPageController.on("message", msg => this.log(msg));
   }
 
   async stop() {
     this.state = "stopped";
     clearTimeout(this.plannedFinishTimeout);
     this.log("Stopping recorder");
-    await this.streamPage.close();
+    await this.streamPageController.close();
   }
 
   prolong(duration) {
