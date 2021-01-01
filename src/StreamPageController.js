@@ -30,14 +30,15 @@ class StreamPageController extends EventEmitter {
   setUpQualityResetEvent() {
     this.streamPage.once("data", () => {
       this.streamPage.isQualitySet(this.quality)
+        .catch(() => true)
         .then(isQualitySet => {
           if (isQualitySet) {
-            return Promise.reject();
+            setTimeout(() => this.setUpQualityResetEvent());
+          } else {
+            this.emit("qualityreset");
+            this.once("qualityset", () => setTimeout(() => this.setUpQualityResetEvent()));
           }
-          this.emit("qualityreset");
-          this.once("qualityset", () => setTimeout(() => this.setUpQualityResetEvent()));
-        })
-        .catch(() => setTimeout(() => this.setUpQualityResetEvent()));
+        });
     });
   }
 }
