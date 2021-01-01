@@ -22,7 +22,7 @@ class StreamRecorder {
   }
 
   log(message) {
-    console.log(`[${this.name}]: ${message}`);
+    console.log(`[${this.name}]: ${message.replace("\n", "")}`);
   }
 
   planFinish(date) {
