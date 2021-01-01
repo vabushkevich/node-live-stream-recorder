@@ -1,3 +1,4 @@
 node_modules/
 site/screenshots/
 package-lock.json
+debug.log
