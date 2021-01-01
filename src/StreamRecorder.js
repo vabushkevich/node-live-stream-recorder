@@ -6,8 +6,10 @@ const { formatDate, saveLastFrame, getBrowser } = require('lib/utils');
 const { nanoid } = require('nanoid');
 const StreamPage = require('lib/stream-page/StreamPage');
 const StreamPageController = require('lib/StreamPageController');
+const { throttle } = require('lodash');
 
-const SCREENSHOT_FREQ = 10000;
+const SAVE_EVERY_MS = 10000;
+const SCREENSHOT_FREQ = 15000;
 
 class StreamRecorder {
   constructor(url, quality = 720) {
@@ -19,6 +21,7 @@ class StreamRecorder {
     this.name = formatDate(this.createdDate);
     this.outputVideoPath = `./recordings/${this.name}.mkv`;
     this.screenshotPath = `./site/screenshots/${this.id}.jpg`;
+    this.collectedData = [];
   }
 
   log(message) {
@@ -39,9 +42,11 @@ class StreamRecorder {
       .catch(err => this.log(`Can't set quality: ${err}`));
   }
 
-  async saveData(buffer) {
+  async saveCollectedData() {
+    const dataToSave = this.collectedData.slice();
     const fileStream = fs.createWriteStream(this.outputVideoPath, { flags: "a" });
-    Readable.from(buffer).pipe(fileStream);
+    Readable.from(dataToSave).pipe(fileStream);
+    this.collectedData.splice(0);
   }
 
   async takeScreenshot() {
@@ -62,22 +67,23 @@ class StreamRecorder {
     this.streamPage.once("data", async () => {
       this.state = "recording";
       this.startedDate = new Date();
-      this.lastScreenshotDate = new Date();
       this.prolong(duration);
       this.log("Recorder has been started");
       this.setQuality(this.quality);
     });
 
     this.streamPage.on("data", buffer => {
-      this.saveData(buffer).catch(err => {
-        this.log(`Can't save data: ${err}. Retry after 1s`);
-        setTimeout(() => this.saveData(buffer), 1000);
-      });
-      if (differenceInMilliseconds(new Date(), this.lastScreenshotDate) > SCREENSHOT_FREQ) {
-        this.lastScreenshotDate = new Date();
-        this.takeScreenshot();
-      }
+      this.collectedData.push(buffer);
     });
+
+    this.streamPage.on("data", throttle(() => {
+      this.saveCollectedData()
+        .catch(err => this.log(`Can't save collected data: ${err}`));
+    }, SAVE_EVERY_MS, { leading: false }));
+
+    this.streamPage.on("data", throttle(() => {
+      this.takeScreenshot();
+    }, SCREENSHOT_FREQ, { leading: false }));
 
     this.streamPageController.on("qualityreset", () => {
       this.setQuality(this.quality);
