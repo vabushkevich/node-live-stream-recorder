@@ -46,7 +46,7 @@ class StreamPage extends EventEmitter {
       new Promise(resolve => this.once("data", resolve)),
       resolveAfter(NO_DATA_TIMEOUT).then(Promise.reject),
     ])
-      .then(() => setTimeout(() => this.setUpStreamLifeEvents()))
+      .then(() => setTimeout(() => this.setUpStreamLifeEvents()), 5000)
       .catch(() => {
         this.emit("offline");
         this.once("data", () => {
