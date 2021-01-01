@@ -33,7 +33,7 @@ class StreamPageController extends EventEmitter {
         .catch(() => true)
         .then(isQualitySet => {
           if (isQualitySet) {
-            setTimeout(() => this.setUpQualityResetEvent());
+            setTimeout(() => this.setUpQualityResetEvent(), 5000);
           } else {
             this.emit("qualityreset");
             this.once("qualityset", () => setTimeout(() => this.setUpQualityResetEvent()));
