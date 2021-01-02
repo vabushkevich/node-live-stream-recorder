@@ -5,7 +5,7 @@ class YouTube extends StreamPage {
     super(page);
   }
 
-  async startStream() {
+  async _startStream() {
     const closeDialogBox = () => this.page
       .waitForSelector("#close_modal")
       .then(el => this.page.waitForTimeout(1000).then(() => el.click()));
@@ -21,12 +21,12 @@ class YouTube extends StreamPage {
       .catch(() => this.emit("message", "Unable to start video manually"));
   }
 
-  setQuality(quality) {
+  _setQuality(quality) {
     return this.getQualityButton(quality)
       .then(button => button.evaluate(el => (el.click(), el.innerText)));
   }
 
-  isQualitySet(quality) {
+  _isQualitySet(quality) {
     return this.getQualityButton(quality)
       .then(button => button.evaluate(isButtonSelected));
   }

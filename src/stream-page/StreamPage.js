@@ -22,6 +22,17 @@ class StreamPage extends EventEmitter {
     throw new Error(`Can't get handle for url: ${url}`);
   }
 
+  startStream() {
+    this._startStream();
+  }
+
+  async setQuality(quality) {
+    this.quality = quality;
+    const actualQuality = await this._setQuality(quality);
+    this.emit("qualityset");
+    return actualQuality;
+  }
+
   async close() {
     this.removeAllListeners();
     await this.page.close();
@@ -30,6 +41,7 @@ class StreamPage extends EventEmitter {
   setUpEvents() {
     this.setUpDataEvent();
     this.setUpStreamLifeEvents();
+    this.once("qualityset", () => this.setUpQualityResetEvent());
   }
 
   setUpDataEvent() {
@@ -54,6 +66,21 @@ class StreamPage extends EventEmitter {
           setTimeout(() => this.setUpStreamLifeEvents());
         });
       });
+  }
+
+  setUpQualityResetEvent() {
+    this.once("data", () => {
+      this._isQualitySet(this.quality)
+        .catch(() => true)
+        .then(isQualitySet => {
+          if (isQualitySet) {
+            setTimeout(() => this.setUpQualityResetEvent(), 5000);
+          } else {
+            this.emit("qualityreset");
+            this.once("qualityset", () => setTimeout(() => this.setUpQualityResetEvent()));
+          }
+        });
+    });
   }
 }
 
