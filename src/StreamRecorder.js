@@ -76,6 +76,7 @@ class StreamRecorder {
 
     const page = await getBrowser().then(browser => browser.newPage());
     await page.goto(this.url);
+    await page.evaluate(() => document.body.hidden = true);
     this.streamPage = StreamPage.create(page);
     this.streamPage.startStream();
 
