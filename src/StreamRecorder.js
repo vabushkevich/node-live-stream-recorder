@@ -1,7 +1,7 @@
 const { Readable } = require('stream');
 const fs = require('fs');
 const path = require('path');
-const { addMilliseconds, differenceInMilliseconds } = require('date-fns');
+const { addMilliseconds } = require('date-fns');
 const { formatDate, saveLastFrame, getBrowser } = require('lib/utils');
 const { nanoid } = require('nanoid');
 const StreamPage = require('lib/stream-page/StreamPage');
@@ -28,12 +28,29 @@ class StreamRecorder {
     console.log(`[${this.name}]: ${message.replace("\n", "")}`);
   }
 
-  planFinish(date) {
-    clearTimeout(this.plannedFinishTimeout);
+  stopOn(date) {
     this.finishDate = date;
-    this.plannedFinishTimeout = setTimeout(() => {
-      this.stop();
-    }, differenceInMilliseconds(this.finishDate, new Date()));
+    this.autoStopTimeout = setTimeout(() => this.stop(), date - new Date());
+  }
+
+  undoAutoStop() {
+    clearTimeout(this.autoStopTimeout);
+  }
+
+  pause() {
+    this.state = "paused";
+    this.undoAutoStop();
+    this.pausedDate = new Date();
+  }
+
+  resume() {
+    this.state = "recording";
+    this.stopOn(addMilliseconds(this.finishDate, new Date() - this.pausedDate));
+  }
+
+  prolong(duration) {
+    this.undoAutoStop();
+    this.stopOn(addMilliseconds(this.finishDate, duration));
   }
 
   async setQuality(quality) {
@@ -67,7 +84,7 @@ class StreamRecorder {
     this.streamPage.once("data", async () => {
       this.state = "recording";
       this.startedDate = new Date();
-      this.prolong(duration);
+      this.stopOn(addMilliseconds(new Date(), duration));
       this.log("Recorder has been started");
       this.setQuality(this.quality);
     });
@@ -90,15 +107,12 @@ class StreamRecorder {
     });
 
     this.streamPage.on("offline", () => {
-      this.state = "paused";
-      this.pausedDate = new Date();
-      clearTimeout(this.plannedFinishTimeout);
+      this.pause();
       this.log("Recorder is paused due to stream inactivity");
     });
 
     this.streamPage.on("online", () => {
-      this.state = "recording";
-      this.prolong(differenceInMilliseconds(this.pausedDate, new Date()));
+      this.resume();
       this.log("Stream is now active");
     });
 
@@ -108,13 +122,9 @@ class StreamRecorder {
 
   async stop() {
     this.state = "stopped";
-    clearTimeout(this.plannedFinishTimeout);
+    this.undoAutoStop();
     this.log("Stopping recorder");
     await this.streamPageController.close();
-  }
-
-  prolong(duration) {
-    this.planFinish(addMilliseconds(this.finishDate || new Date(), duration));
   }
 
   toJSON() {
