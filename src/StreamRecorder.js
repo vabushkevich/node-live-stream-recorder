@@ -1,8 +1,9 @@
 const { Readable } = require('stream');
 const fs = require('fs');
 const path = require('path');
+const os = require("os");
 const { addMilliseconds } = require('date-fns');
-const { formatDate, saveLastFrame, getBrowser } = require('lib/utils');
+const { formatDate, saveFrame, getBrowser } = require('lib/utils');
 const { nanoid } = require('nanoid');
 const StreamPage = require('lib/stream-page/StreamPage');
 const { throttle } = require('lodash');
@@ -12,6 +13,8 @@ const SCREENSHOT_FREQ = 15000;
 
 class StreamRecorder {
   constructor(url, quality = 720) {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "stream-recorder-"));
+    
     this.id = nanoid();
     this.url = url;
     this.quality = quality;
@@ -21,6 +24,7 @@ class StreamRecorder {
     this.outputVideoPath = `./recordings/${this.name}.mkv`;
     this.screenshotPath = `./site/screenshots/${this.id}.jpg`;
     this.collectedData = [];
+    this.dataChunkPath = path.join(tmpDir, this.name);
   }
 
   log(message) {
@@ -65,11 +69,6 @@ class StreamRecorder {
     this.collectedData.splice(0);
   }
 
-  async takeScreenshot() {
-    await saveLastFrame(this.outputVideoPath, this.screenshotPath)
-      .catch(err => this.log(`Can't take screenshot: ${err}`));
-  }
-
   async start(duration) {
     this.state = "starting";
     this.log("Starting recorder");
@@ -97,9 +96,11 @@ class StreamRecorder {
         .catch(err => this.log(`Can't save collected data: ${err}`));
     }, SAVE_EVERY_MS, { leading: false }));
 
-    this.streamPage.on("data", throttle(() => {
-      this.takeScreenshot();
-    }, SCREENSHOT_FREQ, { leading: false }));
+    this.streamPage.on("data", throttle(buffer => {
+      fs.writeFileSync(this.dataChunkPath, buffer);
+      saveFrame(this.dataChunkPath, this.screenshotPath)
+        .catch(err => this.log(`Can't take screenshot: ${err}`));
+    }, SCREENSHOT_FREQ));
 
     this.streamPage.on("qualityreset", () => {
       this.setQuality(this.quality);

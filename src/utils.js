@@ -26,10 +26,12 @@ function startInterval(callback, ms) {
   return setInterval(callback, ms);
 }
 
-function saveLastFrame(videoPath, imagePath) {
+function saveFrame(videoPath, imagePath, position = "00:00") {
+  const seekFlag = position[0] == "-" ? "-sseof" : "-ss";
+
   return new Promise((resolve, reject) => {
     exec(
-      `ffmpeg -sseof -1 -i ${videoPath} -vframes 1 -qscale:v 31 -y ${imagePath}`,
+      `ffmpeg ${seekFlag} ${position} -i ${videoPath} -frames 1 -qscale:v 31 -y ${imagePath}`,
       { timeout: 5000 },
       err => {
         if (err) {
@@ -64,7 +66,7 @@ module.exports = {
   isVideoData,
   formatDate,
   startInterval,
-  saveLastFrame,
+  saveFrame,
   resolveAfter,
   getBrowser,
 };
