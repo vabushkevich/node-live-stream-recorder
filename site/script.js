@@ -44,8 +44,10 @@ class Recorder {
               <h5 class="mr-2 mb-0">${this.url}</h5>
               <span class="badge badge-${this.state == "recording" ? "primary" : "secondary"}">${stateStr}</span>
             </div>
-            ${this.state != "stopped" ? `
+            ${this.state == "recording" ? `
               ${timeLeft ? `<p class="mb-2"><b>Left:</b> ${timeLeft}</p>` : ``}
+            ` : ``}
+            ${this.state != "stopped" ? `
               <div class="d-flex flex-row mb-2">
                 <button type="button" class="btn mr-3 btn-primary js-rec-stop-btn">Stop</button>
                 <input type="number" style="max-width: 80px;" min="1" value="60" class="form-control mr-1 js-rec-duration-input" id="inputDuration">
