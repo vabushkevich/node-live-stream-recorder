@@ -14,7 +14,7 @@ const SCREENSHOT_FREQ = 15000;
 class StreamRecorder {
   constructor(url, quality = 720) {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "stream-recorder-"));
-    
+
     this.id = nanoid();
     this.url = url;
     this.quality = quality;
