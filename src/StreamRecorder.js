@@ -2,7 +2,6 @@ const { Readable } = require('stream');
 const fs = require('fs');
 const path = require('path');
 const os = require("os");
-const { addMilliseconds } = require('date-fns');
 const { formatDate, saveFrame, getBrowser } = require('lib/utils');
 const { nanoid } = require('nanoid');
 const StreamPage = require('lib/stream-page/StreamPage');
@@ -12,48 +11,51 @@ const SAVE_EVERY_MS = 10000;
 const SCREENSHOT_FREQ = 15000;
 
 class StreamRecorder {
-  constructor(url, quality = 720) {
+  constructor(url, duration = 60 * 60 * 1000, quality = 720) {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "stream-recorder-"));
 
     this.id = nanoid();
     this.url = url;
     this.quality = quality;
-    this.state = "idle";
     this.createdDate = new Date();
     this.name = formatDate(this.createdDate);
     this.outputVideoPath = `./recordings/${this.name}.mkv`;
     this.screenshotPath = `./site/screenshots/${this.id}.jpg`;
     this.collectedData = [];
     this.dataChunkPath = path.join(tmpDir, this.name);
+    this.duration = duration;
+    this.stateHistory = [];
+    this.setState("idle");
   }
 
   log(message) {
     console.log(`[${this.name}]: ${message.replace("\n", "")}`);
   }
 
-  stopOn(date) {
-    this.finishDate = date;
-    this.autoStopTimeout = setTimeout(() => this.stop(), date - new Date());
+  stopAfter(duration) {
+    this.undoPlannedStop();
+    this.stopTimeout = setTimeout(() => this.stop(), duration);
   }
 
-  undoAutoStop() {
-    clearTimeout(this.autoStopTimeout);
+  undoPlannedStop() {
+    clearTimeout(this.stopTimeout);
   }
 
   pause() {
-    this.state = "paused";
-    this.undoAutoStop();
-    this.pausedDate = new Date();
+    this.setState("paused");
+    this.undoPlannedStop();
   }
 
   resume() {
-    this.state = "recording";
-    this.stopOn(addMilliseconds(this.finishDate, new Date() - this.pausedDate));
+    this.setState("recording");
+    this.stopAfter(this.getTimeLeft());
   }
 
   prolong(duration) {
-    this.undoAutoStop();
-    this.stopOn(addMilliseconds(this.finishDate, duration));
+    this.duration += duration;
+    if (this.state == "recording") {
+      this.stopAfter(this.getTimeLeft());
+    }
   }
 
   async setQuality(quality) {
@@ -69,8 +71,8 @@ class StreamRecorder {
     this.collectedData.splice(0);
   }
 
-  async start(duration) {
-    this.state = "starting";
+  async start() {
+    this.setState("starting");
     this.log("Starting recorder");
 
     const page = await getBrowser().then(browser => browser.newPage());
@@ -80,9 +82,8 @@ class StreamRecorder {
     this.streamPage.startStream();
 
     this.streamPage.once("data", async () => {
-      this.state = "recording";
-      this.startedDate = new Date();
-      this.stopOn(addMilliseconds(new Date(), duration));
+      this.setState("recording");
+      this.stopAfter(this.getTimeLeft());
       this.log("Recorder has been started");
       this.setQuality(this.quality);
     });
@@ -119,9 +120,43 @@ class StreamRecorder {
     this.streamPage.on("message", msg => this.log(msg));
   }
 
+  setState(state) {
+    this.state = state;
+    this.stateHistory.push({
+      state: this.state,
+      date: new Date(),
+    });
+  }
+
+  getStateInfo(state) {
+    const info = {
+      state,
+      duration: 0,
+    };
+
+    this.stateHistory.forEach((stateItem, i) => {
+      if (stateItem.state != state) {
+        return;
+      }
+      const nextStateItem = this.stateHistory[i + 1] || {
+        date: new Date(),
+      };
+      info.duration += nextStateItem.date - stateItem.date;
+    });
+
+    return info;
+  }
+
+  getTimeLeft() {
+    if (this.state == "stopped") {
+      return 0;
+    }
+    return this.duration - this.getStateInfo("recording").duration;
+  }
+
   async stop() {
-    this.state = "stopped";
-    this.undoAutoStop();
+    this.setState("stopped");
+    this.undoPlannedStop();
     this.log("Stopping recorder");
     await this.streamPage.close();
   }
@@ -133,7 +168,7 @@ class StreamRecorder {
       state: this.state,
       screenshotPath: path.relative("./site", this.screenshotPath),
       createdDate: this.createdDate,
-      finishDate: this.finishDate,
+      timeLeft: this.getTimeLeft(),
     };
   }
 }

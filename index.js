@@ -18,8 +18,8 @@ app.get("/api/v1/recorders", (req, res) => {
 });
 
 app.post("/api/v1/recorders", (req, res) => {
-  const recorder = new StreamRecorder(req.body.url);
-  recorder.start(+req.body.duration)
+  const recorder = new StreamRecorder(req.body.url, +req.body.duration);
+  recorder.start()
     .catch(() => console.log(`Error while starting recorder ${recorder.name}`));
   recorders.push(recorder);
   res.send(recorder.id);

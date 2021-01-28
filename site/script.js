@@ -1,6 +1,6 @@
 class Recorder {
   constructor(obj) {
-    const dateProps = ["createdDate", "finishDate"];
+    const dateProps = ["createdDate"];
     Object.assign(this, obj);
     dateProps.forEach(dateProp => {
       this[dateProp] = new Date(this[dateProp]);
@@ -32,7 +32,7 @@ class Recorder {
     const stateStr = this.state[0].toUpperCase() + this.state.slice(1);
     // const timeLeft = formatDuration(intervalToDuration({ start: new Date(), end: this.finishDate }));
     // const timeLeft = "some time left...";
-    const timeLeft = +this.finishDate ? moment().to(this.finishDate, true) : "";
+    const timeLeft = moment.duration(this.timeLeft, "ms").format("hh:mm:ss", { trim: false });
     const html = `
       <li class="card recorder-items__item">
         <div class="card-body d-flex position-relative">
@@ -44,9 +44,7 @@ class Recorder {
               <h5 class="mr-2 mb-0">${this.url}</h5>
               <span class="badge badge-${this.state == "recording" ? "primary" : "secondary"}">${stateStr}</span>
             </div>
-            ${this.state == "recording" ? `
-              ${timeLeft ? `<p class="mb-2"><b>Left:</b> ${timeLeft}</p>` : ``}
-            ` : ``}
+            ${timeLeft ? `<p class="mb-2"><b>Left:</b> ${timeLeft}</p>` : ``}
             ${this.state != "stopped" ? `
               <div class="d-flex flex-row mb-2">
                 <button type="button" class="btn mr-3 btn-primary js-rec-stop-btn">Stop</button>
