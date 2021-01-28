@@ -2,13 +2,14 @@ const { Readable } = require('stream');
 const fs = require('fs');
 const path = require('path');
 const os = require("os");
-const { formatDate, saveFrame, getBrowser } = require('lib/utils');
+const { formatDate, saveFrame, getBrowser, resolveAfter } = require('lib/utils');
 const { nanoid } = require('nanoid');
 const StreamPage = require('lib/stream-page/StreamPage');
 const { throttle } = require('lodash');
 
 const SAVE_EVERY_MS = 10000;
 const SCREENSHOT_FREQ = 15000;
+const RESTART_TIMEOUT = 2 * 60 * 1000;
 
 class StreamRecorder {
   constructor(url, duration = 60 * 60 * 1000, quality = 720) {
@@ -110,6 +111,11 @@ class StreamRecorder {
     this.streamPage.on("offline", () => {
       this.pause();
       this.log("Recorder is paused due to stream inactivity");
+      Promise.race([
+        new Promise(resolve => this.streamPage.once("online", resolve)),
+        resolveAfter(RESTART_TIMEOUT).then(Promise.reject),
+      ])
+        .catch(() => this.restart());
     });
 
     this.streamPage.on("online", () => {
@@ -159,6 +165,12 @@ class StreamRecorder {
     this.undoPlannedStop();
     this.log("Stopping recorder");
     await this.streamPage.close();
+  }
+
+  async restart() {
+    this.log("Restarting recorder");
+    await this.stop();
+    await this.start();
   }
 
   toJSON() {
