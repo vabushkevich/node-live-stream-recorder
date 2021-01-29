@@ -20,7 +20,7 @@ class StreamRecorder {
     this.url = url;
     this.quality = quality;
     this.createdDate = new Date();
-    this.name = formatDate(this.createdDate, "yyyyMMddHHmmssSSS");
+    this.name = this.buildName();
     this.outputVideoPath = `./recordings/${this.name}.mkv`;
     this.screenshotPath = `./site/screenshots/${this.id}.jpg`;
     this.collectedData = [];
@@ -28,6 +28,10 @@ class StreamRecorder {
     this.duration = duration;
     this.stateHistory = [];
     this.setState("idle");
+  }
+
+  buildName() {
+    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${this.id.slice(0, 4)}`;
   }
 
   log(message) {
