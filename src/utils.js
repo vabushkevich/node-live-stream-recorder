@@ -1,4 +1,3 @@
-const { format } = require('date-fns');
 const { exec } = require('child_process');
 const puppeteer = require('puppeteer');
 
@@ -15,10 +14,6 @@ function isVideoData(res) {
   const contentType = res.headers()["content-type"];
   if (contentType && contentType.includes("video")) return true;
   return false;
-}
-
-function formatDate(date) {
-  return `${format(date, "yyyyMMddHHmmss")}${date.getMilliseconds().toString().padStart(3, "0")}`;
 }
 
 function startInterval(callback, ms) {
@@ -64,7 +59,6 @@ function getBrowser() {
 module.exports = {
   NoVideoTimeoutError,
   isVideoData,
-  formatDate,
   startInterval,
   saveFrame,
   resolveAfter,

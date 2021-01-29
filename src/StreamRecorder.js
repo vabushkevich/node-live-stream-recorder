@@ -2,10 +2,11 @@ const { Readable } = require('stream');
 const fs = require('fs');
 const path = require('path');
 const os = require("os");
-const { formatDate, saveFrame, getBrowser, resolveAfter } = require('lib/utils');
+const { saveFrame, getBrowser, resolveAfter } = require('lib/utils');
 const { nanoid } = require('nanoid');
 const StreamPage = require('lib/stream-page/StreamPage');
 const { throttle } = require('lodash');
+const { format: formatDate } = require('date-fns');
 
 const SAVE_EVERY_MS = 10000;
 const SCREENSHOT_FREQ = 15000;
@@ -19,7 +20,7 @@ class StreamRecorder {
     this.url = url;
     this.quality = quality;
     this.createdDate = new Date();
-    this.name = formatDate(this.createdDate);
+    this.name = formatDate(this.createdDate, "yyyyMMddHHmmssSSS");
     this.outputVideoPath = `./recordings/${this.name}.mkv`;
     this.screenshotPath = `./site/screenshots/${this.id}.jpg`;
     this.collectedData = [];
