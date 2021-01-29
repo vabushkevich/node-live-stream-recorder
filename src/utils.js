@@ -16,11 +16,6 @@ function isVideoData(res) {
   return false;
 }
 
-function startInterval(callback, ms) {
-  callback();
-  return setInterval(callback, ms);
-}
-
 function saveFrame(videoPath, imagePath, position = "00:00") {
   const seekFlag = position[0] == "-" ? "-sseof" : "-ss";
 
@@ -59,7 +54,6 @@ function getBrowser() {
 module.exports = {
   NoVideoTimeoutError,
   isVideoData,
-  startInterval,
   saveFrame,
   resolveAfter,
   getBrowser,
