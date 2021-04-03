@@ -1,7 +1,9 @@
 const { EventEmitter } = require('events');
 const { isVideoData, resolveAfter } = require('lib/utils');
 
-const NO_DATA_TIMEOUT = 20000;
+const {
+  noDataTimeout: NO_DATA_TIMEOUT,
+} = require('../../config');
 
 class StreamPage extends EventEmitter {
   constructor(page) {

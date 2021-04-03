@@ -8,9 +8,13 @@ const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
 
-const SAVE_EVERY_MS = 10000;
-const SCREENSHOT_FREQ = 15000;
-const RESTART_TIMEOUT = 2 * 60 * 1000;
+const {
+  saveEveryMs: SAVE_EVERY_MS,
+  screenshotEveryMs: SCREENSHOT_FREQ,
+  restartTimeout: RESTART_TIMEOUT,
+  outPath: RECORDINGS_ROOT,
+  screenshotsPath: SCREENSHOTS_ROOT,
+} = require('../config');
 
 class StreamRecording {
   constructor(recorder, url, { duration = 60 * 60 * 1000, quality = 360, nameSuffix = "" }) {
@@ -22,8 +26,8 @@ class StreamRecording {
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
     this.name = this.buildName().trim();
-    this.outputVideoPath = `./recordings/${this.name}.mkv`;
-    this.screenshotPath = `./site/screenshots/${this.id}.jpg`;
+    this.outputVideoPath = path.join(RECORDINGS_ROOT, `${this.name}.mkv`);
+    this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
     this.collectedData = [];
     this.dataChunkPath = path.join(this.recorder.tmpDir, this.name);
     this.stateHistory = [];
