@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:8080/api/v1";
+
 class Recorder {
   constructor(obj) {
     const dateProps = ["createdDate"];
@@ -8,21 +10,21 @@ class Recorder {
   }
 
   stop() {
-    fetch(`http://localhost/api/v1/recorders/${this.id}/stop`, {
+    fetch(`${API_URL}/recordings/${this.id}/stop`, {
       method: "PUT",
     })
       .then(() => window.open(document.location.href, "_self"));
   }
 
   prolong(duration) {
-    fetch(`http://localhost/api/v1/recorders/${this.id}/prolong?duration=${duration}`, {
+    fetch(`${API_URL}/recordings/${this.id}/prolong?duration=${duration}`, {
       method: "PUT",
     })
       .then(() => window.open(document.location.href, "_self"));
   }
 
   close() {
-    fetch(`http://localhost/api/v1/recorders/${this.id}`, {
+    fetch(`${API_URL}/recordings/${this.id}`, {
       method: "DELETE",
     })
       .then(() => window.open(document.location.href, "_self"));
@@ -101,7 +103,7 @@ function main() {
     const user = document.querySelector(".js-user-input").value.trim();
     const url = document.querySelector(".js-url-input").value.trim() || buildURL(site, user);
     const duration = document.querySelector(".js-duration-input").value * 60 * 1000;
-    fetch(`http://localhost/api/v1/recorders`, {
+    fetch(`${API_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({ url, duration }),
       headers: { 'Content-Type': 'application/json' },
@@ -109,7 +111,7 @@ function main() {
       .then(() => window.open(document.location.href, "_self"));
   });
 
-  fetch(`http://localhost/api/v1/recorders`, {
+  fetch(`${API_URL}/recordings`, {
     method: "GET",
   })
     .then(req => req.json())

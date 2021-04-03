@@ -1,7 +1,4 @@
 const { exec } = require('child_process');
-const puppeteer = require('puppeteer');
-
-let browser;
 
 class NoVideoTimeoutError extends Error {
   constructor() {
@@ -38,23 +35,9 @@ function resolveAfter(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function getBrowser() {
-  browser = browser || puppeteer.launch({
-    executablePath: "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-    // headless: false,
-    // defaultViewport: {
-    //   width: 1920,
-    //   height: 1080,
-    // },
-    // userDataDir: "C:\\Users\\User\\AppData\\Local\\Google\\Chrome\\User Data",
-  });
-  return browser;
-}
-
 module.exports = {
   NoVideoTimeoutError,
   isVideoData,
   saveFrame,
   resolveAfter,
-  getBrowser,
 };
