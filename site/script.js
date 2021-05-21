@@ -50,7 +50,7 @@ class Recorder {
             ${this.state != "stopped" ? `
               <div class="d-flex flex-row mb-2">
                 <button type="button" class="btn mr-3 btn-primary js-rec-stop-btn">Stop</button>
-                <input type="number" style="max-width: 80px;" min="1" value="60" class="form-control mr-1 js-rec-duration-input" id="inputDuration">
+                <input type="number" style="max-width: 80px;" min="1" value="120" class="form-control mr-1 js-rec-duration-input" id="inputDuration">
                 <button type="button" class="btn btn-primary js-rec-prolong-btn">Prolong</button>
               </div>
             ` : ``}
@@ -90,22 +90,29 @@ function htmlToElement(html) {
   return template.content.firstChild;
 }
 
-function buildURL(site, user) {
-  if (!user) return "";
-  if (site == "youtube") return `https://youtube.com/${user}`;
-  if (site == "twitch") return `https://www.twitch.tv/#${user}`;
-  return "";
+function getSiteName(url) {
+  if (url.includes("youtube.com")) return "youtube";
+  if (url.includes("twitch.tv")) return "twitch";
 }
 
 function main() {
   document.querySelector(".js-record-btn").addEventListener("click", () => {
-    const site = document.querySelector(".js-site-select").value;
-    const user = document.querySelector(".js-user-input").value.trim();
-    const url = document.querySelector(".js-url-input").value.trim() || buildURL(site, user);
-    const duration = document.querySelector(".js-duration-input").value * 60 * 1000;
+    const formData = {
+      url: document.querySelector(".js-url-input").value,
+      duration: document.querySelector(".js-duration-input").value,
+    };
+
+    const url = formData.url.trim();
+    const siteName = getSiteName(url);
+    const duration = formData.duration * 60 * 1000;
+
     fetch(`${API_URL}/recordings`, {
       method: "POST",
-      body: JSON.stringify({ url, duration }),
+      body: JSON.stringify({
+        url,
+        duration,
+        nameSuffix: siteName,
+      }),
       headers: { 'Content-Type': 'application/json' },
     })
       .then(() => window.open(document.location.href, "_self"));

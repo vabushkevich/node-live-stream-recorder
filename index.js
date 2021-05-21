@@ -4,22 +4,23 @@
   const StreamRecorder = require('lib/StreamRecorder');
 
   const app = express();
-  const recorder = await StreamRecorder.create();
+  const recorder = new StreamRecorder();
   const port = 8080;
+
+  await recorder.start();
 
   app.use(cors());
   app.use(express.json());
   app.use(express.static("./site"));
 
   app.get("/api/v1/recordings", (req, res) => {
-    res.send(recorder.recordings);
+    res.send(recorder.getRecordings());
   });
 
   app.post("/api/v1/recordings", (req, res) => {
-    const { url, duration } = req.body;
-    const recording = recorder.createRecording(url, { duration: +duration });
-    recording.start()
-      .catch((err) => console.log(`Error while starting recording ${recording.name}: ${err}`));
+    const { url, duration, nameSuffix } = req.body;
+    const recording = recorder.createRecording(url, { duration: +duration, nameSuffix });
+    recording.start();
     res.send(recording.id);
   });
 

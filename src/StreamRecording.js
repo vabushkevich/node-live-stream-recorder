@@ -1,64 +1,88 @@
-const { Readable } = require('stream');
-const fs = require('fs');
+const { writeFile } = require('fs').promises;
+const { mkdtempSync } = require('fs');
 const path = require('path');
+const { tmpdir } = require('os');
 const { saveFrame, resolveAfter } = require('lib/utils');
-const { nanoid } = require('nanoid');
-const StreamPage = require('lib/stream-page/StreamPage');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
+const M3u8Fetcher = require("lib/M3u8Fetcher");
+const { YouTube, Twitch } = require('lib/stream-page');
+const { EventEmitter } = require('events');
 
 const {
-  saveEveryMs: SAVE_EVERY_MS,
-  screenshotEveryMs: SCREENSHOT_FREQ,
-  restartTimeout: RESTART_TIMEOUT,
-  outPath: RECORDINGS_ROOT,
-  screenshotsPath: SCREENSHOTS_ROOT,
-} = require('../config');
+  SCREENSHOT_FREQ,
+  RESTART_TIMEOUT,
+  RECORDINGS_ROOT,
+  SCREENSHOTS_ROOT,
+  NO_DATA_TIMEOUT,
+} = require('lib/config');
 
-class StreamRecording {
-  constructor(recorder, url, { duration = 60 * 60 * 1000, quality = 360, nameSuffix = "" }) {
-    this.id = nanoid();
-    this.recorder = recorder;
+function createStreamPage(page) {
+  const url = page.url();
+
+  if (url.includes("youtube.com")) return new YouTube(page);
+  if (url.includes("twitch.tv")) return new Twitch(page);
+
+  throw new Error(`Can't get handle for url: ${url}`);
+}
+
+class StreamRecording extends EventEmitter {
+  constructor(
+    url,
+    browser,
+    {
+      duration = 60 * 60 * 1000,
+      quality = [{ resolution: 360 }, { resolution: 480 }],
+      nameSuffix = "",
+      id,
+    } = {}
+  ) {
+    super();
+    if (!id) throw new Error("Recording id must be specified");
+    this.id = id;
     this.url = url;
+    this.browser = browser;
     this.duration = duration;
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
     this.name = this.buildName().trim();
+    this.tmpDir = mkdtempSync(path.join(tmpdir(), "stream-recording-"));
     this.outputVideoPath = path.join(RECORDINGS_ROOT, `${this.name}.mkv`);
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
-    this.collectedData = [];
-    this.dataChunkPath = path.join(this.recorder.tmpDir, this.name);
+    this.dataChunkPath = path.join(this.tmpDir, this.name);
     this.stateHistory = [];
     this.setState("idle");
   }
 
   buildName() {
-    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${this.id.slice(0, 4)} ${this.nameSuffix}`;
+    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss.SSS")} ${this.nameSuffix}`;
   }
 
   log(message) {
-    console.log(`[${this.name}]: ${message.replace("\n", "")}`);
+    console.log(`[${this.name}]: ${String(message).replace("\n", "")}`);
   }
 
   stopAfter(duration) {
-    this.undoPlannedStop();
+    this.cancelScheduledStop();
     this.stopTimeout = setTimeout(() => this.stop(), duration);
   }
 
-  undoPlannedStop() {
+  cancelScheduledStop() {
     clearTimeout(this.stopTimeout);
   }
 
   pause() {
     this.setState("paused");
-    this.undoPlannedStop();
+    this.cancelScheduledStop();
+    this.log("Paused");
   }
 
   resume() {
     this.setState("recording");
     this.stopAfter(this.getTimeLeft());
+    this.log("Resumed");
   }
 
   prolong(duration) {
@@ -68,71 +92,97 @@ class StreamRecording {
     }
   }
 
-  async setQuality(quality) {
-    await this.streamPage.setQuality(quality)
-      .then(quality => this.log(`Quality has been set to: ${quality}`))
-      .catch(err => this.log(`Can't set quality: ${err}`));
-  }
-
-  async saveCollectedData() {
-    const dataToSave = this.collectedData.slice();
-    const fileStream = fs.createWriteStream(this.outputVideoPath, { flags: "a" });
-    Readable.from(dataToSave).pipe(fileStream);
-    this.collectedData.splice(0);
+  async openPage(url) {
+    const page = await this.browser.newPage();
+    await page.goto(url)
+      .catch((err) => {
+        if (err.name == "TimeoutError") {
+          return Promise.reject("Page open timeout");
+        }
+        return Promise.reject(err);
+      });
+    await page.evaluate(() =>
+      document.documentElement.style.display = "none !important"
+    );
+    return page;
   }
 
   async start() {
+    let page;
+
+    this.stopPromise = null;
     this.setState("starting");
-    this.log("Starting recorder");
+    this.log("Starting");
 
-    const page = await this.recorder.browser.newPage();
-    await page.goto(this.url);
-    await page.evaluate(() => document.body.hidden = true);
-    this.streamPage = StreamPage.create(page);
-    this.streamPage.startStream();
+    try {
+      page = await this.openPage(this.url);
+      const streamPage = createStreamPage(page);
+      const m3u8 = await streamPage.getM3u8(this.quality);
 
-    this.streamPage.once("data", async () => {
+      this.m3u8Fetcher = new M3u8Fetcher(m3u8.url);
+      this.setUpM3u8FetcherEventHandlers();
+      this.m3u8Fetcher.start();
       this.setState("recording");
       this.stopAfter(this.getTimeLeft());
-      this.log("Recorder has been started");
-      this.setQuality(this.quality);
+      this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
+    } catch (err) {
+      this.log(`Can't start: ${err}`);
+      this.log(`Retry start in ${RESTART_TIMEOUT} ms`);
+      this.pause();
+      Promise.race([
+        resolveAfter(RESTART_TIMEOUT),
+        this.getStopPromise(),
+      ])
+        .then((res) => {
+          if (res instanceof Error) return;
+          setTimeout(() => this.start());
+        });
+    } finally {
+      page && await page.close();
+    }
+  }
+
+  setUpM3u8FetcherEventHandlers() {
+    this.m3u8Fetcher.on("data", (chunk) => {
+      writeFile(this.outputVideoPath, chunk, { flag: "a" });
     });
 
-    this.streamPage.on("data", buffer => {
-      this.collectedData.push(buffer);
-    });
-
-    this.streamPage.on("data", throttle(() => {
-      this.saveCollectedData()
-        .catch(err => this.log(`Can't save collected data: ${err}`));
-    }, SAVE_EVERY_MS, { leading: false }));
-
-    this.streamPage.on("data", throttle(buffer => {
-      fs.writeFileSync(this.dataChunkPath, buffer);
+    this.m3u8Fetcher.on("data", throttle(async (chunk) => {
+      await writeFile(this.dataChunkPath, chunk);
       saveFrame(this.dataChunkPath, this.screenshotPath)
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
-    this.streamPage.on("qualityreset", () => {
-      this.setQuality(this.quality);
+    this.m3u8Fetcher.on("online", () => {
+      this.log("Stream is online");
     });
 
-    this.streamPage.on("offline", () => {
+    this.m3u8Fetcher.on("offline", () => {
+      this.log("Stream is offline");
+    });
+
+    this.m3u8Fetcher.on("offline", () => {
       this.pause();
-      this.log("Recorder is paused due to stream inactivity");
       Promise.race([
-        new Promise(resolve => this.streamPage.once("online", resolve)),
+        new Promise((resolve) => this.m3u8Fetcher.once("online", () => resolve())),
         resolveAfter(RESTART_TIMEOUT).then(Promise.reject),
+        this.getStopPromise(),
       ])
-        .catch(() => this.restart());
+        .then((res) => {
+          if (res instanceof Error) return;
+          this.resume();
+        })
+        .catch(() => {
+          this.log(`Stream is offline more than ${RESTART_TIMEOUT} ms`);
+          this.restart();
+        });
     });
+  }
 
-    this.streamPage.on("online", () => {
-      this.resume();
-      this.log("Stream is now active");
-    });
-
-    this.streamPage.on("message", msg => this.log(msg));
+  removeM3u8FetcherEventHandlers() {
+    this.m3u8Fetcher.removeAllListeners("data");
+    this.m3u8Fetcher.removeAllListeners("online");
+    this.m3u8Fetcher.removeAllListeners("offline");
   }
 
   setState(state) {
@@ -169,17 +219,30 @@ class StreamRecording {
     return this.duration - this.getStateInfo("recording").duration;
   }
 
-  async stop() {
+  stop() {
+    this.cancelScheduledStop();
     this.setState("stopped");
-    this.undoPlannedStop();
-    this.log("Stopping recorder");
-    await this.streamPage.close();
+    if (this.m3u8Fetcher) {
+      this.m3u8Fetcher.stop();
+      this.removeM3u8FetcherEventHandlers();
+    }
+    this.emit("stop");
+    this.log("Stopped");
   }
 
   async restart() {
-    this.log("Restarting recorder");
-    await this.stop();
+    this.log("Restarting");
+    this.stop();
     await this.start();
+  }
+
+  async getStopPromise() {
+    if (!this.stopPromise) {
+      this.stopPromise = new Promise((resolve) =>
+        this.once("stop", () => resolve(new Error("Recording stopped")))
+      );
+    }
+    return this.stopPromise;
   }
 
   toJSON() {
