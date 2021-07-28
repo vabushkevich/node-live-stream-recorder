@@ -10,7 +10,7 @@
     "lodash": "^4.17.20",
     "nanoid": "^3.1.20",
     "node-fetch": "^2.6.1",
-    "puppeteer-core": "^8.0.0",
+    "puppeteer-core": "^10.1.0",
     "sanitize-filename": "^1.6.3"
   },
   "scripts": {
@@ -18,5 +18,8 @@
   },
   "keywords": [],
   "author": "Vyacheslav Abushkevich <abshkvch@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "workspaces": [
+    "./src"
+  ]
 }

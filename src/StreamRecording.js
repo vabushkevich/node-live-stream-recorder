@@ -1,4 +1,4 @@
-const { writeFile } = require('fs').promises;
+const { writeFileSync } = require('fs');
 const { mkdtempSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
@@ -12,7 +12,6 @@ const { EventEmitter } = require('events');
 
 const {
   SCREENSHOT_FREQ,
-  RESTART_TIMEOUT,
   RECORDINGS_ROOT,
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
@@ -73,12 +72,6 @@ class StreamRecording extends EventEmitter {
     clearTimeout(this.stopTimeout);
   }
 
-  pause() {
-    this.setState("paused");
-    this.cancelScheduledStop();
-    this.log("Paused");
-  }
-
   resume() {
     this.setState("recording");
     this.stopAfter(this.getTimeLeft());
@@ -121,68 +114,50 @@ class StreamRecording extends EventEmitter {
 
       this.m3u8Fetcher = new M3u8Fetcher(m3u8.url);
       this.setUpM3u8FetcherEventHandlers();
+      this.setUpStreamLifeCheck();
       this.m3u8Fetcher.start();
       this.setState("recording");
       this.stopAfter(this.getTimeLeft());
       this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
     } catch (err) {
       this.log(`Can't start: ${err}`);
-      this.log(`Retry start in ${RESTART_TIMEOUT} ms`);
-      this.pause();
-      Promise.race([
-        resolveAfter(RESTART_TIMEOUT),
-        this.getStopPromise(),
-      ])
-        .then((res) => {
-          if (res instanceof Error) return;
-          setTimeout(() => this.start());
-        });
+      this.log("Restart in 5 seconds");
+      setTimeout(() => this.start(), 5000);
     } finally {
       page && await page.close();
     }
   }
 
+  setUpStreamLifeCheck() {
+    Promise.race([
+      new Promise((resolve) => this.m3u8Fetcher.once("data", () => resolve())),
+      resolveAfter(NO_DATA_TIMEOUT).then(Promise.reject),
+    ])
+      .then(() => setTimeout(() => this.setUpStreamLifeCheck()))
+      .catch(() => {
+        if (this.state !== "recording") return;
+        this.log(`Stream is offline more than ${NO_DATA_TIMEOUT} ms`);
+        this.restart();
+      });
+  }
+
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("data", (chunk) => {
-      writeFile(this.outputVideoPath, chunk, { flag: "a" });
+      writeFileSync(this.outputVideoPath, chunk, { flag: "a" });
     });
 
     this.m3u8Fetcher.on("data", throttle(async (chunk) => {
-      await writeFile(this.dataChunkPath, chunk);
+      writeFileSync(this.dataChunkPath, chunk);
       saveFrame(this.dataChunkPath, this.screenshotPath)
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
-    this.m3u8Fetcher.on("online", () => {
-      this.log("Stream is online");
-    });
-
-    this.m3u8Fetcher.on("offline", () => {
-      this.log("Stream is offline");
-    });
-
-    this.m3u8Fetcher.on("offline", () => {
-      this.pause();
-      Promise.race([
-        new Promise((resolve) => this.m3u8Fetcher.once("online", () => resolve())),
-        resolveAfter(RESTART_TIMEOUT).then(Promise.reject),
-        this.getStopPromise(),
-      ])
-        .then((res) => {
-          if (res instanceof Error) return;
-          this.resume();
-        })
-        .catch(() => {
-          this.log(`Stream is offline more than ${RESTART_TIMEOUT} ms`);
-          this.restart();
-        });
-    });
+    this.m3u8Fetcher.on("error", (err) => this.log(`(M3u8Fetcher) ${err.message}`));
   }
 
   removeM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.removeAllListeners("data");
-    this.m3u8Fetcher.removeAllListeners("online");
-    this.m3u8Fetcher.removeAllListeners("offline");
+    this.m3u8Fetcher.removeAllListeners("error");
   }
 
   setState(state) {
