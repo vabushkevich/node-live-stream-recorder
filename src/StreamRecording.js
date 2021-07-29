@@ -32,7 +32,13 @@ class StreamRecording extends EventEmitter {
     browser,
     {
       duration = 60 * 60 * 1000,
-      quality = [{ resolution: 360 }, { resolution: 480 }],
+      quality = [
+        { resolution: 360 },
+        { resolution: 480 },
+        { resolution: 240 },
+        { resolution: 640 },
+        { resolution: 720 },
+      ],
       nameSuffix = "",
       id,
     } = {}
