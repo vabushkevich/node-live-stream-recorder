@@ -154,13 +154,11 @@ class StreamRecording extends EventEmitter {
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
-    this.m3u8Fetcher.on("error", (err) => this.log(`(M3u8Fetcher) ${err.message}`));
+    this.m3u8Fetcher.on("error", () => { });
   }
 
   removeM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.removeAllListeners("data");
-    this.m3u8Fetcher.removeAllListeners("error");
-    this.m3u8Fetcher.on("error", () => { });
   }
 
   setState(state) {
