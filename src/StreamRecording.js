@@ -103,7 +103,6 @@ class StreamRecording extends EventEmitter {
   async start() {
     let page;
 
-    this.stopPromise = null;
     this.setState("starting");
     this.log("Starting");
 
@@ -116,14 +115,17 @@ class StreamRecording extends EventEmitter {
       this.setUpM3u8FetcherEventHandlers();
       this.setUpStreamLifeCheck();
       this.m3u8Fetcher.start();
-      this.setState("recording");
       this.stopAfter(this.getTimeLeft());
+
+      this.setState("recording");
       this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
     } catch (err) {
       this.log(`Can't start: ${err}`);
-      this.log("Restart in 5 seconds");
-      setTimeout(() => this.start(), 5000);
+      this.log("Restart in 1 minute");
+      await resolveAfter(60000);
+      if (this.state === "starting") this.start();
     } finally {
+      this.emit("poststart");
       page && await page.close();
     }
   }
@@ -158,6 +160,7 @@ class StreamRecording extends EventEmitter {
   removeM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.removeAllListeners("data");
     this.m3u8Fetcher.removeAllListeners("error");
+    this.m3u8Fetcher.on("error", () => { });
   }
 
   setState(state) {
@@ -166,6 +169,7 @@ class StreamRecording extends EventEmitter {
       state: this.state,
       date: new Date(),
     });
+    this.emit("statechange");
   }
 
   getStateInfo(state) {
@@ -194,14 +198,21 @@ class StreamRecording extends EventEmitter {
     return this.duration - this.getStateInfo("recording").duration;
   }
 
-  stop() {
+  async stop() {
+    const isStarting = this.state === "starting";
+    this.setState("stopping");
+    this.log("Stopping");
     this.cancelScheduledStop();
-    this.setState("stopped");
+    if (isStarting) {
+      await new Promise((resolve) =>
+        this.once("poststart", resolve)
+      );
+    }
     if (this.m3u8Fetcher) {
       this.m3u8Fetcher.stop();
       this.removeM3u8FetcherEventHandlers();
     }
-    this.emit("stop");
+    this.setState("stopped");
     this.log("Stopped");
   }
 
@@ -209,15 +220,6 @@ class StreamRecording extends EventEmitter {
     this.log("Restarting");
     this.stop();
     await this.start();
-  }
-
-  async getStopPromise() {
-    if (!this.stopPromise) {
-      this.stopPromise = new Promise((resolve) =>
-        this.once("stop", () => resolve(new Error("Recording stopped")))
-      );
-    }
-    return this.stopPromise;
   }
 
   toJSON() {
