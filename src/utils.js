@@ -12,13 +12,17 @@ function isMpegUrlData(res) {
   return false;
 }
 
-function saveFrame(videoPath, imagePath, position = "00:00") {
+function saveFrame(path, imagePath, {
+  position = "00:00",
+  quality,
+}) {
   const seekFlag = position[0] == "-" ? "-sseof" : "-ss";
+  const qualityParam = isNaN(quality) ? "" : `-qscale:v ${+quality}`;
 
   return new Promise((resolve, reject) => {
     exec(
-      `ffmpeg -v error ${seekFlag} ${position} -i "${videoPath}" -frames 1 -qscale:v 31 -y "${imagePath}"`,
-      { timeout: 5000 },
+      `ffmpeg -v error ${seekFlag} ${position} -i "${path}" -frames 1 ${qualityParam} -y "${imagePath}"`,
+      { timeout: 1000 },
       (err, stdout, stderr) => {
         if (err) {
           reject(new Error(stderr.trim()));
