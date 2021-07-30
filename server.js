@@ -2,11 +2,17 @@
   const express = require('express');
   const cors = require('cors');
   const StreamRecorder = require('lib/StreamRecorder');
+  const { mkdirSync } = require('fs');
+
+  const {
+    SCREENSHOTS_ROOT,
+  } = require('lib/config');
 
   const app = express();
   const recorder = new StreamRecorder();
   const port = 8080;
 
+  mkdirSync(SCREENSHOTS_ROOT, { recursive: true });
   await recorder.start();
 
   app.use(cors());
