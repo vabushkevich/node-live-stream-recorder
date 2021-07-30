@@ -17,11 +17,11 @@ function saveFrame(videoPath, imagePath, position = "00:00") {
 
   return new Promise((resolve, reject) => {
     exec(
-      `ffmpeg ${seekFlag} ${position} -i "${videoPath}" -frames 1 -qscale:v 31 -y "${imagePath}"`,
+      `ffmpeg -v error ${seekFlag} ${position} -i "${videoPath}" -frames 1 -qscale:v 31 -y "${imagePath}"`,
       { timeout: 5000 },
-      err => {
+      (err, stdout, stderr) => {
         if (err) {
-          reject(new Error("ffmpeg command failed"));
+          reject(new Error(stderr.trim()));
         } else {
           resolve();
         }
