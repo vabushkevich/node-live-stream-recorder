@@ -55,7 +55,7 @@ class StreamRecording extends EventEmitter {
     this.name = this.buildName().trim();
     this.tmpDir = mkdtempSync(path.join(tmpdir(), "stream-recording-"));
     this.outputVideoPath = path.join(RECORDINGS_ROOT, `${this.name}.mkv`);
-    this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
+    this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.webp`);
     this.dataChunkPath = path.join(this.tmpDir, this.name);
     this.stateHistory = [];
     this.setState("idle");
@@ -156,7 +156,7 @@ class StreamRecording extends EventEmitter {
 
     this.m3u8Fetcher.on("data", throttle(async (chunk) => {
       writeFileSync(this.dataChunkPath, chunk);
-      saveFrame(this.dataChunkPath, this.screenshotPath, { quality: 31 })
+      saveFrame(this.dataChunkPath, this.screenshotPath, { quality: 10 })
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
