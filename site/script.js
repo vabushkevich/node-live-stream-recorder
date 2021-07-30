@@ -44,6 +44,9 @@ class Recorder {
           <div class="d-flex flex-column">
             <div class="d-flex align-items-center mb-2">
               <h5 class="mr-2 mb-0">${this.url}</h5>
+              ${this.quality ? `
+                <span class="mr-2 badge badge-dark">${this.quality.resolution}p</span>
+              `: ``}
               <span class="badge badge-${this.state == "recording" ? "primary" : "secondary"}">${stateStr}</span>
             </div>
             ${timeLeft ? `<p class="mb-2"><b>Left:</b> ${timeLeft}</p>` : ``}

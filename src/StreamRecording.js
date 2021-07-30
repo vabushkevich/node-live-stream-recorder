@@ -122,6 +122,7 @@ class StreamRecording extends EventEmitter {
       this.setUpStreamLifeCheck();
       this.m3u8Fetcher.start();
       this.stopAfter(this.getTimeLeft());
+      this.actualQuality = m3u8.quality;
 
       this.setState("recording");
       this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
@@ -234,6 +235,7 @@ class StreamRecording extends EventEmitter {
       screenshotPath: path.relative("./site", this.screenshotPath),
       createdDate: this.createdDate,
       timeLeft: this.getTimeLeft(),
+      quality: this.actualQuality,
     };
   }
 }
