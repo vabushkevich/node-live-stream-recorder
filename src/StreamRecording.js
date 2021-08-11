@@ -2,7 +2,7 @@ const { writeFileSync } = require('fs');
 const { mkdtempSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
-const { saveFrame, resolveAfter } = require('lib/utils');
+const { saveFrame, resolveAfter, retry } = require('lib/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -110,31 +110,44 @@ class StreamRecording extends EventEmitter {
     let page;
 
     this.setState("starting");
-    this.log("Starting");
 
-    try {
-      page = await this.openPage(this.url);
-      const streamPage = createStreamPage(page);
-      const m3u8 = await streamPage.getM3u8(this.quality);
+    await retry(
+      async () => {
+        if (this.state !== "starting") return;
 
-      this.m3u8Fetcher = new M3u8Fetcher(m3u8.url);
-      this.setUpM3u8FetcherEventHandlers();
-      this.setUpStreamLifeCheck();
-      this.m3u8Fetcher.start();
-      this.stopAfter(this.getTimeLeft());
-      this.actualQuality = m3u8.quality;
+        this.log("Starting");
 
-      this.setState("recording");
-      this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
-    } catch (err) {
-      this.log(`Can't start: ${err}`);
-      this.log("Restart in 1 minute");
-      await resolveAfter(60000);
-      if (this.state === "starting") this.start();
-    } finally {
-      this.emit("poststart");
-      page && await page.close();
-    }
+        page = await this.openPage(this.url);
+        const streamPage = createStreamPage(page);
+        const m3u8 = await streamPage.getM3u8(this.quality);
+
+        this.m3u8Fetcher = new M3u8Fetcher(m3u8.url);
+        this.setUpM3u8FetcherEventHandlers();
+        this.setUpStreamLifeCheck();
+        this.m3u8Fetcher.start();
+        this.stopAfter(this.getTimeLeft());
+        this.actualQuality = m3u8.quality;
+
+        this.setState("recording");
+        this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
+      },
+      [1000, 10 * 1000, 2 * 60 * 1000, 15 * 60 * 1000, 60 * 60 * 1000],
+      (err, res, triesLeft, nextDelay) => {
+        this.emit("poststart");
+        page && page.close();
+        if (!err) return;
+        this.log(`Can't start: ${err}`);
+        if (triesLeft > 0) {
+          this.log(`Restart in ${nextDelay / 1000} s`);
+        }
+      }
+    )
+      .catch(() => {
+        if (this.state === "starting") {
+          this.setState("stopped");
+          this.log("Stopped");
+        }
+      });
   }
 
   setUpStreamLifeCheck() {

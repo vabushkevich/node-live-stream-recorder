@@ -54,6 +54,22 @@ function isSimilarObjects(obj1, obj2) {
   return true;
 }
 
+async function retry(func, retryDelays, callback) {
+  for (let i = 0; i <= retryDelays.length; i++) {
+    const triesLeft = retryDelays.length - i;
+    const nextDelay = retryDelays[i];
+    try {
+      const res = await func();
+      callback(undefined, res, triesLeft, nextDelay);
+      return res;
+    } catch (err) {
+      callback(err, undefined, triesLeft, nextDelay);
+      if (i >= retryDelays.length) throw err;
+      await resolveAfter(nextDelay);
+    }
+  }
+}
+
 module.exports = {
   isVideoData,
   saveFrame,
@@ -61,4 +77,5 @@ module.exports = {
   isMpegUrlData,
   parseM3u8,
   isSimilarObjects,
+  retry,
 };
