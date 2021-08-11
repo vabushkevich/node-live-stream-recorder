@@ -3,9 +3,6 @@ const { platform } = require('os');
 const config = {
   NO_DATA_TIMEOUT: 15 * 1000,
   SCREENSHOT_FREQ: 20 * 1000,
-
-  // NO_DATA_TIMEOUT: 10 * 1000,
-  // SCREENSHOT_FREQ: 20 * 1000,
 }
 
 if (platform() == "win32") {
