@@ -15,6 +15,7 @@ const {
   RECORDINGS_ROOT,
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
+  RETRY_DELAYS,
 } = require('lib/config');
 
 function createStreamPage(page) {
@@ -131,7 +132,7 @@ class StreamRecording extends EventEmitter {
         this.setState("recording");
         this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
       },
-      [1000, 10 * 1000, 2 * 60 * 1000, 15 * 60 * 1000, 60 * 60 * 1000],
+      RETRY_DELAYS,
       (err, res, triesLeft, nextDelay) => {
         this.emit("poststart");
         page && page.close();
