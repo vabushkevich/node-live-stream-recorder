@@ -5,6 +5,8 @@ const config = {
   SCREENSHOT_FREQ: 20 * 1000,
   RETRY_DELAYS: [
     1000,
+    1000,
+    1000,
     10 * 1000,
     2 * 60 * 1000,
     15 * 60 * 1000,
