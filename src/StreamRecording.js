@@ -79,12 +79,6 @@ class StreamRecording extends EventEmitter {
     clearTimeout(this.stopTimeout);
   }
 
-  resume() {
-    this.setState("recording");
-    this.stopAfter(this.getTimeLeft());
-    this.log("Resumed");
-  }
-
   prolong(duration) {
     this.duration += duration;
     if (this.state == "recording") {
