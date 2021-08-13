@@ -70,6 +70,20 @@ async function retry(func, retryDelays, callback) {
   }
 }
 
+function getDuration(path) {
+  return new Promise((resolve, reject) => {
+    exec(
+      `ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${path}"`,
+      { timeout: 1000 },
+      (err, stdout, stderr) => {
+        if (err) reject(new Error(`ffprobe command failed: ${stderr.trim()}`));
+        if (isNaN(stdout)) reject(new Error(`Can't get video duration. Got: ${stdout.trim()}`));
+        resolve(stdout * 1000);
+      }
+    );
+  });
+}
+
 module.exports = {
   isVideoData,
   saveFrame,
@@ -78,4 +92,5 @@ module.exports = {
   parseM3u8,
   isSimilarObjects,
   retry,
+  getDuration,
 };

@@ -13,6 +13,7 @@ const config = {
     10 * 60 * 1000,
     30 * 60 * 1000,
   ],
+  ESTIMATE_CHUNK_LENGTH_EVERY_MS: 10000,
 }
 
 if (platform() == "win32") {

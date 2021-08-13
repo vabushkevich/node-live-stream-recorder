@@ -2,7 +2,7 @@ const { writeFileSync } = require('fs');
 const { mkdtempSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
-const { saveFrame, resolveAfter, retry } = require('lib/utils');
+const { saveFrame, resolveAfter, retry, getDuration } = require('lib/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -16,6 +16,7 @@ const {
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
   RETRY_DELAYS,
+  ESTIMATE_CHUNK_LENGTH_EVERY_MS,
 } = require('lib/config');
 
 function createStreamPage(page) {
@@ -50,6 +51,9 @@ class StreamRecording extends EventEmitter {
     this.url = url;
     this.browser = browser;
     this.duration = duration;
+    this.chunksGot = 0;
+    this.chunkLengthEstimations = 0;
+    this.averageChunkLength = 0;
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
@@ -160,6 +164,7 @@ class StreamRecording extends EventEmitter {
 
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("data", (chunk) => {
+      this.chunksGot += 1;
       writeFileSync(this.outputVideoPath, chunk, { flag: "a" });
     });
 
@@ -168,6 +173,21 @@ class StreamRecording extends EventEmitter {
       saveFrame(this.dataChunkPath, this.screenshotPath, { quality: 31 })
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
+
+    this.m3u8Fetcher.on("data", throttle(() => {
+      getDuration(this.dataChunkPath)
+        .then((duration) => {
+          if (this.chunkLengthEstimations === 0) {
+            this.averageChunkLength = duration;
+          } else {
+            this.averageChunkLength =
+              duration / (this.chunkLengthEstimations + 1)
+              + this.averageChunkLength * this.chunkLengthEstimations / (this.chunkLengthEstimations + 1);
+          }
+          this.chunkLengthEstimations += 1;
+        })
+        .catch((err) => this.log(err));
+    }, ESTIMATE_CHUNK_LENGTH_EVERY_MS));
 
     this.m3u8Fetcher.on("error", () => { });
   }
@@ -204,11 +224,15 @@ class StreamRecording extends EventEmitter {
     return info;
   }
 
+  getRecordedDuration() {
+    return this.chunksGot * this.averageChunkLength;
+  }
+
   getTimeLeft() {
     if (this.state == "stopped") {
       return 0;
     }
-    return this.duration - this.getStateInfo("recording").duration;
+    return this.duration - this.getRecordedDuration();
   }
 
   async stop() {
