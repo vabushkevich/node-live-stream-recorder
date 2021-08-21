@@ -2,7 +2,7 @@ const { writeFileSync } = require('fs');
 const { mkdtempSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
-const { saveFrame, resolveAfter, retry, getDuration } = require('lib/utils');
+const { saveFrame, resolveAfter, retry, getDuration, addToAverage } = require('lib/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -177,13 +177,11 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.on("data", throttle(() => {
       getDuration(this.dataChunkPath)
         .then((duration) => {
-          if (this.chunkLengthEstimations === 0) {
-            this.averageChunkLength = duration;
-          } else {
-            this.averageChunkLength =
-              duration / (this.chunkLengthEstimations + 1)
-              + this.averageChunkLength * this.chunkLengthEstimations / (this.chunkLengthEstimations + 1);
-          }
+          this.averageChunkLength = addToAverage(
+            this.averageChunkLength,
+            duration,
+            this.chunkLengthEstimations
+          );
           this.chunkLengthEstimations += 1;
         })
         .catch((err) => this.log(err));
