@@ -54,6 +54,18 @@ function isSimilarObjects(obj1, obj2) {
   return true;
 }
 
+/**
+ * Retry `func` execution until it returns a value or a promise that resolves.
+ * Four values passed in `callback`: `err`, `res`, `triesLeft`, `nextDelay`.
+ *
+ * @function module:utils.drawRect
+ * @param {Function} func The function to execute.
+ * @param {number[]} retryDelays The array containing delays before each retry.
+ * @param {Function} callback The callback that executes when `func` executes
+ * successfully or when last `func`'s call failed.
+ * @returns {Promise} The promise that resolves with `func`'s returned value or
+ * rejects with a error thrown during last unsuccessful `func` execution.
+ */
 async function retry(func, retryDelays, callback) {
   for (let i = 0; i <= retryDelays.length; i++) {
     const triesLeft = retryDelays.length - i;
