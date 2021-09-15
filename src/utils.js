@@ -58,7 +58,7 @@ function isSimilarObjects(obj1, obj2) {
  * Retry `func` execution until it returns a value or a promise that resolves.
  * Four values passed in `callback`: `err`, `res`, `triesLeft`, `nextDelay`.
  *
- * @function module:utils.drawRect
+ * @function module:utils.retry
  * @param {Function} func The function to execute.
  * @param {number[]} retryDelays The array containing delays before each retry.
  * @param {Function} callback The callback that executes when `func` executes
