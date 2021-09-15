@@ -133,12 +133,12 @@ class StreamRecording extends EventEmitter {
         this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
       },
       RETRY_DELAYS,
-      (err, res, triesLeft, nextDelay) => {
+      (err, res, nextDelay) => {
         this.emit("poststart");
         page && page.close();
         if (!err) return;
         this.log(`Can't start: ${err}`);
-        if (triesLeft > 0) {
+        if (nextDelay != null) {
           this.log(`Restart in ${nextDelay / 1000} s`);
         }
       }

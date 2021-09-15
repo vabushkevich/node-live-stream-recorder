@@ -56,28 +56,32 @@ function isSimilarObjects(obj1, obj2) {
 
 /**
  * Retry `func` execution until it returns a value or a promise that resolves.
- * Four values passed in `callback`: `err`, `res`, `triesLeft`, `nextDelay`.
+ * Four values passed in `callback`: `err`, `res`, `nextDelay`.
  *
  * @function module:utils.retry
  * @param {Function} func The function to execute.
- * @param {number[]} retryDelays The array containing delays before each retry.
+ * @param {*} retryDelays The iterable containing delays before each retry.
  * @param {Function} callback The callback that executes when `func` executes
  * successfully or when last `func`'s call failed.
  * @returns {Promise} The promise that resolves with `func`'s returned value or
  * rejects with a error thrown during last unsuccessful `func` execution.
  */
 async function retry(func, retryDelays, callback) {
-  for (let i = 0; i <= retryDelays.length; i++) {
-    const triesLeft = retryDelays.length - i;
-    const nextDelay = retryDelays[i];
+  const iterFunc = retryDelays[Symbol.iterator] || retryDelays[Symbol.asyncIterator];
+  const iter = iterFunc.call(retryDelays);
+  while (true) {
+    const nextDelay = (await iter.next()).value;
     try {
       const res = await func();
-      callback(undefined, res, triesLeft, nextDelay);
+      callback(undefined, res);
       return res;
     } catch (err) {
-      callback(err, undefined, triesLeft, nextDelay);
-      if (i >= retryDelays.length) throw err;
-      await resolveAfter(nextDelay);
+      callback(err, undefined, nextDelay);
+      if (nextDelay != null) {
+        await resolveAfter(nextDelay);
+      } else {
+        throw err;
+      }
     }
   }
 }
