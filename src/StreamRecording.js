@@ -135,9 +135,10 @@ class StreamRecording extends EventEmitter {
         yield* new Array(3).fill(1000);
         yield 1 * 60 * 1000;
         yield 2 * 60 * 1000;
-        yield* new Array(6).fill(5 * 60 * 1000);
+        yield 5 * 60 * 1000;
+        yield* new Array(6).fill(10 * 60 * 1000);
         while (true) {
-          yield 15 * 60 * 1000;
+          yield 20 * 60 * 1000;
         }
       }(),
       (err, res, nextDelay) => {
