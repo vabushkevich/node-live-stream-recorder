@@ -3,20 +3,6 @@ const { platform } = require('os');
 const config = {
   NO_DATA_TIMEOUT: 30 * 1000,
   SCREENSHOT_FREQ: 20 * 1000,
-  RETRY_DELAYS: [
-    1000,
-    1000,
-    1000,
-    1 * 60 * 1000,
-    2 * 60 * 1000,
-    5 * 60 * 1000,
-    10 * 60 * 1000,
-    10 * 60 * 1000,
-    10 * 60 * 1000,
-    10 * 60 * 1000,
-    10 * 60 * 1000,
-    10 * 60 * 1000,
-  ],
   ESTIMATE_CHUNK_LENGTH_EVERY_MS: 10000,
 }
 
