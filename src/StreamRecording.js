@@ -132,7 +132,15 @@ class StreamRecording extends EventEmitter {
         this.setState("recording");
         this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
       },
-      RETRY_DELAYS,
+      function* () {
+        yield* new Array(3).fill(1000);
+        yield 1 * 60 * 1000;
+        yield 2 * 60 * 1000;
+        yield* new Array(6).fill(5 * 60 * 1000);
+        while (true) {
+          yield 15 * 60 * 1000;
+        }
+      }(),
       (err, res, nextDelay) => {
         this.emit("poststart");
         page && page.close();
