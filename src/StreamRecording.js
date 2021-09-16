@@ -68,7 +68,7 @@ class StreamRecording extends EventEmitter {
   }
 
   buildName() {
-    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss.SSS")} ${this.nameSuffix}`;
+    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`;
   }
 
   log(message) {
