@@ -72,7 +72,8 @@ class StreamRecording extends EventEmitter {
   }
 
   log(message) {
-    console.log(`[${this.name}]: ${String(message).replace("\n", "")}`);
+    const dateStr = formatDate(new Date(), "d MMM, HH:mm:ss");
+    console.log(`[${dateStr}] ${this.nameSuffix}: ${String(message).replace("\n", "")}`);
   }
 
   stopAfter(duration) {
