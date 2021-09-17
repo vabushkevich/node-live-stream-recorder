@@ -10,7 +10,7 @@ class StreamPage {
   }
 
   async startStream() {
-    this._startStream().catch(() => { });
+    this._startStream();
     await this.page.waitForResponse(isVideoData, { timeout: NO_DATA_TIMEOUT })
       .catch(() => Promise.reject("No video data after starting stream"));
   }
