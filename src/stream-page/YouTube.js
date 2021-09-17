@@ -12,10 +12,8 @@ class YouTube extends StreamPage {
       .then((elem) => this.page.waitForTimeout(500).then(() => elem.click()))
       .catch(() => { });
 
-    await Promise.all([
-      closeDialogBox(),
-      startVideo(),
-    ]);
+    closeDialogBox();
+    startVideo();
   }
 
   getQualityMenu() {

@@ -7,7 +7,7 @@ class Twitch extends StreamPage {
       .then((elem) => this.page.waitForTimeout(500).then(() => elem.click()))
       .catch(() => { });
 
-    await closeDialogBox();
+    closeDialogBox();
   }
 
   getQualityMenu() {
