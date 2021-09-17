@@ -75,10 +75,14 @@ class StreamPage {
     return quality;
   }
 
+  async postStart() {
+  }
+
   async getM3u8(quality) {
     this.startStream();
     await this.getVideoData()
       .catch(() => Promise.reject("No video data after starting stream"));
+    await this.postStart();
 
     const targetQualityList = Array.isArray(quality) ? quality : [quality];
     const qualityList = await this.getQualityList();
