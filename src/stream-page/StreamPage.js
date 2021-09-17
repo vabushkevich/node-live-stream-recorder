@@ -9,12 +9,6 @@ class StreamPage {
     this.page = page;
   }
 
-  async startStream() {
-    this._startStream();
-    await this.getVideoData()
-      .catch(() => Promise.reject("No video data after starting stream"));
-  }
-
   async getVideoData() {
     await this.page.waitForResponse(isVideoData, { timeout: NO_DATA_TIMEOUT });
   }
@@ -82,7 +76,9 @@ class StreamPage {
   }
 
   async getM3u8(quality) {
-    await this.startStream();
+    this._startStream();
+    await this.getVideoData()
+      .catch(() => Promise.reject("No video data after starting stream"));
 
     const targetQualityList = Array.isArray(quality) ? quality : [quality];
     const qualityList = await this.getQualityList();
