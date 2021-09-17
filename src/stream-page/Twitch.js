@@ -1,7 +1,7 @@
 const StreamPage = require('lib/stream-page/StreamPage');
 
 class Twitch extends StreamPage {
-  async _startStream() {
+  async startStream() {
     const closeDialogBox = () => this.page
       .waitForSelector("#close_dialog")
       .then((elem) => this.page.waitForTimeout(500).then(() => elem.click()))

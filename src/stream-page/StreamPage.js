@@ -76,7 +76,7 @@ class StreamPage {
   }
 
   async getM3u8(quality) {
-    this._startStream();
+    this.startStream();
     await this.getVideoData()
       .catch(() => Promise.reject("No video data after starting stream"));
 
