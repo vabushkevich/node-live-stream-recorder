@@ -11,8 +11,12 @@ class StreamPage {
 
   async startStream() {
     this._startStream();
-    await this.page.waitForResponse(isVideoData, { timeout: NO_DATA_TIMEOUT })
+    await this.getVideoData()
       .catch(() => Promise.reject("No video data after starting stream"));
+  }
+
+  async getVideoData() {
+    await this.page.waitForResponse(isVideoData, { timeout: NO_DATA_TIMEOUT });
   }
 
   async setQuality(quality) {
