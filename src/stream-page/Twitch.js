@@ -17,7 +17,7 @@ class Twitch extends StreamPage {
       const hslMenuItem = await (async () => {
         for (const menuItem of menuItems) {
           const menuItemText = await menuItem.evaluate((elem) => elem.textContent);
-          if (menuItemText == "HLS") return menuItem;
+          if (menuItemText.toLowerCase().startsWith("hls")) return menuItem;
         }
       })();
       if (!hslMenuItem) return Promise.reject();
