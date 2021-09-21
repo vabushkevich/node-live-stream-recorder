@@ -7,11 +7,11 @@ const config = {
 }
 
 if (platform() == "win32") {
-  config.RECORDINGS_ROOT = "c:/stream-recordings/raw/";
+  config.RECORDINGS_ROOT = "c:/stream-recordings/";
   config.SCREENSHOTS_ROOT = "./site/screenshots/";
   config.BROWSER_PATH = "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe";
 } else if (platform() == "linux") {
-  config.RECORDINGS_ROOT = "~/raw/";
+  config.RECORDINGS_ROOT = "~/stream-recordings/";
   config.SCREENSHOTS_ROOT = "./site/screenshots/";
   config.BROWSER_PATH = "/usr/bin/google-chrome";
 }
