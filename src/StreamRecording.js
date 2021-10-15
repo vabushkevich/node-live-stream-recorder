@@ -7,7 +7,7 @@ const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
 const M3u8Fetcher = require("lib/M3u8Fetcher");
-const { YouTube, Twitch } = require('lib/stream-page');
+const { createStreamPage } = require('lib/stream-page');
 const { EventEmitter } = require('events');
 
 const {
@@ -17,15 +17,6 @@ const {
   NO_DATA_TIMEOUT,
   ESTIMATE_CHUNK_LENGTH_EVERY_MS,
 } = require('lib/config');
-
-function createStreamPage(page) {
-  const url = page.url();
-
-  if (url.includes("youtube.com")) return new YouTube(page);
-  if (url.includes("twitch.tv")) return new Twitch(page);
-
-  throw new Error(`Can't get handle for url: ${url}`);
-}
 
 class StreamRecording extends EventEmitter {
   constructor(
