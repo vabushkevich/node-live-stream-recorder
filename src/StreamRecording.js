@@ -21,18 +21,9 @@ const {
 class StreamRecording extends EventEmitter {
   constructor(
     url,
-    browser,
     {
       duration = 60 * 60 * 1000,
-      quality = [
-        { resolution: 360 },
-        { resolution: 480 },
-        { resolution: 240 },
-        { resolution: 540 },
-        { resolution: 640 },
-        { resolution: 720 },
-        { resolution: 1080 },
-      ],
+      quality = { height: 400 },
       nameSuffix = "",
       id,
     } = {}
@@ -41,7 +32,6 @@ class StreamRecording extends EventEmitter {
     if (!id) throw new Error("Recording id must be specified");
     this.id = id;
     this.url = url;
-    this.browser = browser;
     this.duration = duration;
     this.chunksGot = 0;
     this.chunkLengthEstimations = 0;
@@ -83,24 +73,7 @@ class StreamRecording extends EventEmitter {
     }
   }
 
-  async openPage(url) {
-    const page = await this.browser.newPage();
-    await page.goto(url)
-      .catch((err) => {
-        if (err.name == "TimeoutError") {
-          return Promise.reject("Page open timeout");
-        }
-        return Promise.reject(err);
-      });
-    await page.evaluate(() =>
-      document.documentElement.style.display = "none !important"
-    );
-    return page;
-  }
-
   async start() {
-    let page;
-
     this.setState("starting");
 
     await retry(
@@ -109,19 +82,22 @@ class StreamRecording extends EventEmitter {
 
         this.log("Starting");
 
-        page = await this.openPage(this.url);
-        const streamPage = createStreamPage(page);
-        const m3u8 = await streamPage.getM3u8(this.quality);
+        const streamPage = createStreamPage(this.url);
+        const stream = await Promise.race([
+          streamPage.getStream(this.quality),
+          resolveAfter(NO_DATA_TIMEOUT)
+            .then(() => Promise.reject(new Error("Timeout while getting a stream")))
+        ]);
 
-        this.m3u8Fetcher = new M3u8Fetcher(m3u8.url);
+        this.m3u8Fetcher = new M3u8Fetcher(stream.url);
         this.setUpM3u8FetcherEventHandlers();
         this.setUpStreamLifeCheck();
         this.m3u8Fetcher.start();
         this.stopAfter(this.getTimeLeft());
-        this.actualQuality = m3u8.quality;
+        this.actualQuality = { resolution: stream.height };
 
         this.setState("recording");
-        this.log(`Started with quality: ${JSON.stringify(m3u8.quality)}`);
+        this.log(`Started with quality: ${JSON.stringify(this.actualQuality)}`);
       },
       function* () {
         yield* new Array(3).fill(1000);
@@ -135,7 +111,6 @@ class StreamRecording extends EventEmitter {
       }(),
       (err, res, nextDelay) => {
         this.emit("poststart");
-        page && page.close();
         if (!err) return;
         this.log(`Can't start: ${err}`);
         if (nextDelay != null) {

@@ -1,24 +1,16 @@
 const StreamPage = require('lib/stream-page/StreamPage');
+const { isMpegUrlData, parseM3u8 } = require('lib/utils');
 
 class YouTube extends StreamPage {
-  async startStream() {
-    const closeDialogBox = () => this.page
-      .waitForSelector("#close_modal")
-      .then((elem) => this.page.waitForTimeout(500).then(() => elem.click()))
-      .catch(() => { });
-
-    const startVideo = () => this.page
-      .waitForSelector(".player [data-quality]")
-      .then((elem) => this.page.waitForTimeout(500).then(() => elem.click()))
-      .catch(() => { });
-
-    closeDialogBox();
-    startVideo();
-  }
-
-  getQualityMenu() {
-    return this.page
-      .waitForSelector(".icon-gears ~ .menu .menu-content");
+  async getStreams() {
+    const [body, url] = await this.page
+      .waitForResponse((res) =>
+        isMpegUrlData(res) && res.url().includes("playlist.m3u8")
+      )
+      .then(async (res) => [await res.text(), res.url()])
+      .catch(() => Promise.reject(new Error("Can't get playlist.m3u8")));
+    const baseUrl = new URL(".", url).href;
+    return parseM3u8(body, baseUrl).streams;
   }
 }
 

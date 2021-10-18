@@ -13,7 +13,6 @@
   const port = 8080;
 
   mkdirSync(SCREENSHOTS_ROOT, { recursive: true });
-  await recorder.start();
 
   app.use(cors());
   app.use(express.json());

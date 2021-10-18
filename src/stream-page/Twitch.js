@@ -1,36 +1,31 @@
 const StreamPage = require('lib/stream-page/StreamPage');
+const { isMpegUrlData, parseM3u8 } = require('lib/utils');
 
 class Twitch extends StreamPage {
-  async startStream() {
-    const closeDialogBox = () => this.page
-      .waitForSelector("#close_dialog")
-      .then((elem) => this.page.waitForTimeout(500).then(() => elem.click()))
+  async getStreams() {
+    this.page.waitForFunction(
+      async () => {
+        const elem = [...document.querySelectorAll("li > span")]
+          .find((elem) => elem.textContent == "HLS");
+        if (elem) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          elem.click();
+          return true;
+        }
+      },
+      { polling: "mutation" }
+    )
       .catch(() => { });
 
-    closeDialogBox();
-  }
+    const [body, url] = await this.page
+      .waitForResponse((res) =>
+        isMpegUrlData(res) && res.url().includes("playlist.m3u8")
+      )
+      .then(async (res) => [await res.text(), res.url()])
+      .catch(() => Promise.reject(new Error("Can't get playlist.m3u8")));
+    const baseUrl = new URL(".", url).href;
 
-  async postStart() {
-    const selectHLS = async () => {
-      const menu = await this.getQualityMenu();
-      const menuItems = await menu.$$(":scope > *");
-      const hslMenuItem = await (async () => {
-        for (const menuItem of menuItems) {
-          const menuItemText = await menuItem.evaluate((elem) => elem.textContent);
-          if (menuItemText.toLowerCase().startsWith("hls")) return menuItem;
-        }
-      })();
-      if (!hslMenuItem) return Promise.reject();
-      await this.page.waitForTimeout(500)
-        .then(() => hslMenuItem.evaluate((elem) => elem.click()));
-    };
-
-    await selectHLS().catch(() => Promise.reject("Can't select HLS"));
-  }
-
-  getQualityMenu() {
-    return this.page
-      .waitForSelector(".icon-gears ~ .menu .menu-content");
+    return parseM3u8(body, baseUrl).streams;
   }
 }
 
