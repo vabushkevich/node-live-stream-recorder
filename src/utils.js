@@ -38,10 +38,21 @@ function resolveAfter(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function parseM3u8(m3u8) {
+function parseM3u8(m3u8, baseUrl) {
   const chunkNames = [...m3u8.matchAll(/(?:#EXTINF.*\n)(.+)/ig)]
     .map((match) => match[1]);
-  return { chunkNames };
+  const streams = [...m3u8.matchAll(/(^#EXT-X-STREAM-INF:.+)\n(.+)/gm)]
+    .map(([, meta, name]) => {
+      const stream = {};
+      stream.name = name;
+      stream.bandwidth = +meta.match(/(?<=BANDWIDTH=)\d+/)[0];
+      stream.resolution = meta.match(/(?<=RESOLUTION=)\d+x\d+/)[0];
+      stream.width = +stream.resolution.match(/(\d+)x(\d+)/)[1];
+      stream.height = +stream.resolution.match(/(\d+)x(\d+)/)[2];
+      if (baseUrl) stream.url = new URL(name, baseUrl).href;
+      return stream;
+    });
+  return { chunkNames, streams };
 }
 
 function isSimilarObjects(obj1, obj2) {
