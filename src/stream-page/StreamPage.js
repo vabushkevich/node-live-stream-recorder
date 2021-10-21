@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer-core');
 
 const {
   BROWSER_PATH,
+  MAX_OPEN_PAGES,
 } = require('lib/config');
 
 class StreamPage {
@@ -27,7 +28,10 @@ class StreamPage {
         );
       })()
     ])
-      .finally(() => this.page.close().catch(() => { }));
+      .finally(async () => {
+        await this.page.close().catch(() => { });
+        StreamPage.resolveNextQuotaReq();
+      });
 
     const stream = this.findStream(streams, quality);
     return stream;
@@ -46,10 +50,28 @@ class StreamPage {
     const i = distances.indexOf(minDistance)
     return streams[i];
   }
+
+  async getQuota() {
+    const browser = await StreamPage.browser;
+    const pagesOpen = (await browser.pages()).length - 1;
+    if (pagesOpen < MAX_OPEN_PAGES) return;
+    return new Promise((resolve) =>
+      StreamPage.quotaRequests.push(resolve)
+    );
+  }
 }
 
 StreamPage.browser = puppeteer.launch({
   executablePath: BROWSER_PATH,
 });
+
+StreamPage.quotaRequests = [];
+
+StreamPage.resolveNextQuotaReq = () => {
+  if (StreamPage.quotaRequests.length > 0) {
+    const quotaResolver = StreamPage.quotaRequests.shift();
+    quotaResolver();
+  }
+}
 
 module.exports = StreamPage;

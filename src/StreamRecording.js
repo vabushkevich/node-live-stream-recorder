@@ -83,6 +83,7 @@ class StreamRecording extends EventEmitter {
         this.log("Starting");
 
         const streamPage = createStreamPage(this.url);
+        await streamPage.getQuota();
         const stream = await Promise.race([
           streamPage.getStream(this.quality),
           resolveAfter(NO_DATA_TIMEOUT)
