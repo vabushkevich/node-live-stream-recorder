@@ -17,12 +17,13 @@ class Twitch extends StreamPage {
     )
       .catch(() => { });
 
-    const [body, url] = await this.page
+    const res = await this.page
       .waitForResponse((res) =>
         isMpegUrlData(res) && res.url().includes("playlist.m3u8")
       )
-      .then(async (res) => [await res.text(), res.url()])
       .catch(() => Promise.reject(new Error("Can't get playlist.m3u8")));
+    const body = await res.text();
+    const url = res.url();
     const baseUrl = new URL(".", url).href;
 
     return parseM3u8(body, baseUrl).streams;
