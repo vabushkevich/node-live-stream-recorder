@@ -143,11 +143,11 @@ class StreamRecording extends EventEmitter {
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("data", (chunk) => {
       this.chunksGot += 1;
-      writeFileSync(this.outputVideoPath, chunk, { flag: "a" });
+      writeFileSync(this.outputVideoPath, chunk.buffer, { flag: "a" });
     });
 
     this.m3u8Fetcher.on("data", throttle(async (chunk) => {
-      writeFileSync(this.dataChunkPath, chunk);
+      writeFileSync(this.dataChunkPath, chunk.buffer);
       saveFrame(this.dataChunkPath, this.screenshotPath, { quality: 31 })
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));

@@ -97,7 +97,7 @@ class M3u8Fetcher extends EventEmitter {
     for (const chunk of chunks) {
       this.processedChunkNames.store(chunk.name);
       if (chunk.buffer && chunk.buffer.length === 0) continue;
-      this.emit("data", chunk.buffer);
+      this.emit("data", chunk);
     }
   }
 
