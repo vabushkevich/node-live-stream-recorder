@@ -89,15 +89,15 @@ class M3u8Fetcher extends EventEmitter {
     await Promise.all(
       chunks.map(async (chunk) => {
         this.emit("message", `Requesting chunk "${chunk.name}"`);
-        chunk.data = await this.getChunk(chunk.name);
-        this.emit("message", `Got chunk: "${chunk.name}", length: ${chunk.data.length}`);
+        chunk.buffer = await this.getChunk(chunk.name);
+        this.emit("message", `Got chunk: "${chunk.name}", length: ${chunk.buffer.length}`);
       })
     );
 
     for (const chunk of chunks) {
       this.processedChunkNames.store(chunk.name);
-      if (chunk.data && chunk.data.length === 0) continue;
-      this.emit("data", chunk.data);
+      if (chunk.buffer && chunk.buffer.length === 0) continue;
+      this.emit("data", chunk.buffer);
     }
   }
 
