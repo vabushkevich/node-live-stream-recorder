@@ -3,6 +3,7 @@ const { resolveAfter, parseM3u8 } = require('lib/utils');
 const { EventEmitter } = require('events');
 const http = require('http');
 const https = require('https');
+const { extname } = require('path');
 
 const httpAgent = new http.Agent({ keepAlive: true });
 const httpsAgent = new https.Agent({ keepAlive: true });
@@ -82,7 +83,7 @@ class M3u8Fetcher extends EventEmitter {
     const chunkNames = parseM3u8(m3u8).chunkNames;
     const chunks = chunkNames
       .filter((name) => !this.processedChunkNames.has(name))
-      .map((name) => ({ name }));
+      .map((name) => ({ name, ext: extname(name).split("?")[0] }));
     this.emit("message", `Got m3u8. Chunks count: ${chunkNames.length}, to fetch: ${chunks.length}`);
 
     await Promise.all(
