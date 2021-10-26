@@ -103,9 +103,13 @@ function getDuration(path) {
       `ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 "${path}"`,
       { timeout: 1000 },
       (err, stdout, stderr) => {
-        if (err) reject(new Error(`ffprobe command failed: ${stderr.trim()}`));
-        if (isNaN(stdout)) reject(new Error(`Can't get video duration. Got: ${stdout.trim()}`));
-        resolve(stdout * 1000);
+        if (err || stderr.trim()) {
+          reject(new Error(`ffprobe command failed: ${stderr.trim()}`));
+        } else if (!stdout.trim() || isNaN(stdout)) {
+          reject(new Error(`ffprobe can't get duration. Got: ${stdout.trim()}`));
+        } else {
+          resolve(stdout * 1000);
+        }
       }
     );
   });
