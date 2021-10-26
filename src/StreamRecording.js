@@ -16,6 +16,7 @@ const {
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
   ESTIMATE_CHUNK_LENGTH_EVERY_MS,
+  MAX_CHUNK_DURATION,
 } = require('lib/config');
 
 class StreamRecording extends EventEmitter {
@@ -157,6 +158,10 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.on("data", throttle(() => {
       getDuration(this.dataChunkPath)
         .then((duration) => {
+          if (duration >= MAX_CHUNK_DURATION) {
+            this.log(`Got too long chunk: ${duration}ms. Estimation skipped`);
+            return;
+          }
           this.averageChunkLength = addToAverage(
             this.averageChunkLength,
             duration,
