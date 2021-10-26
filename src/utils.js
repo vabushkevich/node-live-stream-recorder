@@ -24,7 +24,7 @@ function saveFrame(path, imagePath, {
       `ffmpeg -v error ${seekFlag} ${position} -i "${path}" -frames 1 ${qualityParam} -y "${imagePath}"`,
       { timeout: 1000 },
       (err, stdout, stderr) => {
-        if (err) {
+        if (err || stderr.trim()) {
           reject(new Error(stderr.trim()));
         } else {
           resolve();
