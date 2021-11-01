@@ -45,7 +45,7 @@ class StreamRecording extends EventEmitter {
     this.outDirPath = path.join(RECORDINGS_ROOT, this.name);
     mkdirSync(this.outDirPath);
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
-    this.dataChunkPath = path.join(this.tmpDir, this.name);
+    this.dataChunkPath = path.join(this.tmpDir, "chunk");
     this.stateHistory = [];
     this.setState("idle");
   }
