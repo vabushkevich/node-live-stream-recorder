@@ -40,7 +40,7 @@ class StreamRecording extends EventEmitter {
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
-    this.name = this.buildName().trim();
+    this.name = this.buildName();
     this.tmpDir = mkdtempSync(path.join(tmpdir(), "stream-recording-"));
     this.outDirPath = path.join(RECORDINGS_ROOT, this.name);
     mkdirSync(this.outDirPath);
@@ -51,7 +51,7 @@ class StreamRecording extends EventEmitter {
   }
 
   buildName() {
-    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`;
+    return `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`.trim();
   }
 
   log(message) {
