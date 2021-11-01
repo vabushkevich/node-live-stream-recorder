@@ -146,7 +146,8 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.on("data", (chunk) => {
       this.chunksGot += 1;
       const fileStem = String(this.chunksGot).padStart(6, "0");
-      writeFileSync(path.join(this.outDirPath, `${fileStem}${chunk.ext}`), chunk.buffer);
+      const filePath = path.join(this.outDirPath, `${fileStem}${chunk.ext}`);
+      writeFileSync(filePath, chunk.buffer);
     });
 
     this.m3u8Fetcher.on("data", throttle((chunk) => {
