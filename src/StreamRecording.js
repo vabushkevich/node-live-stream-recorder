@@ -1,5 +1,4 @@
-const { writeFile } = require('fs').promises;
-const { mkdtempSync, mkdirSync } = require('fs');
+const { mkdtempSync, mkdirSync, writeFileSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
 const { saveFrame, resolveAfter, retry, getDuration, addToAverage } = require('lib/utils');
@@ -92,6 +91,7 @@ class StreamRecording extends EventEmitter {
             .then(() => Promise.reject(new Error("Timeout while getting a stream")))
         ]);
 
+        this.startedDate = new Date();
         this.m3u8Fetcher = new M3u8Fetcher(stream.url);
         this.setUpM3u8FetcherEventHandlers();
         this.setUpStreamLifeCheck();
@@ -146,11 +146,11 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.on("data", (chunk) => {
       this.chunksGot += 1;
       const fileStem = String(this.chunksGot).padStart(6, "0");
-      writeFile(path.join(this.outDirPath, `${fileStem}${chunk.ext}`), chunk.buffer);
+      writeFileSync(path.join(this.outDirPath, `${fileStem}${chunk.ext}`), chunk.buffer);
     });
 
-    this.m3u8Fetcher.on("data", throttle(async (chunk) => {
-      await writeFile(this.dataChunkPath, chunk.buffer);
+    this.m3u8Fetcher.on("data", throttle((chunk) => {
+      writeFileSync(this.dataChunkPath, chunk.buffer);
       saveFrame(this.dataChunkPath, this.screenshotPath, { quality: 31 })
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
