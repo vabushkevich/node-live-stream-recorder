@@ -89,8 +89,7 @@ class StreamRecording extends EventEmitter {
             .then(() => Promise.reject(new Error("Timeout while getting a stream")))
         ]);
 
-        this.startedDate = new Date();
-        const fileStem = this.buildName(this.startedDate);
+        const fileStem = this.buildName(new Date());
         this.outFilePath = path.join(RECORDINGS_ROOT, `${fileStem}.ts`);
 
         this.m3u8Fetcher = new M3u8Fetcher(stream.url);
