@@ -169,10 +169,8 @@ class StreamRecording extends EventEmitter {
   }
 
   getTimeLeft() {
-    if (this.state == "stopped") {
-      return 0;
-    }
-    return this.duration - this.getRecordedDuration();
+    const timeLeft = this.duration - this.getRecordedDuration();
+    return timeLeft > 0 ? timeLeft : 0;
   }
 
   async stop() {
