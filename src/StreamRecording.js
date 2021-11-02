@@ -43,7 +43,6 @@ class StreamRecording extends EventEmitter {
     this.tmpDir = mkdtempSync(path.join(tmpdir(), "stream-recording-"));
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
     this.dataChunkPath = path.join(this.tmpDir, "chunk");
-    this.stateHistory = [];
     this.setState("idle");
   }
 
@@ -180,10 +179,6 @@ class StreamRecording extends EventEmitter {
 
   setState(state) {
     this.state = state;
-    this.stateHistory.push({
-      state: this.state,
-      date: new Date(),
-    });
     this.emit("statechange");
   }
 
