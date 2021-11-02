@@ -55,20 +55,8 @@ class StreamRecording extends EventEmitter {
     console.log(`[${dateStr}] ${this.nameSuffix}: ${String(message).replace("\n", "")}`);
   }
 
-  stopAfter(duration) {
-    this.cancelScheduledStop();
-    this.stopTimeout = setTimeout(() => this.stop(), duration);
-  }
-
-  cancelScheduledStop() {
-    clearTimeout(this.stopTimeout);
-  }
-
   prolong(duration) {
     this.duration += duration;
-    if (this.state == "recording") {
-      this.stopAfter(this.getTimeLeft());
-    }
   }
 
   async start() {
@@ -95,7 +83,6 @@ class StreamRecording extends EventEmitter {
         this.setUpM3u8FetcherEventHandlers();
         this.setUpStreamLifeCheck();
         this.m3u8Fetcher.start();
-        this.stopAfter(this.getTimeLeft());
         this.actualQuality = { resolution: stream.height };
 
         this.setState("recording");
@@ -145,6 +132,7 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.on("data", (chunk) => {
       this.chunksGot += 1;
       writeFileSync(this.outFilePath, chunk.buffer, { flag: "a" });
+      if (this.getTimeLeft() <= 0) this.stop();
     });
 
     this.m3u8Fetcher.on("data", throttle((chunk) => {
@@ -191,7 +179,6 @@ class StreamRecording extends EventEmitter {
     const isStarting = this.state === "starting";
     this.setState("stopping");
     this.log("Stopping");
-    this.cancelScheduledStop();
     if (isStarting) {
       await new Promise((resolve) =>
         this.once("poststart", resolve)
