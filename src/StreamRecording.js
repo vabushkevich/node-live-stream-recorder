@@ -1,4 +1,4 @@
-const { mkdtempSync, mkdirSync, writeFileSync } = require('fs');
+const { mkdtempSync, writeFileSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
 const { saveFrame, resolveAfter, retry, getDuration, addToAverage } = require('lib/utils');
@@ -41,8 +41,6 @@ class StreamRecording extends EventEmitter {
     this.createdDate = new Date();
     this.name = this.buildName(this.createdDate);
     this.tmpDir = mkdtempSync(path.join(tmpdir(), "stream-recording-"));
-    this.outDirPath = path.join(RECORDINGS_ROOT, this.name);
-    mkdirSync(this.outDirPath);
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
     this.dataChunkPath = path.join(this.tmpDir, "chunk");
     this.stateHistory = [];
@@ -92,6 +90,9 @@ class StreamRecording extends EventEmitter {
         ]);
 
         this.startedDate = new Date();
+        const fileStem = this.buildName(this.startedDate);
+        this.outFilePath = path.join(RECORDINGS_ROOT, `${fileStem}.ts`);
+
         this.m3u8Fetcher = new M3u8Fetcher(stream.url);
         this.setUpM3u8FetcherEventHandlers();
         this.setUpStreamLifeCheck();
@@ -145,9 +146,7 @@ class StreamRecording extends EventEmitter {
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("data", (chunk) => {
       this.chunksGot += 1;
-      const fileStem = formatDate(this.startedDate, "yyyy-MM-dd HH-mm-ss");
-      const filePath = path.join(this.outDirPath, `${fileStem}${chunk.ext}`);
-      writeFileSync(filePath, chunk.buffer, { flag: "a" });
+      writeFileSync(this.outFilePath, chunk.buffer, { flag: "a" });
     });
 
     this.m3u8Fetcher.on("data", throttle((chunk) => {
