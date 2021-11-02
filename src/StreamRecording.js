@@ -187,25 +187,6 @@ class StreamRecording extends EventEmitter {
     this.emit("statechange");
   }
 
-  getStateInfo(state) {
-    const info = {
-      state,
-      duration: 0,
-    };
-
-    this.stateHistory.forEach((stateItem, i) => {
-      if (stateItem.state != state) {
-        return;
-      }
-      const nextStateItem = this.stateHistory[i + 1] || {
-        date: new Date(),
-      };
-      info.duration += nextStateItem.date - stateItem.date;
-    });
-
-    return info;
-  }
-
   getRecordedDuration() {
     return this.chunksGot * this.averageChunkLength;
   }
