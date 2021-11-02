@@ -179,7 +179,6 @@ class StreamRecording extends EventEmitter {
 
   setState(state) {
     this.state = state;
-    this.emit("statechange");
   }
 
   getRecordedDuration() {
