@@ -115,10 +115,6 @@ function getDuration(path) {
   });
 }
 
-function addToAverage(average, value, i) {
-  return average * i / (i + 1) + value / (i + 1);
-}
-
 module.exports = {
   isVideoData,
   saveFrame,
@@ -128,5 +124,4 @@ module.exports = {
   isSimilarObjects,
   retry,
   getDuration,
-  addToAverage,
 };

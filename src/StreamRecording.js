@@ -1,7 +1,8 @@
 const { mkdtempSync, writeFileSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
-const { saveFrame, resolveAfter, retry, getDuration, addToAverage } = require('lib/utils');
+const { saveFrame, resolveAfter, retry, getDuration } = require('lib/utils');
+const MeanCalc = require('lib/MeanCalc');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -34,8 +35,7 @@ class StreamRecording extends EventEmitter {
     this.url = url;
     this.duration = duration;
     this.chunksGot = 0;
-    this.chunkLengthEstimations = 0;
-    this.averageChunkLength = 0;
+    this.chunkLengthMean = new MeanCalc();
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
@@ -160,12 +160,7 @@ class StreamRecording extends EventEmitter {
             this.log(`Got too long chunk: ${duration}ms. Estimation skipped`);
             return;
           }
-          this.averageChunkLength = addToAverage(
-            this.averageChunkLength,
-            duration,
-            this.chunkLengthEstimations
-          );
-          this.chunkLengthEstimations += 1;
+          this.chunkLengthMean.add(duration);
         })
         .catch((err) => this.log(err));
     }, ESTIMATE_CHUNK_LENGTH_EVERY_MS));
@@ -182,7 +177,7 @@ class StreamRecording extends EventEmitter {
   }
 
   getRecordedDuration() {
-    return this.chunksGot * this.averageChunkLength;
+    return this.chunksGot * this.chunkLengthMean.get();
   }
 
   getTimeLeft() {
