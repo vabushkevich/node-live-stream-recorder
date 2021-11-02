@@ -34,7 +34,7 @@ function saveFrame(path, imagePath, {
   });
 }
 
-function resolveAfter(ms) {
+function resolveIn(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -89,7 +89,7 @@ async function retry(func, retryDelays, callback) {
     } catch (err) {
       callback(err, undefined, nextDelay);
       if (nextDelay != null) {
-        await resolveAfter(nextDelay);
+        await resolveIn(nextDelay);
       } else {
         throw err;
       }
@@ -118,7 +118,7 @@ function getDuration(path) {
 module.exports = {
   isVideoData,
   saveFrame,
-  resolveAfter,
+  resolveIn,
   isMpegUrlData,
   parseM3u8,
   isSimilarObjects,

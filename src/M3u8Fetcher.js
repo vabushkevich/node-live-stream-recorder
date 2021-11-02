@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const { resolveAfter, parseM3u8 } = require('lib/utils');
+const { resolveIn, parseM3u8 } = require('lib/utils');
 const { EventEmitter } = require('events');
 const http = require('http');
 const https = require('https');
@@ -57,7 +57,7 @@ class M3u8Fetcher extends EventEmitter {
   async getM3u8() {
     const m3u8 = await Promise.race([
       fetch(this.m3u8Url, { agent: getAgent }),
-      resolveAfter(this.timeout).then(() =>
+      resolveIn(this.timeout).then(() =>
         Promise.reject(new Error("Timeout while requesting m3u8"))
       ),
     ])
@@ -69,7 +69,7 @@ class M3u8Fetcher extends EventEmitter {
     const chunkUrl = this.baseUrl + "/" + chunkName;
     const chunk = await Promise.race([
       fetch(chunkUrl, { agent: getAgent }),
-      resolveAfter(this.timeout).then(() =>
+      resolveIn(this.timeout).then(() =>
         Promise.reject(new Error("Timeout while requesting chunk"))
       ),
     ])
@@ -107,7 +107,7 @@ class M3u8Fetcher extends EventEmitter {
     while (!this.stopped) {
       await Promise.all([
         this.requestNextChunks().catch((err) => this.emit("error", err)),
-        resolveAfter(this.frequency),
+        resolveIn(this.frequency),
       ]);
     }
   }

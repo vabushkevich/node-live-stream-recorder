@@ -1,7 +1,7 @@
 const { mkdtempSync, writeFileSync } = require('fs');
 const path = require('path');
 const { tmpdir } = require('os');
-const { saveFrame, resolveAfter, retry, getDuration } = require('lib/utils');
+const { saveFrame, resolveIn, retry, getDuration } = require('lib/utils');
 const MeanCalc = require('lib/MeanCalc');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
@@ -84,7 +84,7 @@ class StreamRecording extends EventEmitter {
         await streamPage.getQuota();
         const stream = await Promise.race([
           streamPage.getStream(this.quality),
-          resolveAfter(NO_DATA_TIMEOUT)
+          resolveIn(NO_DATA_TIMEOUT)
             .then(() => Promise.reject(new Error("Timeout while getting a stream")))
         ]);
 
@@ -131,7 +131,7 @@ class StreamRecording extends EventEmitter {
   setUpStreamLifeCheck() {
     Promise.race([
       new Promise((resolve) => this.m3u8Fetcher.once("data", () => resolve())),
-      resolveAfter(NO_DATA_TIMEOUT).then(Promise.reject),
+      resolveIn(NO_DATA_TIMEOUT).then(Promise.reject),
     ])
       .then(() => setTimeout(() => this.setUpStreamLifeCheck()))
       .catch(() => {
