@@ -18,7 +18,7 @@ class StreamRecording extends EventEmitter {
   constructor(
     url,
     {
-      duration = 60 * 60 * 1000,
+      targetDuration = 60 * 60 * 1000,
       quality = { height: 400 },
       nameSuffix = "",
       id,
@@ -28,7 +28,7 @@ class StreamRecording extends EventEmitter {
     if (!id) throw new Error("Recording id must be specified");
     this.id = id;
     this.url = url;
-    this.duration = duration;
+    this.targetDuration = targetDuration;
     this.recordedDuration = 0;
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
@@ -48,7 +48,7 @@ class StreamRecording extends EventEmitter {
   }
 
   prolong(duration) {
-    this.duration += duration;
+    this.targetDuration += duration;
   }
 
   async start() {
@@ -152,7 +152,7 @@ class StreamRecording extends EventEmitter {
   }
 
   getTimeLeft() {
-    const timeLeft = this.duration - this.recordedDuration;
+    const timeLeft = this.targetDuration - this.recordedDuration;
     return timeLeft > 0 ? timeLeft : 0;
   }
 

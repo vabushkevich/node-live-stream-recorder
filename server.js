@@ -24,7 +24,7 @@
 
   app.post("/api/v1/recordings", (req, res) => {
     const { url, duration, nameSuffix } = req.body;
-    const recording = recorder.createRecording(url, { duration: +duration, nameSuffix });
+    const recording = recorder.createRecording(url, { targetDuration: +duration, nameSuffix });
     recording.start();
     res.send(recording.id);
   });
