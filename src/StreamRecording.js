@@ -1,8 +1,5 @@
-const { mkdtempSync, writeFileSync } = require('fs');
 const path = require('path');
-const { tmpdir } = require('os');
-const { saveFrame, resolveIn, retry, getDuration } = require('lib/utils');
-const MeanCalc = require('lib/MeanCalc');
+const { saveFrame, resolveIn, retry } = require('lib/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -15,8 +12,6 @@ const {
   RECORDINGS_ROOT,
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
-  ESTIMATE_CHUNK_LENGTH_EVERY_MS,
-  MAX_CHUNK_DURATION,
 } = require('lib/config');
 
 class StreamRecording extends EventEmitter {
@@ -34,15 +29,12 @@ class StreamRecording extends EventEmitter {
     this.id = id;
     this.url = url;
     this.duration = duration;
-    this.chunksGot = 0;
-    this.chunkLengthMean = new MeanCalc();
+    this.recordedDuration = 0;
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
     this.name = this.buildName(this.createdDate);
-    this.tmpDir = mkdtempSync(path.join(tmpdir(), "stream-recording-"));
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
-    this.dataChunkPath = path.join(this.tmpDir, "chunk");
     this.setState("idle");
   }
 
@@ -75,11 +67,12 @@ class StreamRecording extends EventEmitter {
           resolveIn(NO_DATA_TIMEOUT)
             .then(() => Promise.reject(new Error("Timeout while getting a stream")))
         ]);
+        this.m3u8Url = stream.url;
 
         const fileStem = this.buildName(new Date());
-        this.outFilePath = path.join(RECORDINGS_ROOT, `${fileStem}.ts`);
+        const outFilePath = path.join(RECORDINGS_ROOT, `${fileStem}.mkv`);
 
-        this.m3u8Fetcher = new M3u8Fetcher(stream.url);
+        this.m3u8Fetcher = new M3u8Fetcher(stream.url, outFilePath);
         this.setUpM3u8FetcherEventHandlers();
         this.setUpStreamLifeCheck();
         this.m3u8Fetcher.start();
@@ -117,7 +110,7 @@ class StreamRecording extends EventEmitter {
 
   setUpStreamLifeCheck() {
     Promise.race([
-      new Promise((resolve) => this.m3u8Fetcher.once("data", () => resolve())),
+      new Promise((resolve) => this.m3u8Fetcher.once("request", () => resolve())),
       resolveIn(NO_DATA_TIMEOUT).then(Promise.reject),
     ])
       .then(() => setTimeout(() => this.setUpStreamLifeCheck()))
@@ -129,47 +122,37 @@ class StreamRecording extends EventEmitter {
   }
 
   setUpM3u8FetcherEventHandlers() {
-    this.m3u8Fetcher.on("data", (chunk) => {
-      this.chunksGot += 1;
-      writeFileSync(this.outFilePath, chunk.buffer, { flag: "a" });
+    let lastDuration = 0;
+
+    this.m3u8Fetcher.on("duration", (duration) => {
+      this.recordedDuration += duration - lastDuration;
+      lastDuration = duration;
       if (this.getTimeLeft() <= 0) this.stop();
     });
 
-    this.m3u8Fetcher.on("data", throttle((chunk) => {
-      writeFileSync(this.dataChunkPath, chunk.buffer);
-      saveFrame(this.dataChunkPath, this.screenshotPath, { quality: 31 })
+    this.m3u8Fetcher.on("request", throttle(() => {
+      saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
-    this.m3u8Fetcher.on("data", throttle(() => {
-      getDuration(this.dataChunkPath)
-        .then((duration) => {
-          if (duration >= MAX_CHUNK_DURATION) {
-            this.log(`Got too long chunk: ${duration}ms. Estimation skipped`);
-            return;
-          }
-          this.chunkLengthMean.add(duration);
-        })
-        .catch((err) => this.log(err));
-    }, ESTIMATE_CHUNK_LENGTH_EVERY_MS));
-
-    this.m3u8Fetcher.on("error", () => { });
+    this.m3u8Fetcher.once("stop", () => {
+      if (this.state !== "recording") return;
+      this.log("M3u8Fetcher stopped on its own");
+      this.restart();
+    });
   }
 
   removeM3u8FetcherEventHandlers() {
-    this.m3u8Fetcher.removeAllListeners("data");
+    this.m3u8Fetcher.removeAllListeners("request");
+    this.m3u8Fetcher.removeAllListeners("duration");
   }
 
   setState(state) {
     this.state = state;
   }
 
-  getRecordedDuration() {
-    return this.chunksGot * this.chunkLengthMean.get();
-  }
-
   getTimeLeft() {
-    const timeLeft = this.duration - this.getRecordedDuration();
+    const timeLeft = this.duration - this.recordedDuration;
     return timeLeft > 0 ? timeLeft : 0;
   }
 
