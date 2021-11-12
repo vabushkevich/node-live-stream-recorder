@@ -6,6 +6,7 @@ const sanitizePath = require("sanitize-filename");
 const M3u8Fetcher = require("lib/M3u8Fetcher");
 const { createStreamPage } = require('lib/stream-page');
 const { EventEmitter } = require('events');
+const { mkdirSync } = require('fs');
 
 const {
   SCREENSHOT_FREQ,
@@ -36,6 +37,7 @@ class StreamRecording extends EventEmitter {
     this.name = this.buildName(this.createdDate);
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
     this.setState("idle");
+    mkdirSync(path.join(RECORDINGS_ROOT, this.name));
   }
 
   buildName(date = new Date()) {
@@ -70,7 +72,7 @@ class StreamRecording extends EventEmitter {
         this.m3u8Url = stream.url;
 
         const fileStem = this.buildName(new Date());
-        const outFilePath = path.join(RECORDINGS_ROOT, `${fileStem}.mkv`);
+        const outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
 
         this.m3u8Fetcher = new M3u8Fetcher(stream.url, outFilePath);
         this.setUpM3u8FetcherEventHandlers();
