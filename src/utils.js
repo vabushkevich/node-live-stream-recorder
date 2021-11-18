@@ -20,7 +20,7 @@ function saveFrame(inPath, outPath, {
   return new Promise((resolve, reject) => {
     exec(
       `ffmpeg -y -v error ${seekParam} -i "${inPath}" -frames 1 ${qualityParam} "${outPath}"`,
-      { timeout: 3000 },
+      { timeout: 2000 },
       (err, stdout, stderr) => {
         if (err || stderr.trim()) {
           reject(new Error(stderr.trim()));
