@@ -140,10 +140,7 @@ class StreamRecording extends EventEmitter {
           quality: 31,
         }
       )
-        .catch((err) => {
-          this.log("Can't take screenshot:");
-          console.log(err);
-        });
+        .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
     this.m3u8Fetcher.once("stop", () => {
