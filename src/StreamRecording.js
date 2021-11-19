@@ -44,9 +44,23 @@ class StreamRecording extends EventEmitter {
     return `${formatDate(date, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`.trim();
   }
 
-  log(message) {
+  log(...messages) {
     const dateStr = formatDate(new Date(), "d MMM, HH:mm:ss");
-    console.log(`[${dateStr}] ${this.nameSuffix}: ${String(message).replace("\n", "")}`);
+    const prefix = `[${dateStr}] ${this.nameSuffix}:`;
+    const out = messages.reduce((res, message, i) => {
+      let messageStr;
+      if (message instanceof Error) {
+        messageStr = message.stack;
+      } else if (message && typeof message == "object") {
+        messageStr = JSON.stringify(message);
+      } else {
+        messageStr = message;
+      }
+      res += (i > 0 ? "\n" : " ");
+      res += messageStr;
+      return res;
+    }, prefix);
+    console.log(out);
   }
 
   prolong(duration) {
@@ -96,7 +110,7 @@ class StreamRecording extends EventEmitter {
       (err, res, nextDelay) => {
         this.emit("poststart");
         if (!err) return;
-        this.log(`Can't start: ${err}`);
+        this.log("Can't start:", err);
         if (nextDelay != null) {
           this.log(`Restart in ${nextDelay / 1000} s`);
         }
@@ -134,7 +148,7 @@ class StreamRecording extends EventEmitter {
 
     this.m3u8Fetcher.on("request", throttle(() => {
       saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
-        .catch(err => this.log(`Can't take screenshot: ${err}`));
+        .catch(err => this.log("Can't take screenshot:", err));
     }, SCREENSHOT_FREQ));
 
     this.m3u8Fetcher.once("stop", () => {
