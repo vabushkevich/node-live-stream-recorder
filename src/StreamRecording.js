@@ -6,13 +6,14 @@ const sanitizePath = require("sanitize-filename");
 const M3u8Fetcher = require("lib/M3u8Fetcher");
 const { createStreamPage } = require('lib/stream-page');
 const { EventEmitter } = require('events');
-const { mkdirSync } = require('fs');
+const { mkdirSync, appendFileSync } = require('fs');
 
 const {
   SCREENSHOT_FREQ,
   RECORDINGS_ROOT,
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
+  LOG_PATH,
 } = require('lib/config');
 
 class StreamRecording extends EventEmitter {
@@ -61,6 +62,7 @@ class StreamRecording extends EventEmitter {
       return res;
     }, prefix);
     console.log(out);
+    appendFileSync(LOG_PATH, `${out}\n`);
   }
 
   prolong(duration) {
