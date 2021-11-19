@@ -69,11 +69,12 @@ class StreamRecording extends EventEmitter {
           resolveIn(NO_DATA_TIMEOUT)
             .then(() => Promise.reject(new Error("Timeout while getting a stream")))
         ]);
+        this.m3u8Url = stream.url;
 
         const fileStem = this.buildName(new Date());
-        this.outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
+        const outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
 
-        this.m3u8Fetcher = new M3u8Fetcher(stream.url, this.outFilePath);
+        this.m3u8Fetcher = new M3u8Fetcher(stream.url, outFilePath);
         this.setUpM3u8FetcherEventHandlers();
         this.setUpStreamLifeCheck();
         this.m3u8Fetcher.start();
@@ -131,15 +132,8 @@ class StreamRecording extends EventEmitter {
       if (this.getTimeLeft() <= 0) this.stop();
     });
 
-    this.m3u8Fetcher.on("duration", throttle(() => {
-      saveFrame(
-        this.outFilePath,
-        this.screenshotPath,
-        {
-          position: `${this.recordedDuration - 2000}ms`,
-          quality: 31,
-        }
-      )
+    this.m3u8Fetcher.on("request", throttle(() => {
+      saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
         .catch(err => this.log(`Can't take screenshot: ${err}`));
     }, SCREENSHOT_FREQ));
 
