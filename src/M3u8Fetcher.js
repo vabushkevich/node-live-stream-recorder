@@ -50,7 +50,10 @@ class M3u8Fetcher extends EventEmitter {
 
   stop() {
     if (this.stopped) return;
-    this.ffmpeg.kill();
+    const killed = this.ffmpeg.kill();
+    if (!killed) {
+      this.emit("error", "Can't kill ffmpeg process");
+    }
   }
 }
 
