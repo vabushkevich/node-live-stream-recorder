@@ -187,7 +187,7 @@ class StreamRecording extends EventEmitter {
       );
     }
     if (this.m3u8Fetcher) {
-      this.m3u8Fetcher.stop();
+      await this.m3u8Fetcher.stop();
       this.removeM3u8FetcherEventHandlers();
     }
     this.setState("stopped");
@@ -196,7 +196,7 @@ class StreamRecording extends EventEmitter {
 
   async restart() {
     this.log("Restarting");
-    this.stop();
+    await this.stop();
     await this.start();
   }
 

@@ -1,5 +1,6 @@
 const { EventEmitter } = require('events');
 const { spawn } = require('child_process');
+const { resolveIn } = require('lib/utils');
 
 class M3u8Fetcher extends EventEmitter {
   constructor(url, outPath) {
@@ -48,11 +49,17 @@ class M3u8Fetcher extends EventEmitter {
     });
   }
 
-  stop() {
+  async stop() {
     if (this.stopped) return;
-    const killed = this.ffmpeg.kill();
-    if (!killed) {
-      this.emit("error", "Can't kill ffmpeg process");
+    const exitPromise = new Promise((resolve) => this.ffmpeg.once("exit", resolve));
+    for (const signal of ["SIGTERM", "SIGKILL"]) {
+      this.ffmpeg.kill(signal);
+      const terminated = await Promise.race([
+        exitPromise.then(() => true),
+        resolveIn(5000).then(() => false)
+      ]);
+      if (terminated) break;
+      this.emit("error", `Can't kill ffmpeg process using ${signal}`);
     }
   }
 }
