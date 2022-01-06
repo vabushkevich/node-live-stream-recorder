@@ -140,11 +140,8 @@ class StreamRecording extends EventEmitter {
   }
 
   setUpM3u8FetcherEventHandlers() {
-    let lastDuration = 0;
-
-    this.m3u8Fetcher.on("duration", (duration) => {
-      this.recordedDuration += duration - lastDuration;
-      lastDuration = duration;
+    this.m3u8Fetcher.on("durationearn", (durationEarned) => {
+      this.recordedDuration += durationEarned;
       if (this.getTimeLeft() <= 0) this.stop();
     });
 
@@ -164,7 +161,7 @@ class StreamRecording extends EventEmitter {
 
   removeM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.removeAllListeners("request");
-    this.m3u8Fetcher.removeAllListeners("duration");
+    this.m3u8Fetcher.removeAllListeners("durationearn");
     this.m3u8Fetcher.removeAllListeners("error");
   }
 
