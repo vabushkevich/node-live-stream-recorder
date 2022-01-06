@@ -128,7 +128,7 @@ class StreamRecording extends EventEmitter {
 
   setUpStreamLifeCheck() {
     Promise.race([
-      new Promise((resolve) => this.m3u8Fetcher.once("request", () => resolve())),
+      new Promise((resolve) => this.m3u8Fetcher.once("durationearn", () => resolve())),
       resolveIn(NO_DATA_TIMEOUT).then(Promise.reject),
     ])
       .then(() => setTimeout(() => this.setUpStreamLifeCheck()))
@@ -145,7 +145,7 @@ class StreamRecording extends EventEmitter {
       if (this.getTimeLeft() <= 0) this.stop();
     });
 
-    this.m3u8Fetcher.on("request", throttle(() => {
+    this.m3u8Fetcher.on("durationearn", throttle(() => {
       saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
         .catch(err => this.log("Can't take screenshot:", err));
     }, SCREENSHOT_FREQ));
@@ -160,7 +160,6 @@ class StreamRecording extends EventEmitter {
   }
 
   removeM3u8FetcherEventHandlers() {
-    this.m3u8Fetcher.removeAllListeners("request");
     this.m3u8Fetcher.removeAllListeners("durationearn");
     this.m3u8Fetcher.removeAllListeners("error");
   }
