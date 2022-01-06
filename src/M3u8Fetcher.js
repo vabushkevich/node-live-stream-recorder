@@ -8,6 +8,7 @@ class M3u8Fetcher extends EventEmitter {
     this.stopped = true;
     this.url = url;
     this.outPath = outPath;
+    this.duration = 0;
   }
 
   parseDurations(data) {
@@ -35,6 +36,7 @@ class M3u8Fetcher extends EventEmitter {
 
     this.ffmpeg.stderr.on("data", (data) => {
       for (const duration of this.parseDurations(data)) {
+        this.duration = duration;
         this.emit("duration", duration);
       }
 
