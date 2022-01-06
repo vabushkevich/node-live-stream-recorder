@@ -36,6 +36,10 @@ class M3u8Fetcher extends EventEmitter {
 
     this.ffmpeg.stderr.on("data", (data) => {
       for (const duration of this.parseDurations(data)) {
+        const durationEarned = duration - this.duration;
+        if (durationEarned > 0) {
+          this.emit("durationearn", duration - this.duration);
+        }
         this.duration = duration;
         this.emit("duration", duration);
       }
