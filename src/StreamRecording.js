@@ -31,7 +31,7 @@ class StreamRecording extends EventEmitter {
     this.id = id;
     this.url = url;
     this.targetDuration = targetDuration;
-    this.recordedDuration = 0;
+    this.duration = 0;
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
@@ -141,7 +141,7 @@ class StreamRecording extends EventEmitter {
 
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("durationearn", (durationEarned) => {
-      this.recordedDuration += durationEarned;
+      this.duration += durationEarned;
       if (this.getTimeLeft() <= 0) this.stop();
     });
 
@@ -170,7 +170,7 @@ class StreamRecording extends EventEmitter {
   }
 
   getTimeLeft() {
-    const timeLeft = this.targetDuration - this.recordedDuration;
+    const timeLeft = this.targetDuration - this.duration;
     return timeLeft > 0 ? timeLeft : 0;
   }
 
