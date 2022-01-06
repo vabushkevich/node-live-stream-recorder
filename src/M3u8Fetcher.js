@@ -1,6 +1,7 @@
 const { EventEmitter } = require('events');
 const { spawn } = require('child_process');
 const { resolveIn } = require('lib/utils');
+const { last } = require('lodash');
 
 class M3u8Fetcher extends EventEmitter {
   constructor(url, outPath) {
@@ -35,7 +36,8 @@ class M3u8Fetcher extends EventEmitter {
     this.stopped = false;
 
     this.ffmpeg.stderr.on("data", (data) => {
-      for (const duration of this.parseDurations(data)) {
+      const duration = last(this.parseDurations(data));
+      if (duration) {
         const durationEarned = duration - this.duration;
         if (durationEarned > 0) {
           this.emit("durationearn", duration - this.duration);
