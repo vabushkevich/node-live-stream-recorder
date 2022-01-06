@@ -1,7 +1,6 @@
-const puppeteer = require('puppeteer-core');
+const { getBrowser } = require('lib/browser');
 
 const {
-  BROWSER_PATH,
   MAX_OPEN_PAGES,
 } = require('lib/config');
 
@@ -11,7 +10,7 @@ class StreamPage {
   }
 
   async getStream(quality) {
-    const browser = await this.getBrowser();
+    const browser = await getBrowser();
     this.page = await browser.newPage();
     const [streams] = await Promise.all([
       this.getStreams(),
@@ -37,10 +36,6 @@ class StreamPage {
     return stream;
   }
 
-  async getBrowser() {
-    return await StreamPage.browser;
-  }
-
   findStream(streams, target) {
     const key = Object.keys(target)[0];
     const distances = streams.map((stream) =>
@@ -52,7 +47,7 @@ class StreamPage {
   }
 
   async getQuota() {
-    const browser = await StreamPage.browser;
+    const browser = await getBrowser();
     const pagesOpen = (await browser.pages()).length - 1;
     if (pagesOpen < MAX_OPEN_PAGES) return;
     return new Promise((resolve) =>
@@ -60,10 +55,6 @@ class StreamPage {
     );
   }
 }
-
-StreamPage.browser = puppeteer.launch({
-  executablePath: BROWSER_PATH,
-});
 
 StreamPage.quotaRequests = [];
 
