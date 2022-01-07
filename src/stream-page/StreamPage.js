@@ -1,39 +1,53 @@
 const { getBrowser } = require('lib/browser');
+const { resolveIn, parseM3u8 } = require('lib/utils');
+const fetch = require('node-fetch');
 
 const {
   MAX_OPEN_PAGES,
+  NO_DATA_TIMEOUT,
+  FETCH_HEADERS,
 } = require('lib/config');
 
 class StreamPage {
   constructor(url) {
     this.url = url;
+    this.page = null;
+    this.closed = true;
   }
 
   async getStream(quality) {
-    const browser = await getBrowser();
-    this.page = await browser.newPage();
-    const [streams] = await Promise.all([
-      this.getStreams(),
-      (async () => {
-        await this.page.goto(this.url)
-          .catch((err) => {
-            if (err.name == "TimeoutError") {
-              throw new Error("Page open timeout");
-            }
-            throw err;
-          });
-        await this.page.evaluate(() =>
-          document.documentElement.style.display = "none !important"
-        );
-      })()
+    await this.getQuota();
+    const m3u8Url = await Promise.race([
+      this.getM3u8Url(),
+      resolveIn(NO_DATA_TIMEOUT).then(() => Promise.reject(new Error("Timeout while getting a playlist url")))
     ])
-      .finally(async () => {
-        await this.page.close().catch(() => { });
+      .finally(() => {
+        if (!this.closed) this.close();
         StreamPage.resolveNextQuotaReq();
       });
-
+    const m3u8 = await fetch(m3u8Url, { headers: FETCH_HEADERS })
+      .then((res) => res.text());
+    const { streams } = parseM3u8(m3u8, m3u8Url);
     const stream = this.findStream(streams, quality);
     return stream;
+  }
+
+  async open() {
+    const browser = await getBrowser();
+    const page = this.page || (this.page = await browser.newPage());
+    this.closed = false;
+    await page.goto(this.url, { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => {
+      document.documentElement.style.setProperty("display", "none", "important");
+    });
+    return page;
+  }
+
+  close() {
+    if (this.page && !this.closed) {
+      this.page.close().catch(() => { });
+      this.closed = true;
+    }
   }
 
   findStream(streams, target) {

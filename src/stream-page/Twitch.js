@@ -1,9 +1,10 @@
 const StreamPage = require('lib/stream-page/StreamPage');
-const { isMpegUrlData, parseM3u8 } = require('lib/utils');
 
 class Twitch extends StreamPage {
-  async getStreams() {
-    this.page.waitForFunction(
+  async getM3u8Url() {
+    const page = await this.open();
+
+    page.waitForFunction(
       async () => {
         const elem = [...document.querySelectorAll("li > span")]
           .find((elem) => elem.textContent == "HLS");
@@ -17,16 +18,11 @@ class Twitch extends StreamPage {
     )
       .catch(() => { });
 
-    const res = await this.page
-      .waitForResponse((res) =>
-        isMpegUrlData(res) && res.url().includes("playlist.m3u8")
-      )
-      .catch(() => Promise.reject(new Error("Can't get playlist.m3u8")));
-    const body = await res.text();
-    const url = res.url();
-    const baseUrl = new URL(".", url).href;
-
-    return parseM3u8(body, baseUrl).streams;
+    const res = await page.waitForResponse((res) =>
+      new URL(res.url()).pathname.endsWith("playlist.m3u8")
+    );
+    this.close();
+    return res.url();
   }
 }
 

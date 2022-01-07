@@ -79,12 +79,7 @@ class StreamRecording extends EventEmitter {
         this.log("Starting");
 
         const streamPage = createStreamPage(this.url);
-        await streamPage.getQuota();
-        const stream = await Promise.race([
-          streamPage.getStream(this.quality),
-          resolveIn(NO_DATA_TIMEOUT)
-            .then(() => Promise.reject(new Error("Timeout while getting a stream")))
-        ]);
+        const stream = await streamPage.getStream(this.quality);
         this.m3u8Url = stream.url;
 
         const fileStem = this.buildName(new Date());
