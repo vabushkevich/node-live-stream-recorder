@@ -34,7 +34,7 @@ function resolveIn(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function parseM3u8(m3u8, baseUrl) {
+function parseM3u8(m3u8, url) {
   const chunkNames = [...m3u8.matchAll(/(?:#EXTINF.*\n)(.+)/ig)]
     .map((match) => match[1]);
   const streams = [...m3u8.matchAll(/(^#EXT-X-STREAM-INF:.+)\n(.+)/gm)]
@@ -45,7 +45,11 @@ function parseM3u8(m3u8, baseUrl) {
       stream.resolution = meta.match(/(?<=RESOLUTION=)\d+x\d+/)[0];
       stream.width = +stream.resolution.match(/(\d+)x(\d+)/)[1];
       stream.height = +stream.resolution.match(/(\d+)x(\d+)/)[2];
-      if (baseUrl) stream.url = new URL(name, baseUrl).href;
+      if (isValidUrl(name)) {
+        stream.url = name;
+      } else if (isValidUrl(url)) {
+        stream.url = new URL(name, url).href;
+      }
       return stream;
     });
   return { chunkNames, streams };
