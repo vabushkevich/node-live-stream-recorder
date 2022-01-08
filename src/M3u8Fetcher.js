@@ -13,9 +13,9 @@ class M3u8Fetcher extends EventEmitter {
   }
 
   parseDurations(data) {
-    const matches = String(data).matchAll(/^frame=.+fps=.+size=.+time=\s*(?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2}).(?<S>\d+)/gm);
+    const matches = String(data).matchAll(/^frame=.+fps=.+size=.+time=\s*(?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2})(\.(?<S>\d+))?/gm);
     return [...matches].map((match) => {
-      const { h, m, s, S } = match.groups;
+      const { h, m, s, S = 0 } = match.groups;
       const duration = (h * 60 * 60 + m * 60 + +s) * 1000 + +S;
       return duration;
     });
