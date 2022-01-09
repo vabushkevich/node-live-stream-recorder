@@ -4,7 +4,7 @@ const { resolveIn } = require('lib/utils');
 const { last } = require('lodash');
 
 class M3u8Fetcher extends EventEmitter {
-  constructor(url, outPath) {
+  constructor(url, outPath, { timeout = 30000 } = {}) {
     super();
     this.stopped = false;
     this.finished = false;
@@ -12,6 +12,7 @@ class M3u8Fetcher extends EventEmitter {
     this.outPath = outPath;
     this.duration = 0;
     this.emitter = new EventEmitter();
+    this.timeout = timeout;
 
     this.emitter.on("request", (e) => this.emit("request", e));
     this.emitter.on("duration", (e) => this.emit("duration", e));
@@ -68,6 +69,8 @@ class M3u8Fetcher extends EventEmitter {
       this.finished = true;
       this.emitter.emit("stop");
     });
+
+    this.startPinging();
   }
 
   async stop() {
@@ -81,6 +84,19 @@ class M3u8Fetcher extends EventEmitter {
       ]);
       if (terminated) return;
       this.emitter.emit("error", `Can't kill ffmpeg process using ${signal}`);
+    }
+  }
+
+  async ping() {
+    await Promise.race([
+      new Promise((resolve) => this.emitter.once("durationearn", resolve)),
+      resolveIn(this.timeout).then(Promise.reject),
+    ]);
+  }
+
+  async startPinging() {
+    while (!this.finished) {
+      await this.ping().catch(() => this.stop());
     }
   }
 }

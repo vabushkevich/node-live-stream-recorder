@@ -1,5 +1,5 @@
 const path = require('path');
-const { saveFrame, resolveIn, retry } = require('lib/utils');
+const { saveFrame, retry } = require('lib/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -85,9 +85,12 @@ class StreamRecording extends EventEmitter {
         const fileStem = this.buildName(new Date());
         const outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
 
-        this.m3u8Fetcher = new M3u8Fetcher(stream.url, outFilePath);
+        this.m3u8Fetcher = new M3u8Fetcher(
+          stream.url,
+          outFilePath,
+          { timeout: NO_DATA_TIMEOUT }
+        );
         this.setUpM3u8FetcherEventHandlers();
-        this.setUpStreamLifeCheck();
         this.m3u8Fetcher.start();
         this.actualQuality = { resolution: stream.height };
 
@@ -121,19 +124,6 @@ class StreamRecording extends EventEmitter {
       });
   }
 
-  setUpStreamLifeCheck() {
-    Promise.race([
-      new Promise((resolve) => this.m3u8Fetcher.once("durationearn", () => resolve())),
-      resolveIn(NO_DATA_TIMEOUT).then(Promise.reject),
-    ])
-      .then(() => setTimeout(() => this.setUpStreamLifeCheck()))
-      .catch(() => {
-        if (this.state !== "recording") return;
-        this.log(`Stream is offline more than ${NO_DATA_TIMEOUT} ms`);
-        this.restart();
-      });
-  }
-
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("durationearn", (durationEarned) => {
       this.duration += durationEarned;
@@ -147,7 +137,7 @@ class StreamRecording extends EventEmitter {
 
     this.m3u8Fetcher.once("stop", () => {
       if (this.state !== "recording") return;
-      this.log("M3u8Fetcher stopped on its own");
+      this.log("M3u8Fetcher stopped");
       this.restart();
     });
 
