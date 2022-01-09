@@ -34,6 +34,7 @@ class M3u8Fetcher extends EventEmitter {
     );
 
     this.stopped = false;
+    this.exitPromise = new Promise((resolve) => this.ffmpeg.once("exit", resolve));
 
     this.ffmpeg.stderr.on("data", (data) => {
       const duration = last(this.parseDurations(data));
@@ -59,11 +60,10 @@ class M3u8Fetcher extends EventEmitter {
 
   async stop() {
     if (this.stopped) return;
-    const exitPromise = new Promise((resolve) => this.ffmpeg.once("exit", resolve));
     for (const signal of ["SIGTERM", "SIGKILL"]) {
       this.ffmpeg.kill(signal);
       const terminated = await Promise.race([
-        exitPromise.then(() => true),
+        this.exitPromise.then(() => true),
         resolveIn(5000).then(() => false)
       ]);
       if (terminated) break;
