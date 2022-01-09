@@ -53,7 +53,7 @@ class M3u8Fetcher extends EventEmitter {
       if (duration) {
         const durationEarned = duration - this.duration;
         if (durationEarned > 0) {
-          this.emitter.emit("durationearn", duration - this.duration);
+          this.emitter.emit("durationearn", durationEarned);
         }
         this.duration = duration;
         this.emitter.emit("duration", duration);
