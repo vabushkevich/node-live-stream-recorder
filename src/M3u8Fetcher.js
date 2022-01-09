@@ -6,7 +6,7 @@ const { last } = require('lodash');
 class M3u8Fetcher extends EventEmitter {
   constructor(url, outPath) {
     super();
-    this.stopped = true;
+    this.stopped = false;
     this.url = url;
     this.outPath = outPath;
     this.duration = 0;
@@ -40,7 +40,6 @@ class M3u8Fetcher extends EventEmitter {
       ["-y", "-i", this.url, "-c", "copy", this.outPath]
     );
 
-    this.stopped = false;
     this.exitPromise = new Promise((resolve) => this.ffmpeg.once("exit", resolve));
 
     this.ffmpeg.stderr.on("data", (data) => {
