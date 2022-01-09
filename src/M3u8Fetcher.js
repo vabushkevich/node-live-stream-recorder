@@ -10,6 +10,13 @@ class M3u8Fetcher extends EventEmitter {
     this.url = url;
     this.outPath = outPath;
     this.duration = 0;
+    this.emitter = new EventEmitter();
+
+    this.emitter.on("request", (e) => this.emit("request", e));
+    this.emitter.on("duration", (e) => this.emit("duration", e));
+    this.emitter.on("durationearn", (e) => this.emit("durationearn", e));
+    this.emitter.on("error", (e) => this.emit("error", e));
+    this.emitter.on("stop", () => this.emit("stop"));
   }
 
   parseDurations(data) {
@@ -41,20 +48,20 @@ class M3u8Fetcher extends EventEmitter {
       if (duration) {
         const durationEarned = duration - this.duration;
         if (durationEarned > 0) {
-          this.emit("durationearn", duration - this.duration);
+          this.emitter.emit("durationearn", duration - this.duration);
         }
         this.duration = duration;
-        this.emit("duration", duration);
+        this.emitter.emit("duration", duration);
       }
 
       for (const url of this.parseRequests(data)) {
-        this.emit("request", url);
+        this.emitter.emit("request", url);
       }
     });
 
     this.ffmpeg.on("exit", () => {
       this.stopped = true;
-      this.emit("stop");
+      this.emitter.emit("stop");
     });
   }
 
@@ -67,7 +74,7 @@ class M3u8Fetcher extends EventEmitter {
         resolveIn(5000).then(() => false)
       ]);
       if (terminated) break;
-      this.emit("error", `Can't kill ffmpeg process using ${signal}`);
+      this.emitter.emit("error", `Can't kill ffmpeg process using ${signal}`);
     }
   }
 }
