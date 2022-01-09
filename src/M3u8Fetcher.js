@@ -73,7 +73,7 @@ class M3u8Fetcher extends EventEmitter {
         this.exitPromise.then(() => true),
         resolveIn(5000).then(() => false)
       ]);
-      if (terminated) break;
+      if (terminated) return;
       this.emitter.emit("error", `Can't kill ffmpeg process using ${signal}`);
     }
   }
