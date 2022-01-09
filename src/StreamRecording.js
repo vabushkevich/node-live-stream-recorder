@@ -146,6 +146,7 @@ class StreamRecording extends EventEmitter {
 
   removeM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.removeAllListeners("durationearn");
+    this.m3u8Fetcher.removeAllListeners("stop");
     this.m3u8Fetcher.removeAllListeners("error");
   }
 
