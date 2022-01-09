@@ -36,6 +36,10 @@ class M3u8Fetcher extends EventEmitter {
   }
 
   start() {
+    if (this.finished) {
+      throw new Error("The m3u8Fetcher can't be started after it's stopped");
+    }
+
     this.ffmpeg = spawn(
       "ffmpeg",
       ["-y", "-i", this.url, "-c", "copy", this.outPath]
