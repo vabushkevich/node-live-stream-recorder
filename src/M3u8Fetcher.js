@@ -7,6 +7,7 @@ class M3u8Fetcher extends EventEmitter {
   constructor(url, outPath) {
     super();
     this.stopped = false;
+    this.finished = false;
     this.url = url;
     this.outPath = outPath;
     this.duration = 0;
@@ -60,12 +61,14 @@ class M3u8Fetcher extends EventEmitter {
 
     this.ffmpeg.on("exit", () => {
       this.stopped = true;
+      this.finished = true;
       this.emitter.emit("stop");
     });
   }
 
   async stop() {
-    if (this.stopped) return;
+    if (this.finished) return;
+    this.finished = true;
     for (const signal of ["SIGTERM", "SIGKILL"]) {
       this.ffmpeg.kill(signal);
       const terminated = await Promise.race([
