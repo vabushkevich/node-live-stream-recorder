@@ -119,13 +119,7 @@ class StreamRecording extends EventEmitter {
           this.log(`Restart in ${nextDelay / 1000} s`);
         }
       }
-    )
-      .catch(() => {
-        if (this.state === "starting") {
-          this.setState("stopped");
-          this.log("Stopped");
-        }
-      });
+    );
   }
 
   setUpM3u8FetcherEventHandlers() {
