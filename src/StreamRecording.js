@@ -81,6 +81,7 @@ class StreamRecording extends EventEmitter {
         const streamPage = createStreamPage(this.url);
         const stream = await streamPage.getStream(this.quality);
         this.m3u8Url = stream.url;
+        this.actualQuality = { resolution: stream.height };
 
         const fileStem = this.buildName(new Date());
         const outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
@@ -91,8 +92,7 @@ class StreamRecording extends EventEmitter {
           { timeout: NO_DATA_TIMEOUT }
         );
         this.setUpM3u8FetcherEventHandlers();
-        this.m3u8Fetcher.start();
-        this.actualQuality = { resolution: stream.height };
+        this.m3u8Fetcher.start();        
 
         this.setState("recording");
         this.log(`Started with quality: ${JSON.stringify(this.actualQuality)}`);
@@ -163,9 +163,7 @@ class StreamRecording extends EventEmitter {
     this.setState("stopping");
     this.log("Stopping");
     if (isStarting) {
-      await new Promise((resolve) =>
-        this.once("poststart", resolve)
-      );
+      await new Promise((resolve) => this.once("poststart", resolve));
     }
     if (this.m3u8Fetcher) {
       await this.m3u8Fetcher.stop();
