@@ -96,10 +96,11 @@ class StreamRecording extends EventEmitter {
           { timeout: NO_DATA_TIMEOUT }
         );
         this.setUpM3u8FetcherEventHandlers();
-        this.m3u8Fetcher.start();        
-
-        this.setState("recording");
-        this.log(`Started with quality: ${JSON.stringify(this.actualQuality)}`);
+        this.m3u8Fetcher.start();
+        this.m3u8Fetcher.once("durationearn", () => {
+          this.setState("recording");
+          this.log(`Started with quality: ${JSON.stringify(this.actualQuality)}`);
+        });
       },
       function* () {
         yield* new Array(3).fill(1000);
