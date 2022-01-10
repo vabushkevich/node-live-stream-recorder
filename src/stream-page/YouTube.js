@@ -7,7 +7,9 @@ class YouTube extends StreamPage {
   async getM3u8Url() {
     const res = await fetch(this.url, { headers: FETCH_HEADERS });
     const body = await res.text();
-    const url = JSON.parse(`"${body.match(/http.+\.m3u8/)[0]}"`);
+    const match = body.match(/https?:\/\/[\w\.\/%-]+.m3u8/);
+    if (!match) throw new Error("Unable to find m3u8 url in the response");
+    const url = match[0];
     return url;
   }
 }
