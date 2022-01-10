@@ -78,6 +78,10 @@ class StreamRecording extends EventEmitter {
 
         this.log("Starting");
 
+        this.postStartPromise = new Promise((resolve) => {
+          this.postStartCallback = resolve;
+        });
+
         const streamPage = createStreamPage(this.url);
         const stream = await streamPage.getStream(this.quality);
         this.m3u8Url = stream.url;
@@ -108,7 +112,7 @@ class StreamRecording extends EventEmitter {
         }
       }(),
       (err, res, nextDelay) => {
-        this.emit("poststart");
+        this.postStartCallback();
         if (!err) return;
         this.log("Can't start:", err);
         if (nextDelay != null) {
@@ -156,12 +160,9 @@ class StreamRecording extends EventEmitter {
   }
 
   async stop() {
-    const isStarting = this.state === "starting";
     this.setState("stopping");
     this.log("Stopping");
-    if (isStarting) {
-      await new Promise((resolve) => this.once("poststart", resolve));
-    }
+    await this.postStartPromise;
     if (this.m3u8Fetcher) {
       this.removeM3u8FetcherEventHandlers();
       this.m3u8Fetcher.stop().catch((err) => {
