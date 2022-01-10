@@ -136,7 +136,6 @@ class StreamRecording extends EventEmitter {
     }, SCREENSHOT_FREQ));
 
     this.m3u8Fetcher.once("stop", () => {
-      if (this.state !== "recording") return;
       this.log("M3u8Fetcher stopped");
       this.restart();
     });
@@ -177,6 +176,7 @@ class StreamRecording extends EventEmitter {
   }
 
   async restart() {
+    if (this.state === "stopping") return;
     this.log("Restarting");
     await this.stop();
     await this.start();
