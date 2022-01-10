@@ -166,8 +166,10 @@ class StreamRecording extends EventEmitter {
       await new Promise((resolve) => this.once("poststart", resolve));
     }
     if (this.m3u8Fetcher) {
-      await this.m3u8Fetcher.stop();
       this.removeM3u8FetcherEventHandlers();
+      this.m3u8Fetcher.stop().catch((err) => {
+        this.log("Can't stop m3u8Fetcher:", err);
+      });
     }
     this.setState("stopped");
     this.log("Stopped");

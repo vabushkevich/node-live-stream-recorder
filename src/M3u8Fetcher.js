@@ -82,8 +82,9 @@ class M3u8Fetcher extends EventEmitter {
         this.exitPromise.then(() => true),
         resolveIn(5000).then(() => false)
       ]);
-      if (terminated) return;
-      this.emitter.emit("error", `Can't kill ffmpeg process using ${signal}`);
+      if (!terminated && signal == "SIGKILL") {
+        throw new Error("Can't kill ffmpeg process with SIGKILL");
+      }
     }
   }
 
