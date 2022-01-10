@@ -17,7 +17,6 @@ class M3u8Fetcher extends EventEmitter {
     this.emitter.on("request", (e) => this.emit("request", e));
     this.emitter.on("duration", (e) => this.emit("duration", e));
     this.emitter.on("durationearn", (e) => this.emit("durationearn", e));
-    this.emitter.on("error", (e) => this.emit("error", e));
     this.emitter.on("stop", () => this.emit("stop"));
   }
 

@@ -139,14 +139,11 @@ class StreamRecording extends EventEmitter {
       this.log("M3u8Fetcher stopped");
       this.restart();
     });
-
-    this.m3u8Fetcher.on("error", (msg) => this.log(`M3u8Fetcher error: ${msg}`));
   }
 
   removeM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.removeAllListeners("durationearn");
     this.m3u8Fetcher.removeAllListeners("stop");
-    this.m3u8Fetcher.removeAllListeners("error");
   }
 
   setState(state) {
