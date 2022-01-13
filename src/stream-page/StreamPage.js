@@ -62,7 +62,8 @@ class StreamPage {
 
   async getQuota() {
     const browser = await getBrowser();
-    const pagesOpen = (await browser.pages()).length - 1;
+    if (browser.contexts().length == 0) return;
+    const pagesOpen = (await browsercontexts()[0].pages()).length - 1;
     if (pagesOpen < MAX_OPEN_PAGES) return;
     return new Promise((resolve) =>
       StreamPage.quotaRequests.push(resolve)
