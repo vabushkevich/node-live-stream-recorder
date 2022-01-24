@@ -1,4 +1,4 @@
-const { platform } = require('os');
+require('dotenv').config();
 
 const config = {
   NO_DATA_TIMEOUT: 30 * 1000,
@@ -9,14 +9,16 @@ const config = {
   },
   SCREENSHOTS_ROOT: "./site/screenshots/",
   LOG_PATH: "./server.log",
+  RECORDINGS_ROOT: process.env.RECORDINGS_ROOT,
+  BROWSER_PATH: process.env.BROWSER_PATH,
 }
 
-if (platform() == "win32") {
-  config.RECORDINGS_ROOT = "c:/stream-recordings/";
-  config.BROWSER_PATH = "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe";
-} else if (platform() == "linux") {
-  config.RECORDINGS_ROOT = "~/stream-recordings/";
-  config.BROWSER_PATH = "/usr/bin/google-chrome";
+if (!config.RECORDINGS_ROOT) {
+  throw new Error("Env var RECORDINGS_ROOT must be set");
+}
+
+if (!config.BROWSER_PATH) {
+  throw new Error("Env var BROWSER_PATH must be set");
 }
 
 module.exports = config;
