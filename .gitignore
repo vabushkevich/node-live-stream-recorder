@@ -3,3 +3,4 @@ site/screenshots/
 package-lock.json
 debug.log
 .env
+server.log
