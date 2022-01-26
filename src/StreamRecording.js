@@ -14,7 +14,7 @@ const {
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
   LOG_PATH,
-} = require('lib/config');
+} = require('lib/constants');
 
 class StreamRecording extends EventEmitter {
   constructor(

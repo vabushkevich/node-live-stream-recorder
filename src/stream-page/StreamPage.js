@@ -6,7 +6,7 @@ const {
   MAX_OPEN_PAGES,
   NO_DATA_TIMEOUT,
   FETCH_HEADERS,
-} = require('lib/config');
+} = require('lib/constants');
 
 class StreamPage {
   constructor(url) {

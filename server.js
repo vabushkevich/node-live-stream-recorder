@@ -6,7 +6,7 @@
 
   const {
     SCREENSHOTS_ROOT,
-  } = require('lib/config');
+  } = require('lib/constants');
 
   const app = express();
   const recorder = new StreamRecorder();
