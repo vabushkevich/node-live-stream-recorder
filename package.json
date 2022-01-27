@@ -21,6 +21,6 @@
   "author": "Vyacheslav Abushkevich <abshkvch@gmail.com>",
   "license": "MIT",
   "workspaces": [
-    "./src"
+    "./server"
   ]
 }
