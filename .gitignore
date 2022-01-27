@@ -1,5 +1,5 @@
 node_modules/
-client/screenshots/
+client/build/
 package-lock.json
 debug.log
 .env

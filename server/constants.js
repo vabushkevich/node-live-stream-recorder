@@ -6,7 +6,7 @@ const MAX_OPEN_PAGES = 5;
 const FETCH_HEADERS = {
   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
 };
-const SCREENSHOTS_ROOT = "./client/screenshots/";
+const SCREENSHOTS_ROOT = "./client/build/screenshots/";
 const LOG_PATH = "./server.log";
 const RECORDINGS_ROOT = process.env.RECORDINGS_ROOT;
 const BROWSER_PATH = process.env.BROWSER_PATH;
