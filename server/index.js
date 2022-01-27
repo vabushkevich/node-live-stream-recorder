@@ -16,7 +16,7 @@
 
   app.use(cors());
   app.use(express.json());
-  app.use(express.static("./site"));
+  app.use(express.static("./client"));
 
   app.get("/api/v1/recordings", (req, res) => {
     res.send(recorder.getRecordings());

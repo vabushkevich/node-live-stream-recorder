@@ -180,7 +180,7 @@ class StreamRecording extends EventEmitter {
       id: this.id,
       url: this.url,
       state: this.state,
-      screenshotPath: path.relative("./site", this.screenshotPath),
+      screenshotPath: path.relative("./client", this.screenshotPath),
       createdDate: this.createdDate,
       timeLeft: this.getTimeLeft(),
       quality: this.actualQuality,
