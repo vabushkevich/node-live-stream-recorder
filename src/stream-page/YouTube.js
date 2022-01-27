@@ -1,7 +1,7 @@
-const StreamPage = require('lib/stream-page/StreamPage');
+const StreamPage = require('server/stream-page/StreamPage');
 const fetch = require('node-fetch');
 
-const { FETCH_HEADERS } = require('lib/constants');
+const { FETCH_HEADERS } = require('server/constants');
 
 class YouTube extends StreamPage {
   async getM3u8Url() {

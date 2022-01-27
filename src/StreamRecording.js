@@ -1,10 +1,10 @@
 const path = require('path');
-const { saveFrame, retry } = require('lib/utils');
+const { saveFrame, retry } = require('server/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
-const M3u8Fetcher = require("lib/M3u8Fetcher");
-const { createStreamPage } = require('lib/stream-page');
+const M3u8Fetcher = require("server/M3u8Fetcher");
+const { createStreamPage } = require('server/stream-page');
 const { EventEmitter } = require('events');
 const { mkdirSync, appendFileSync } = require('fs');
 
@@ -14,7 +14,7 @@ const {
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
   LOG_PATH,
-} = require('lib/constants');
+} = require('server/constants');
 
 class StreamRecording extends EventEmitter {
   constructor(

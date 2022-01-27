@@ -1,4 +1,4 @@
-const { YouTube, Twitch } = require('lib/stream-page');
+const { YouTube, Twitch } = require('server/stream-page');
 
 function createStreamPage(url) {
   if (url.includes("youtube.com")) return new YouTube(url);

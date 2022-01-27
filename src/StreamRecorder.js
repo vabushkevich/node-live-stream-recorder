@@ -1,4 +1,4 @@
-const StreamRecording = require('lib/StreamRecording');
+const StreamRecording = require('server/StreamRecording');
 const { nanoid } = require('nanoid');
 
 class StreamRecorder {

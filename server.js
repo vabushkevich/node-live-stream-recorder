@@ -1,12 +1,12 @@
 (async () => {
   const express = require('express');
   const cors = require('cors');
-  const StreamRecorder = require('lib/StreamRecorder');
+  const StreamRecorder = require('server/StreamRecorder');
   const { mkdirSync } = require('fs');
 
   const {
     SCREENSHOTS_ROOT,
-  } = require('lib/constants');
+  } = require('server/constants');
 
   const app = express();
   const recorder = new StreamRecorder();

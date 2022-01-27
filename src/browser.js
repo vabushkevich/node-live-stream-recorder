@@ -1,6 +1,6 @@
 const { chromium } = require('playwright-core');
 
-const { BROWSER_PATH } = require('lib/constants');
+const { BROWSER_PATH } = require('server/constants');
 
 let browser;
 

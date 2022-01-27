@@ -1,6 +1,6 @@
 const { EventEmitter } = require('events');
 const { spawn } = require('child_process');
-const { resolveIn } = require('lib/utils');
+const { resolveIn } = require('server/utils');
 const { last } = require('lodash');
 
 class M3u8Fetcher extends EventEmitter {

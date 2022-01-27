@@ -1,12 +1,12 @@
-const { getBrowser } = require('lib/browser');
-const { resolveIn, parseM3u8 } = require('lib/utils');
+const { getBrowser } = require('server/browser');
+const { resolveIn, parseM3u8 } = require('server/utils');
 const fetch = require('node-fetch');
 
 const {
   MAX_OPEN_PAGES,
   NO_DATA_TIMEOUT,
   FETCH_HEADERS,
-} = require('lib/constants');
+} = require('server/constants');
 
 class StreamPage {
   constructor(url) {
