@@ -7,11 +7,11 @@
   const {
     STATIC_ROOT,
     SCREENSHOTS_ROOT,
+    SERVER_PORT,
   } = require('server/constants');
 
   const app = express();
   const recorder = new StreamRecorder();
-  const port = 8080;
 
   mkdirSync(SCREENSHOTS_ROOT, { recursive: true });
 
@@ -49,5 +49,5 @@
     res.end();
   });
 
-  app.listen(port, () => console.log(`Live stream recorder web server has been started on port ${port}`));
+  app.listen(SERVER_PORT, () => console.log(`Live stream recorder web server has been started on port ${SERVER_PORT}`));
 })();
