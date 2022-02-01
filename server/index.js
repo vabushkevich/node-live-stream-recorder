@@ -5,6 +5,7 @@
   const { mkdirSync } = require('fs');
 
   const {
+    STATIC_ROOT,
     SCREENSHOTS_ROOT,
   } = require('server/constants');
 
@@ -16,7 +17,7 @@
 
   app.use(cors());
   app.use(express.json());
-  app.use(express.static("./client/build/"));
+  app.use(express.static(STATIC_ROOT));
 
   app.get("/api/v1/recordings", (req, res) => {
     res.send(recorder.getRecordings());

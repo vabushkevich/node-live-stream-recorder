@@ -11,6 +11,7 @@ const { mkdirSync, appendFileSync } = require('fs');
 const {
   SCREENSHOT_FREQ,
   RECORDINGS_ROOT,
+  STATIC_ROOT,
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
   LOG_PATH,
@@ -180,7 +181,7 @@ class StreamRecording extends EventEmitter {
       id: this.id,
       url: this.url,
       state: this.state,
-      screenshotPath: path.relative("./client/build/", this.screenshotPath),
+      screenshotPath: path.relative(STATIC_ROOT, this.screenshotPath),
       createdDate: this.createdDate,
       timeLeft: this.getTimeLeft(),
       quality: this.actualQuality,
