@@ -1,6 +1,8 @@
 const path = require("path");
 
-require('dotenv').config();
+require("dotenv").config({
+  path: path.join(__dirname, "..", ".env"),
+});
 
 const NO_DATA_TIMEOUT = 30 * 1000;
 const SCREENSHOT_FREQ = 20 * 1000;
