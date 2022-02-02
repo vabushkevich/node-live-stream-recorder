@@ -15,6 +15,7 @@ const SCREENSHOTS_ROOT = path.join(STATIC_ROOT, "screenshots");
 const LOG_PATH = "./server.log";
 const RECORDINGS_ROOT = process.env.RECORDINGS_ROOT;
 const BROWSER_PATH = process.env.BROWSER_PATH;
+const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || "localhost";
 const SERVER_PORT = process.env.SERVER_PORT || 5370;
 
 if (!RECORDINGS_ROOT) {
@@ -35,5 +36,6 @@ module.exports = {
   LOG_PATH,
   RECORDINGS_ROOT,
   BROWSER_PATH,
+  SERVER_HOSTNAME,
   SERVER_PORT,
 };
