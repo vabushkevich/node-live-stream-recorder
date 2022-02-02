@@ -1,6 +1,8 @@
 import "./index.css";
 
-const API_URL = "http://localhost:8080/api/v1";
+const HOSTNAME = process.env.SERVER_HOSTNAME;
+const PORT = process.env.SERVER_PORT;
+const API_URL = `http://${HOSTNAME}:${PORT}/api/v1`;
 
 class Recorder {
   constructor(obj) {
