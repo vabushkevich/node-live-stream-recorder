@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "concurrently": "^7.1.0",
     "cors": "^2.8.5",
     "css-loader": "^6.7.1",
     "date-fns": "^2.16.1",
@@ -13,6 +14,7 @@
     "lodash": "^4.17.20",
     "nanoid": "^3.1.25",
     "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.15",
     "playwright-core": "^1.20.2",
     "sanitize-filename": "^1.6.3",
     "style-loader": "^3.3.1",
@@ -21,7 +23,12 @@
     "webpack-dev-server": "^4.8.1"
   },
   "scripts": {
+    "build": "cd client && webpack --mode=production",
+    "dev": "concurrently -n server,web -c green,cyan 'npm:start:dev-server' 'npm:start:dev-client'",
+    "start": "npm run build && npm run start:server",
     "start:dev-client": "cd client && webpack serve --mode development",
+    "start:dev-server": "nodemon server -w server",
+    "start:server": "node server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
