@@ -6,11 +6,12 @@ const { CLIENT_PORT } = require("./constants");
 const {
   SERVER_HOSTNAME,
   SERVER_PORT,
+  STATIC_ROOT,
 } = require("server/constants");
 
 module.exports = {
   output: {
-    path: path.resolve(__dirname, "build"),
+    path: STATIC_ROOT,
   },
   devServer: {
     static: "./build/",
