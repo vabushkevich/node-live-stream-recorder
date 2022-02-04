@@ -14,7 +14,11 @@ module.exports = {
     path: STATIC_ROOT,
   },
   devServer: {
-    static: "./build/",
+    static: {
+      directory: path.join(STATIC_ROOT, "screenshots"),
+      publicPath: "/screenshots",
+      watch: false,
+    },
     port: CLIENT_PORT,
   },
   module: {
