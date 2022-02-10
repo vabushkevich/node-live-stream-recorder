@@ -10,6 +10,7 @@ const {
 } = require("server/constants");
 
 module.exports = {
+  entry: "./src/index.jsx",
   output: {
     path: STATIC_ROOT,
   },
@@ -26,6 +27,17 @@ module.exports = {
       {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.jsx$/i,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              presets: ["@babel/preset-react"],
+            }
+          }
+        ]
       },
     ]
   },
