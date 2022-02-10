@@ -41,29 +41,37 @@ class Recorder {
     const timeLeft = moment.duration(this.timeLeft, "ms").format("hh:mm:ss", { trim: false });
     const html = `
       <li class="card recorder-items__item">
-        <div class="card-body d-flex position-relative">
-          <div class="mr-3" style="width: 231px; height: 130px;">
-            <img src="${this.screenshotPath}" class="rounded" alt="Screenshot" style="width: 100%; height: 100%; object-fit: contain;">
-          </div>
-          <div class="d-flex flex-column">
-            <div class="d-flex align-items-center mb-2">
-              <h5 class="mr-2 mb-0">${this.url}</h5>
-              ${this.quality ? `
-                <span class="mr-2 badge badge-dark">${this.quality.resolution}p</span>
-              `: ``}
-              <span class="badge badge-${this.state == "recording" ? "primary" : "secondary"}">${stateStr}</span>
+        <div class="card-body position-relative">
+          <div class="row no-gutters">
+            <div class="col-md col-md-4 col-lg-3 pr-md-3 pb-2 pb-md-0 col-6 mx-auto min-w-0">
+              <img src="${this.screenshotPath}" class="rounded w-100" alt="Screenshot">
             </div>
-            ${timeLeft ? `<p class="mb-2"><b>Left:</b> ${timeLeft}</p>` : ``}
-            ${this.state != "stopped" ? `
-              <div class="d-flex flex-row mb-2">
-                <button type="button" class="btn mr-3 btn-primary js-rec-stop-btn">Stop</button>
-                <input type="number" style="max-width: 80px;" min="1" value="120" class="form-control mr-1 js-rec-duration-input" id="inputDuration">
-                <button type="button" class="btn btn-primary js-rec-prolong-btn">Prolong</button>
+            <div class="col-md min-w-0">
+              <div class="d-flex flex-md-nowrap flex-wrap align-items-center mb-2">
+                <h5 class="mr-2 mb-md-0 mb-1 text-truncate">${this.url}</h5>
+                <div class="d-flex">
+                  ${this.quality ? `
+                    <span class="mr-2 badge badge-dark">${this.quality.resolution}p</span>
+                  `: ``}
+                  <span class="badge badge-${this.state == "recording" ? "primary" : "secondary"}">${stateStr}</span>
+                </div>
               </div>
-            ` : ``}
+              ${timeLeft ? `<p class="${this.state != "stopped" ? "mb-2" : "mb-0"}"><b>Left:</b> ${timeLeft}</p>` : ``}
+              ${this.state != "stopped" ? `
+                <div class="d-flex flex-row">
+                  <button type="button" class="btn mr-1 btn-primary btn-sm js-rec-stop-btn">Stop</button>
+                  <div class="input-group w-auto">
+                    <input type="number" min="1" max="999" value="120" class="form-control form-control-sm js-rec-duration-input" id="inputDuration">
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-primary btn-sm js-rec-prolong-btn">Prolong</button>
+                    </div>
+                  </div>
+                </div>
+              ` : ``}
+            </div>
           </div>
           ${this.state == "stopped" ? `
-            <button type="button" class="close position-absolute js-rec-close-btn" style="top: 5px; right: 10px;">
+            <button type="button" class="close recording__close-btn js-rec-close-btn">
               <span>&times;</span>
             </button>
           ` : ``}

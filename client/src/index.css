@@ -1,7 +1,13 @@
-body {
-  padding: 24px;
+.recorder-items__item:not(:last-child) {
+  margin-bottom: 10px;
 }
 
-.recorder-items__item {
-  margin-bottom: 10px;
+.min-w-0 {
+  min-width: 0px;
+}
+
+.recording__close-btn {
+  position: absolute;
+  top: 0px;
+  right: 6px;
 }
