@@ -1,8 +1,6 @@
 {
   "name": "node-live-stream-recorder",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
   "dependencies": {
     "@babel/preset-react": "^7.16.7",
     "babel-loader": "^8.2.4",
@@ -31,10 +29,8 @@
     "start:client": "node client/serve.js",
     "start:dev-client": "cd client && webpack serve --mode development",
     "start:dev-server": "nodemon server -w server",
-    "start:server": "node server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:server": "node server"
   },
-  "keywords": [],
   "author": "Vyacheslav Abushkevich <abshkvch@gmail.com>",
   "license": "MIT",
   "workspaces": [
