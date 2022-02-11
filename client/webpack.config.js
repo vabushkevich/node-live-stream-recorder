@@ -2,11 +2,11 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { DefinePlugin } = require("webpack");
 
-const { CLIENT_PORT } = require("./constants");
 const {
   SERVER_HOSTNAME,
   SERVER_PORT,
   STATIC_ROOT,
+  CLIENT_PORT,
 } = require("server/constants");
 
 module.exports = {
