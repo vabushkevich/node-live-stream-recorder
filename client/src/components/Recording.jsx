@@ -1,8 +1,6 @@
 import React from "react";
 
-const HOSTNAME = process.env.SERVER_HOSTNAME;
-const PORT = process.env.SERVER_PORT;
-const API_URL = `http://${HOSTNAME}:${PORT}/api/v1`;
+import { API_URL } from "../../constants";
 
 export default class Recording extends React.Component {
   constructor(props) {
