@@ -11,6 +11,13 @@ function getSiteName(url) {
 }
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      recordings: [],
+    };
+  }
+
   componentDidMount() {
     document.querySelector(".js-record-btn").addEventListener("click", () => {
       const formData = {
@@ -39,15 +46,12 @@ class App extends React.Component {
     })
       .then((req) => req.json())
       .then((recordings) => {
-        ReactDOM.render(
-          <App recordings={recordings} />,
-          document.querySelector("#root")
-        );
+        this.setState({ recordings });
       });
   }
 
   render() {
-    const { recordings = [] } = this.props;
+    const { recordings } = this.state;
 
     return (
       <div className="container my-4">
