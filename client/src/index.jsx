@@ -13,9 +13,14 @@ function getSiteName(url) {
 class App extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       recordings: [],
+      url: "",
+      duration: 120,
     };
+
+    this.handleInputChange = this.handleInputChange.bind(this);
   }
 
   componentDidMount() {
@@ -50,6 +55,16 @@ class App extends React.Component {
       });
   }
 
+  handleInputChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
   render() {
     const { recordings } = this.state;
 
@@ -63,11 +78,11 @@ class App extends React.Component {
                 <div className="form-row">
                   <div className="form-group col">
                     <label htmlFor="inputURL">URL</label>
-                    <input type="url" className="form-control js-url-input" id="inputURL" />
+                    <input type="url" className="form-control js-url-input" id="inputURL" name="url" value={this.state.url} onChange={this.handleInputChange} />
                   </div>
                   <div className="form-group col-3 col-md-2">
                     <label htmlFor="inputDuration">Minutes</label>
-                    <input type="number" min="1" defaultValue="120" className="form-control js-duration-input" id="inputDuration" />
+                    <input type="number" min="1" className="form-control js-duration-input" id="inputDuration" name="duration" value={this.state.duration} onChange={this.handleInputChange} />
                   </div>
                 </div>
                 <button type="button" className="btn btn-primary js-record-btn">Record</button>
