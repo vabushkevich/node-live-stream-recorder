@@ -21,31 +21,10 @@ class App extends React.Component {
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
-    document.querySelector(".js-record-btn").addEventListener("click", () => {
-      const formData = {
-        url: document.querySelector(".js-url-input").value,
-        duration: document.querySelector(".js-duration-input").value,
-      };
-
-      const url = formData.url.trim();
-      const siteName = getSiteName(url);
-      const duration = formData.duration * 60 * 1000;
-
-      fetch(`${API_URL}/recordings`, {
-        method: "POST",
-        body: JSON.stringify({
-          url,
-          duration,
-          nameSuffix: siteName,
-        }),
-        headers: { 'Content-Type': 'application/json' },
-      })
-        .then(() => window.open(document.location.href, "_self"));
-    });
-
     fetch(`${API_URL}/recordings`, {
       method: "GET",
     })
@@ -65,6 +44,20 @@ class App extends React.Component {
     });
   }
 
+  handleSubmit(event) {
+    event.preventDefault();
+    fetch(`${API_URL}/recordings`, {
+      method: "POST",
+      body: JSON.stringify({
+        url: this.state.url,
+        duration: this.state.duration * 60 * 1000,
+        nameSuffix: getSiteName(this.state.url),
+      }),
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(() => window.open(document.location.href, "_self"));
+  }
+
   render() {
     const { recordings } = this.state;
 
@@ -75,17 +68,19 @@ class App extends React.Component {
             <div className="card">
               <div className="card-body">
                 <h5 className="card-title">Record new stream</h5>
-                <div className="form-row">
-                  <div className="form-group col">
-                    <label htmlFor="inputURL">URL</label>
-                    <input type="url" className="form-control js-url-input" id="inputURL" name="url" value={this.state.url} onChange={this.handleInputChange} />
+                <form onSubmit={this.handleSubmit}>
+                  <div className="form-row">
+                    <div className="form-group col">
+                      <label htmlFor="inputURL">URL</label>
+                      <input type="url" className="form-control js-url-input" id="inputURL" name="url" value={this.state.url} onChange={this.handleInputChange} />
+                    </div>
+                    <div className="form-group col-3 col-md-2">
+                      <label htmlFor="inputDuration">Minutes</label>
+                      <input type="number" min="1" className="form-control js-duration-input" id="inputDuration" name="duration" value={this.state.duration} onChange={this.handleInputChange} />
+                    </div>
                   </div>
-                  <div className="form-group col-3 col-md-2">
-                    <label htmlFor="inputDuration">Minutes</label>
-                    <input type="number" min="1" className="form-control js-duration-input" id="inputDuration" name="duration" value={this.state.duration} onChange={this.handleInputChange} />
-                  </div>
-                </div>
-                <button type="button" className="btn btn-primary js-record-btn">Record</button>
+                  <button type="submit" className="btn btn-primary js-record-btn">Record</button>
+                </form>
               </div>
             </div>
           </div>
