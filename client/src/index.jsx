@@ -25,13 +25,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    fetch(`${API_URL}/recordings`, {
-      method: "GET",
-    })
-      .then((req) => req.json())
-      .then((recordings) => {
-        this.setState({ recordings });
-      });
+    this.syncRecordings();
   }
 
   handleInputChange(event) {
@@ -55,7 +49,17 @@ class App extends React.Component {
       }),
       headers: { "Content-Type": "application/json" },
     })
-      .then(() => window.open(document.location.href, "_self"));
+      .then(() => this.syncRecordings());
+  }
+
+  syncRecordings() {
+    fetch(`${API_URL}/recordings`, {
+      method: "GET",
+    })
+      .then((req) => req.json())
+      .then((recordings) => {
+        this.setState({ recordings });
+      });
   }
 
   render() {
