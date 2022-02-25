@@ -62,6 +62,27 @@ class App extends React.Component {
       });
   }
 
+  handleRecordingStop(id) {
+    fetch(`${API_URL}/recordings/${id}/stop`, {
+      method: "PUT",
+    })
+      .then(() => this.syncRecordings());
+  }
+
+  handleRecordingProlong(id, duration) {
+    fetch(`${API_URL}/recordings/${id}/prolong?duration=${duration}`, {
+      method: "PUT",
+    })
+      .then(() => this.syncRecordings());
+  }
+
+  handleRecordingClose(id) {
+    fetch(`${API_URL}/recordings/${id}`, {
+      method: "DELETE",
+    })
+      .then(() => this.syncRecordings());
+  }
+
   render() {
     const { recordings } = this.state;
 
@@ -93,7 +114,15 @@ class App extends React.Component {
           <div className="card-body">
             <h5 className="card-title">Recorders</h5>
             <ol className="recorder-items m-0 p-0">
-              {recordings.map((recording) => <Recording key={recording.id} {...recording} />)}
+              {recordings.map((recording) => (
+                <Recording
+                  {...recording}
+                  onStop={this.handleRecordingStop.bind(this, recording.id)}
+                  onProlong={this.handleRecordingProlong.bind(this, recording.id)}
+                  onClose={this.handleRecordingClose.bind(this, recording.id)}
+                  key={recording.id}
+                />
+              ))}
             </ol>
           </div>
         </div>

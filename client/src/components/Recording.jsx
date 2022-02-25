@@ -1,39 +1,20 @@
 import React from "react";
 
-import { API_URL } from "../../constants";
-
 export default class Recording extends React.Component {
   constructor(props) {
     super(props);
     this.input = React.createRef();
   }
 
-  stop() {
-    fetch(`${API_URL}/recordings/${this.props.id}/stop`, {
-      method: "PUT",
-    })
-      .then(() => window.open(document.location.href, "_self"));
-  }
-
-  prolong() {
-    const duration = this.input.current.value * 60 * 1000;
-    fetch(`${API_URL}/recordings/${this.props.id}/prolong?duration=${duration}`, {
-      method: "PUT",
-    })
-      .then(() => window.open(document.location.href, "_self"));
-  }
-
-  close() {
-    fetch(`${API_URL}/recordings/${this.props.id}`, {
-      method: "DELETE",
-    })
-      .then(() => window.open(document.location.href, "_self"));
-  }
-
   render() {
     const stateFormatted = this.props.state[0].toUpperCase() + this.props.state.slice(1);
     const badgeType = this.props.state == "recording" ? "primary" : "secondary";
     const timeLeft = moment.duration(this.props.timeLeft, "ms").format("hh:mm:ss", { trim: false });
+
+    const handleProlong = () => {
+      const duration = this.input.current.value * 60 * 1000;
+      this.props.onProlong(duration);
+    }
 
     return (
       <li className="card recorder-items__item">
@@ -53,11 +34,11 @@ export default class Recording extends React.Component {
               {timeLeft && <p className={`${this.props.state != "stopped" ? "mb-2" : "mb-0"}`}><b>Left:</b> {timeLeft}</p>}
               {this.props.state != "stopped" && (
                 <div className="d-flex flex-row">
-                  <button type="button" className="btn mr-1 btn-primary btn-sm js-rec-stop-btn" onClick={() => this.stop()}>Stop</button>
+                  <button type="button" className="btn mr-1 btn-primary btn-sm js-rec-stop-btn" onClick={this.props.onStop}>Stop</button>
                   <div className="input-group w-auto">
                     <input type="number" min="1" max="999" defaultValue="120" className="form-control form-control-sm js-rec-duration-input" id="inputDuration" ref={this.input} />
                     <div className="input-group-append">
-                      <button type="button" className="btn btn-primary btn-sm js-rec-prolong-btn" onClick={() => this.prolong()}>Prolong</button>
+                      <button type="button" className="btn btn-primary btn-sm js-rec-prolong-btn" onClick={handleProlong}>Prolong</button>
                     </div>
                   </div>
                 </div>
@@ -65,7 +46,7 @@ export default class Recording extends React.Component {
             </div>
           </div>
           {this.props.state == "stopped" && (
-            <button type="button" className="close recording__close-btn js-rec-close-btn" onClick={() => this.close()}>
+            <button type="button" className="close recording__close-btn js-rec-close-btn" onClick={this.props.onClose}>
               <span>&times;</span>
             </button>
           )}
