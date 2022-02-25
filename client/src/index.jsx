@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import Recording from "./components/Recording.jsx";
 
-import { API_URL } from "../constants";
+import { API_BASE_URL } from "../constants";
 
 function getSiteName(url) {
   if (url.includes("youtube.com")) return "youtube";
@@ -40,7 +40,7 @@ class App extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    fetch(`${API_URL}/recordings`, {
+    fetch(`${API_BASE_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({
         url: this.state.url,
@@ -53,7 +53,7 @@ class App extends React.Component {
   }
 
   syncRecordings() {
-    fetch(`${API_URL}/recordings`, {
+    fetch(`${API_BASE_URL}/recordings`, {
       method: "GET",
     })
       .then((req) => req.json())
@@ -63,21 +63,21 @@ class App extends React.Component {
   }
 
   handleRecordingStop(id) {
-    fetch(`${API_URL}/recordings/${id}/stop`, {
+    fetch(`${API_BASE_URL}/recordings/${id}/stop`, {
       method: "PUT",
     })
       .then(() => this.syncRecordings());
   }
 
   handleRecordingProlong(id, duration) {
-    fetch(`${API_URL}/recordings/${id}/prolong?duration=${duration}`, {
+    fetch(`${API_BASE_URL}/recordings/${id}/prolong?duration=${duration}`, {
       method: "PUT",
     })
       .then(() => this.syncRecordings());
   }
 
   handleRecordingClose(id) {
-    fetch(`${API_URL}/recordings/${id}`, {
+    fetch(`${API_BASE_URL}/recordings/${id}`, {
       method: "DELETE",
     })
       .then(() => this.syncRecordings());
