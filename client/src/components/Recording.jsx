@@ -1,4 +1,5 @@
 import React from "react";
+import { capitalize } from "lodash";
 
 export default class Recording extends React.Component {
   constructor(props) {
@@ -7,7 +8,6 @@ export default class Recording extends React.Component {
   }
 
   render() {
-    const stateFormatted = this.props.state[0].toUpperCase() + this.props.state.slice(1);
     const badgeType = this.props.state == "recording" ? "primary" : "secondary";
     const timeLeft = moment.duration(this.props.timeLeft, "ms").format("hh:mm:ss", { trim: false });
 
@@ -28,7 +28,7 @@ export default class Recording extends React.Component {
                 <h5 className="mr-2 mb-md-0 mb-1 text-truncate">{this.props.url}</h5>
                 <div className="d-flex">
                   {this.props.quality && <span className="mr-2 badge badge-dark">{this.props.quality.resolution}p</span>}
-                  <span className={`badge badge-${badgeType}`}>{stateFormatted}</span>
+                  <span className={`badge badge-${badgeType}`}>{capitalize(this.props.state)}</span>
                 </div>
               </div>
               {timeLeft && <p className={`${this.props.state != "stopped" ? "mb-2" : "mb-0"}`}><b>Left:</b> {timeLeft}</p>}
