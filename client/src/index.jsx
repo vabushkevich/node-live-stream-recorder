@@ -98,14 +98,14 @@ class App extends React.Component {
                   <div className="form-row">
                     <div className="form-group col">
                       <label htmlFor="inputURL">URL</label>
-                      <input type="url" className="form-control js-url-input" id="inputURL" name="url" value={this.state.url} onChange={this.handleInputChange} />
+                      <input type="url" className="form-control" id="inputURL" name="url" value={this.state.url} onChange={this.handleInputChange} />
                     </div>
                     <div className="form-group col-3 col-md-2">
                       <label htmlFor="inputDuration">Minutes</label>
-                      <input type="number" min="1" className="form-control js-duration-input" id="inputDuration" name="duration" value={this.state.duration} onChange={this.handleInputChange} />
+                      <input type="number" min="1" className="form-control" id="inputDuration" name="duration" value={this.state.duration} onChange={this.handleInputChange} />
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary js-record-btn">Record</button>
+                  <button type="submit" className="btn btn-primary">Record</button>
                 </form>
               </div>
             </div>
