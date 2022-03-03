@@ -1,5 +1,6 @@
 import React from "react";
 import { capitalize } from "lodash";
+import { formatDuration } from "../utils";
 
 export default class Recording extends React.Component {
   constructor(props) {
@@ -9,7 +10,6 @@ export default class Recording extends React.Component {
 
   render() {
     const badgeType = this.props.state == "recording" ? "primary" : "secondary";
-    const timeLeft = moment.duration(this.props.timeLeft, "ms").format("hh:mm:ss", { trim: false });
 
     const handleProlong = () => {
       const duration = this.input.current.value * 60 * 1000;
@@ -31,7 +31,7 @@ export default class Recording extends React.Component {
                   <span className={`badge badge-${badgeType}`}>{capitalize(this.props.state)}</span>
                 </div>
               </div>
-              {timeLeft && <p className={`${this.props.state != "stopped" ? "mb-2" : "mb-0"}`}><b>Left:</b> {timeLeft}</p>}
+              {this.props.timeLeft > 0 && <p className={`${this.props.state != "stopped" ? "mb-2" : "mb-0"}`}><b>Left:</b> {formatDuration(this.props.timeLeft)}</p>}
               {this.props.state != "stopped" && (
                 <div className="d-flex flex-row">
                   <button type="button" className="btn mr-1 btn-primary btn-sm js-rec-stop-btn" onClick={this.props.onStop}>Stop</button>
