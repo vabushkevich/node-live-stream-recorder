@@ -27,6 +27,11 @@ class App extends React.Component {
 
   componentDidMount() {
     this.syncRecordings();
+    this.startPeriodicSync();
+  }
+
+  componentWillUnmount() {
+    this.stopPeriodicSync();
   }
 
   handleInputChange(event) {
@@ -82,6 +87,14 @@ class App extends React.Component {
       method: "DELETE",
     })
       .then(() => this.syncRecordings());
+  }
+
+  startPeriodicSync() {
+    this.syncInterval = setInterval(() => this.syncRecordings(), 5000);
+  }
+
+  stopPeriodicSync() {
+    clearInterval(this.syncInterval);
   }
 
   render() {

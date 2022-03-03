@@ -21,7 +21,7 @@ export default class Recording extends React.Component {
         <div className="card-body position-relative">
           <div className="row no-gutters">
             <div className="col-md col-md-4 col-lg-3 pr-md-3 pb-2 pb-md-0 col-6 mx-auto min-w-0">
-              <img src={this.props.screenshotPath} className="rounded w-100" alt="Screenshot" />
+              <img src={`${this.props.screenshotPath}?${Date.now()}`} className="rounded w-100" alt="Screenshot" />
             </div>
             <div className="col-md min-w-0">
               <div className="d-flex flex-md-nowrap flex-wrap align-items-center mb-2">
