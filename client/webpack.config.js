@@ -45,6 +45,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "src/index.html",
       favicon: "src/assets/favicon.ico",
+      title: "Stream Recorder",
     }),
     new DefinePlugin({
       'process.env.SERVER_HOSTNAME': JSON.stringify(SERVER_HOSTNAME),
