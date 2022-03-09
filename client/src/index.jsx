@@ -68,21 +68,21 @@ class App extends React.Component {
       });
   }
 
-  handleRecordingStop(id) {
+  stopRecording(id) {
     fetch(`${API_BASE_URL}/recordings/${id}/stop`, {
       method: "PUT",
     })
       .then(() => this.syncRecordings());
   }
 
-  handleRecordingProlong(id, duration) {
+  prolongRecording(id, duration) {
     fetch(`${API_BASE_URL}/recordings/${id}/prolong?duration=${duration}`, {
       method: "PUT",
     })
       .then(() => this.syncRecordings());
   }
 
-  handleRecordingClose(id) {
+  closeRecording(id) {
     fetch(`${API_BASE_URL}/recordings/${id}`, {
       method: "DELETE",
     })
@@ -131,9 +131,9 @@ class App extends React.Component {
               {recordings.map((recording) => (
                 <Recording
                   {...recording}
-                  onStop={this.handleRecordingStop.bind(this, recording.id)}
-                  onProlong={this.handleRecordingProlong.bind(this, recording.id)}
-                  onClose={this.handleRecordingClose.bind(this, recording.id)}
+                  onStop={this.stopRecording.bind(this, recording.id)}
+                  onProlong={this.prolongRecording.bind(this, recording.id)}
+                  onClose={this.closeRecording.bind(this, recording.id)}
                   key={recording.id}
                 />
               ))}
