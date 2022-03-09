@@ -23,6 +23,9 @@ class App extends React.Component {
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.stopRecording = this.stopRecording.bind(this);
+    this.prolongRecording = this.prolongRecording.bind(this);
+    this.closeRecording = this.closeRecording.bind(this);
   }
 
   componentDidMount() {
@@ -131,9 +134,9 @@ class App extends React.Component {
               {recordings.map((recording) => (
                 <Recording
                   {...recording}
-                  onStop={this.stopRecording.bind(this, recording.id)}
-                  onProlong={this.prolongRecording.bind(this, recording.id)}
-                  onClose={this.closeRecording.bind(this, recording.id)}
+                  onStop={this.stopRecording}
+                  onProlong={this.prolongRecording}
+                  onClose={this.closeRecording}
                   key={recording.id}
                 />
               ))}

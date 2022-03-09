@@ -13,7 +13,7 @@ export default class Recording extends React.Component {
 
     const handleProlong = () => {
       const duration = this.input.current.value * 60 * 1000;
-      this.props.onProlong(duration);
+      this.props.onProlong(this.props.id, duration);
     }
 
     return (
@@ -34,7 +34,7 @@ export default class Recording extends React.Component {
               {this.props.timeLeft > 0 && <p className={`${this.props.state != "stopped" ? "mb-2" : "mb-0"}`}><b>Left:</b> {formatDuration(this.props.timeLeft)}</p>}
               {this.props.state != "stopped" && (
                 <div className="d-flex flex-row">
-                  <button type="button" className="btn mr-1 btn-primary btn-sm" onClick={this.props.onStop}>Stop</button>
+                  <button type="button" className="btn mr-1 btn-primary btn-sm" onClick={() => this.props.onStop(this.props.id)}>Stop</button>
                   <div className="input-group w-auto">
                     <input type="number" min="1" max="999" defaultValue="120" className="form-control form-control-sm" ref={this.input} />
                     <div className="input-group-append">
@@ -46,7 +46,7 @@ export default class Recording extends React.Component {
             </div>
           </div>
           {this.props.state == "stopped" && (
-            <button type="button" className="close recording__close-btn" onClick={this.props.onClose}>
+            <button type="button" className="close recording__close-btn" onClick={() => this.props.onClose(this.props.id)}>
               <span>&times;</span>
             </button>
           )}
