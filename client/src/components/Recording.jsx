@@ -5,14 +5,14 @@ import { formatDuration } from "../utils";
 export default class Recording extends React.Component {
   constructor(props) {
     super(props);
-    this.input = React.createRef();
+    this.inputRef = React.createRef();
   }
 
   render() {
     const badgeType = this.props.state == "recording" ? "primary" : "secondary";
 
     const handleProlong = () => {
-      const duration = this.input.current.value * 60 * 1000;
+      const duration = this.inputRef.current.value * 60 * 1000;
       this.props.onProlong(this.props.id, duration);
     }
 
@@ -36,7 +36,7 @@ export default class Recording extends React.Component {
                 <div className="d-flex flex-row">
                   <button type="button" className="btn mr-1 btn-primary btn-sm" onClick={() => this.props.onStop(this.props.id)}>Stop</button>
                   <div className="input-group w-auto">
-                    <input type="number" min="1" max="999" defaultValue="120" className="form-control form-control-sm" ref={this.input} />
+                    <input type="number" min="1" max="999" defaultValue="120" className="form-control form-control-sm" ref={this.inputRef} />
                     <div className="input-group-append">
                       <button type="button" className="btn btn-primary btn-sm" onClick={handleProlong}>Prolong</button>
                     </div>
