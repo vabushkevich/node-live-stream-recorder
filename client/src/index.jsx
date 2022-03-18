@@ -37,8 +37,8 @@ class App extends React.Component {
     this.stopPeriodicSync();
   }
 
-  handleInputChange(event) {
-    const target = event.target;
+  handleInputChange(e) {
+    const target = e.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
@@ -47,8 +47,8 @@ class App extends React.Component {
     });
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
+  handleSubmit(e) {
+    e.preventDefault();
     fetch(`${API_BASE_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({
