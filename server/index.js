@@ -6,6 +6,7 @@ const { mkdirSync } = require('fs');
 const {
   SCREENSHOTS_ROOT,
   SERVER_PORT,
+  STATIC_ROOT,
 } = require('server/constants');
 
 const app = express();
@@ -15,6 +16,7 @@ mkdirSync(SCREENSHOTS_ROOT, { recursive: true });
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(STATIC_ROOT));
 
 app.get("/api/v1/recordings", (req, res) => {
   res.send(recorder.getRecordings());

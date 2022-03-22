@@ -26,8 +26,7 @@
   "scripts": {
     "build": "cd client && webpack --mode=production",
     "dev": "concurrently -n server,web -c green,cyan 'npm:start:dev-server' 'npm:start:dev-client'",
-    "start": "npm run build && concurrently -n server,web -c green,cyan 'npm:start:server' 'npm:start:client'",
-    "start:client": "node client/serve.js",
+    "start": "npm run build && npm run start:server",
     "start:dev-client": "cd client && webpack serve --mode development",
     "start:dev-server": "nodemon server -w server",
     "start:server": "node server"
