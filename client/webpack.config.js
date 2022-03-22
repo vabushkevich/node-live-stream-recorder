@@ -6,7 +6,6 @@ const {
   SERVER_HOSTNAME,
   SERVER_PORT,
   STATIC_ROOT,
-  CLIENT_PORT,
 } = require("server/constants");
 
 module.exports = {
@@ -20,7 +19,6 @@ module.exports = {
       publicPath: "/screenshots",
       watch: false,
     },
-    port: CLIENT_PORT,
   },
   module: {
     rules: [
