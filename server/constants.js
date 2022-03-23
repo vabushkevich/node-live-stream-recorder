@@ -17,7 +17,6 @@ const RECORDINGS_ROOT = process.env.RECORDINGS_ROOT;
 const BROWSER_PATH = process.env.BROWSER_PATH;
 const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || "localhost";
 const SERVER_PORT = process.env.SERVER_PORT || 5370;
-const CLIENT_PORT = process.env.CLIENT_PORT || 3000;
 
 if (!RECORDINGS_ROOT) {
   throw new Error("Env var RECORDINGS_ROOT must be set");
@@ -39,5 +38,4 @@ module.exports = {
   BROWSER_PATH,
   SERVER_HOSTNAME,
   SERVER_PORT,
-  CLIENT_PORT,
 };
