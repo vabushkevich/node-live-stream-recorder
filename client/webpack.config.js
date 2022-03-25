@@ -1,10 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const { DefinePlugin } = require("webpack");
 
 const {
-  SERVER_HOSTNAME,
-  SERVER_PORT,
   STATIC_ROOT,
 } = require("server/constants");
 
@@ -44,10 +41,6 @@ module.exports = {
       template: "src/index.html",
       favicon: "src/assets/favicon.ico",
       title: "Stream Recorder",
-    }),
-    new DefinePlugin({
-      'process.env.SERVER_HOSTNAME': JSON.stringify(SERVER_HOSTNAME),
-      'process.env.SERVER_PORT': JSON.stringify(SERVER_PORT),
     }),
   ],
 };
