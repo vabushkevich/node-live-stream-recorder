@@ -1,9 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const {
-  STATIC_ROOT,
-} = require("server/constants");
+const STATIC_ROOT = path.resolve(__dirname, "build");
 
 module.exports = {
   entry: "./src/index.jsx",
