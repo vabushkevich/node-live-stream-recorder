@@ -5,7 +5,7 @@ import { formatDuration } from "../utils";
 export default function Recording({
   id,
   quality,
-  screenshotPath,
+  screenshotURL,
   state,
   timeLeft,
   url,
@@ -27,7 +27,7 @@ export default function Recording({
         <div className="row no-gutters">
           <div className="col-md col-md-4 col-lg-3 pr-md-3 pb-2 pb-md-0 col-6 mx-auto min-w-0">
             <img
-              src={`${screenshotPath}?${Date.now()}`}
+              src={`${screenshotURL}?${Date.now()}`}
               className="rounded w-100"
               alt="Screenshot"
             />
