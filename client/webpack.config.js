@@ -1,16 +1,16 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-const STATIC_ROOT = path.resolve(__dirname, "build");
+const BUILD_OUT_ROOT = path.resolve(__dirname, "build");
 
 module.exports = {
   entry: "./src/index.jsx",
   output: {
-    path: STATIC_ROOT,
+    path: BUILD_OUT_ROOT,
   },
   devServer: {
     static: {
-      directory: path.join(STATIC_ROOT, "screenshots"),
+      directory: path.join(BUILD_OUT_ROOT, "screenshots"),
       publicPath: "/screenshots",
       watch: false,
     },
