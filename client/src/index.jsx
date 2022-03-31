@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import Recording from "./components/Recording.jsx";
+import RecordingList from "./components/RecordingList.jsx";
 
 import { API_BASE_URL } from "../constants";
 
@@ -142,22 +142,12 @@ class App extends React.Component {
             </div>
           </div>
         </div>
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">Recorders</h5>
-            <ol className="recorder-items m-0 p-0">
-              {recordings.map((recording) => (
-                <Recording
-                  {...recording}
-                  onStop={this.stopRecording}
-                  onProlong={this.prolongRecording}
-                  onClose={this.closeRecording}
-                  key={recording.id}
-                />
-              ))}
-            </ol>
-          </div>
-        </div>
+        <RecordingList
+          recordings={recordings}
+          onRecordingStop={this.stopRecording}
+          onRecordingProlong={this.prolongRecording}
+          onRecordingClose={this.closeRecording}
+        />
       </div>
     );
   }
