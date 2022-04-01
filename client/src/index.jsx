@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
+import CreateStreamForm from "./components/CreateStreamForm.jsx";
 import RecordingList from "./components/RecordingList.jsx";
 
 import { API_BASE_URL } from "../constants";
@@ -101,47 +102,16 @@ class App extends React.Component {
   }
 
   render() {
-    const { recordings } = this.state;
+    const { recordings, url, duration } = this.state;
 
     return (
       <div className="container my-4">
-        <div className="row mb-3">
-          <div className="col-lg-7">
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">Record new stream</h5>
-                <form onSubmit={this.handleSubmit}>
-                  <div className="form-row">
-                    <div className="form-group col">
-                      <label htmlFor="inputURL">URL</label>
-                      <input
-                        type="url"
-                        className="form-control"
-                        id="inputURL"
-                        name="url"
-                        value={this.state.url}
-                        onChange={this.handleInputChange}
-                      />
-                    </div>
-                    <div className="form-group col-3 col-md-2">
-                      <label htmlFor="inputDuration">Minutes</label>
-                      <input
-                        type="number"
-                        min="1"
-                        className="form-control"
-                        id="inputDuration"
-                        name="duration"
-                        value={this.state.duration}
-                        onChange={this.handleInputChange}
-                      />
-                    </div>
-                  </div>
-                  <button type="submit" className="btn btn-primary">Record</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
+        <CreateStreamForm
+          url={url}
+          duration={duration}
+          onInputChange={this.handleInputChange}
+          onSubmit={this.handleSubmit}
+        />
         <RecordingList
           recordings={recordings}
           onRecordingStop={this.stopRecording}
