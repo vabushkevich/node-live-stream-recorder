@@ -18,12 +18,9 @@ class App extends React.Component {
 
     this.state = {
       recordings: [],
-      url: "",
-      duration: 120,
     };
 
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.createRecording = this.createRecording.bind(this);
     this.stopRecording = this.stopRecording.bind(this);
     this.prolongRecording = this.prolongRecording.bind(this);
     this.closeRecording = this.closeRecording.bind(this);
@@ -38,24 +35,13 @@ class App extends React.Component {
     this.stopPeriodicSync();
   }
 
-  handleInputChange(e) {
-    const target = e.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleSubmit(e) {
-    e.preventDefault();
+  createRecording(url, duration) {
     fetch(`${API_BASE_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({
-        url: this.state.url,
-        duration: this.state.duration * 60 * 1000,
-        nameSuffix: getSiteName(this.state.url),
+        url,
+        duration: duration,
+        nameSuffix: getSiteName(url),
       }),
       headers: { "Content-Type": "application/json" },
     })
@@ -102,16 +88,11 @@ class App extends React.Component {
   }
 
   render() {
-    const { recordings, url, duration } = this.state;
+    const { recordings } = this.state;
 
     return (
       <div className="container my-4">
-        <CreateStreamForm
-          url={url}
-          duration={duration}
-          onInputChange={this.handleInputChange}
-          onSubmit={this.handleSubmit}
-        />
+        <CreateStreamForm onRecordingCreate={this.createRecording} />
         <RecordingList
           recordings={recordings}
           onRecordingStop={this.stopRecording}
