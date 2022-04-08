@@ -22,7 +22,7 @@ class StreamRecording extends EventEmitter {
   constructor(
     url,
     {
-      targetDuration = 60 * 60 * 1000,
+      duration = 60 * 60 * 1000,
       quality = { height: 400 },
       nameSuffix = "",
     } = {}
@@ -30,7 +30,7 @@ class StreamRecording extends EventEmitter {
     super();
     this.id = nanoid();
     this.url = url;
-    this.targetDuration = targetDuration;
+    this.maxDuration = duration;
     this.duration = 0;
     this.quality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
@@ -66,7 +66,7 @@ class StreamRecording extends EventEmitter {
   }
 
   prolong(duration) {
-    this.targetDuration += duration;
+    this.maxDuration += duration;
   }
 
   async start() {
@@ -150,7 +150,7 @@ class StreamRecording extends EventEmitter {
   }
 
   getTimeLeft() {
-    const timeLeft = this.targetDuration - this.duration;
+    const timeLeft = this.maxDuration - this.duration;
     return timeLeft > 0 ? timeLeft : 0;
   }
 
