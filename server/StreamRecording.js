@@ -7,6 +7,7 @@ const M3u8Fetcher = require("server/M3u8Fetcher");
 const { createStreamPage } = require('server/stream-page');
 const { EventEmitter } = require('events');
 const { mkdirSync, appendFileSync } = require('fs');
+const { nanoid } = require('nanoid');
 
 const {
   SCREENSHOT_FREQ,
@@ -24,12 +25,10 @@ class StreamRecording extends EventEmitter {
       targetDuration = 60 * 60 * 1000,
       quality = { height: 400 },
       nameSuffix = "",
-      id,
     } = {}
   ) {
     super();
-    if (!id) throw new Error("Recording id must be specified");
-    this.id = id;
+    this.id = nanoid();
     this.url = url;
     this.targetDuration = targetDuration;
     this.duration = 0;

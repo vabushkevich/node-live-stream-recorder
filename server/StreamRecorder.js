@@ -1,5 +1,4 @@
 const StreamRecording = require('server/StreamRecording');
-const { nanoid } = require('nanoid');
 
 class StreamRecorder {
   constructor() {
@@ -13,7 +12,7 @@ class StreamRecorder {
   }
 
   createRecording(url, opts) {
-    const recording = new StreamRecording(url, { ...opts, id: nanoid() });
+    const recording = new StreamRecording(url, { ...opts });
     this.recordings.set(recording.id, recording);
     return recording;
   }
