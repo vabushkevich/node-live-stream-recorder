@@ -6,7 +6,7 @@ class StreamRecorder {
   }
 
   async stop() {
-    for (const [id, recording] of this.recordings) {
+    for (const [, recording] of this.recordings) {
       await recording.stop();
     }
   }
