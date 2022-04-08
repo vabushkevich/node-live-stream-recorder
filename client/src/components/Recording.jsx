@@ -3,7 +3,6 @@ import { capitalize } from "lodash";
 import { formatDuration } from "../utils";
 
 export default function Recording({
-  id,
   quality,
   screenshotURL,
   state,
@@ -18,7 +17,7 @@ export default function Recording({
 
   const handleProlong = () => {
     const duration = inputRef.current.value * 60 * 1000;
-    onProlong(id, duration);
+    onProlong(duration);
   }
 
   return (
@@ -50,7 +49,7 @@ export default function Recording({
                 <button
                   type="button"
                   className="btn mr-1 btn-primary btn-sm"
-                  onClick={() => onStop(id)}
+                  onClick={onStop}
                 >
                   Stop
                 </button>
@@ -78,7 +77,7 @@ export default function Recording({
           </div>
         </div>
         {state == "stopped" && (
-          <button type="button" className="close recording__close-btn" onClick={() => onClose(id)}>
+          <button type="button" className="close recording__close-btn" onClick={onClose}>
             <span>&times;</span>
           </button>
         )}
