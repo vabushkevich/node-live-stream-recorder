@@ -32,7 +32,7 @@ class StreamRecording extends EventEmitter {
     this.url = url;
     this.maxDuration = duration;
     this.duration = 0;
-    this.quality = quality;
+    this.preferredQuality = quality;
     this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
     this.name = this.buildName(this.createdDate);
@@ -83,7 +83,7 @@ class StreamRecording extends EventEmitter {
         });
 
         const streamPage = createStreamPage(this.url);
-        const stream = await streamPage.getStream(this.quality);
+        const stream = await streamPage.getStream(this.preferredQuality);
         this.m3u8Url = stream.url;
         this.actualQuality = { resolution: stream.height };
 
