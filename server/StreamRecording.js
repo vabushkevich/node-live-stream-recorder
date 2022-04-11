@@ -85,7 +85,7 @@ class StreamRecording extends EventEmitter {
         const streamPage = createStreamPage(this.url);
         const stream = await streamPage.getStream(this.preferredQuality);
         this.m3u8Url = stream.url;
-        this.actualQuality = { resolution: stream.height };
+        this.quality = { resolution: stream.height };
 
         const fileStem = this.buildName(new Date());
         const outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
@@ -99,7 +99,7 @@ class StreamRecording extends EventEmitter {
         this.m3u8Fetcher.start();
         this.m3u8Fetcher.once("durationearn", () => {
           this.setState("recording");
-          this.log(`Started with quality: ${JSON.stringify(this.actualQuality)}`);
+          this.log(`Started with quality: ${JSON.stringify(this.quality)}`);
         });
       },
       function* () {
@@ -183,7 +183,7 @@ class StreamRecording extends EventEmitter {
       screenshotURL: path.relative(STATIC_ROOT, this.screenshotPath),
       createdDate: this.createdDate,
       timeLeft: this.getTimeLeft(),
-      quality: this.actualQuality,
+      quality: this.quality,
     };
   }
 }
