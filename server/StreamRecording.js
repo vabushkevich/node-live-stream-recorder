@@ -100,25 +100,18 @@ class StreamRecording extends EventEmitter {
         this.m3u8Fetcher.once("durationearn", () => {
           this.setState("recording");
           this.log(`Started with quality: ${JSON.stringify(this.quality)}`);
+          this.postStartCallback();
         });
       },
-      function* () {
-        yield* new Array(3).fill(1000);
-        yield 1 * 60 * 1000;
-        yield 2 * 60 * 1000;
-        yield 5 * 60 * 1000;
-        yield* new Array(6).fill(10 * 60 * 1000);
-        while (true) {
-          yield 20 * 60 * 1000;
-        }
-      }(),
-      (err, res, nextDelay) => {
+      (prevDelay, err) => {
+        const delay = Math.min(
+          prevDelay == null ? 1000 : prevDelay * 3,
+          15 * 60 * 1000
+        );
         this.postStartCallback();
-        if (!err) return;
         this.log("Can't start:", err);
-        if (nextDelay != null) {
-          this.log(`Restart in ${nextDelay / 1000} s`);
-        }
+        this.log(`Restart in ${delay / 1000} s`);
+        return delay;
       }
     );
   }

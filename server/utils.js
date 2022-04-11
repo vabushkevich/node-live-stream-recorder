@@ -57,32 +57,26 @@ function parseM3u8(m3u8, url) {
 
 /**
  * Retry `func` execution until it returns a value or a promise that resolves.
- * Four values passed in `callback`: `err`, `res`, `nextDelay`.
+ * The values passed in `delayReducer`: `prevDelay`, `err`.
  *
- * @function module:utils.retry
  * @param {Function} func The function to execute.
- * @param {*} retryDelays The iterable containing delays before each retry.
- * @param {Function} callback The callback that executes when `func` executes
- * successfully or when last `func`'s call failed.
+ * @param {Function} delayReducer The function that should return the next delay
+ * based on the previous delay. If the function returns `null` or `undefined`,
+ * there will be no future `func` calls. During the first call `prevDelay`
+ * equals `null`.
  * @returns {Promise} The promise that resolves with `func`'s returned value or
  * rejects with a error thrown during last unsuccessful `func` execution.
  */
-async function retry(func, retryDelays, callback) {
-  const iterFunc = retryDelays[Symbol.iterator] || retryDelays[Symbol.asyncIterator];
-  const iter = iterFunc.call(retryDelays);
+async function retry(func, delayReducer) {
+  let prevDelay = null;
   while (true) {
-    const nextDelay = (await iter.next()).value;
     try {
-      const res = await func();
-      callback(undefined, res);
-      return res;
+      return await func();
     } catch (err) {
-      callback(err, undefined, nextDelay);
-      if (nextDelay != null) {
-        await resolveIn(nextDelay);
-      } else {
-        throw err;
-      }
+      const delay = delayReducer(prevDelay, err);
+      if (delay == null) throw err;
+      await resolveIn(delay);
+      prevDelay = delay;
     }
   }
 }
