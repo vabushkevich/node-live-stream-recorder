@@ -69,10 +69,10 @@ class StreamRecording extends EventEmitter {
     this.maxDuration += duration;
   }
 
-  async start() {
+  start() {
     this.setState("starting");
 
-    await retry(
+    retry(
       async () => {
         if (this.state !== "starting") return;
 
@@ -165,7 +165,7 @@ class StreamRecording extends EventEmitter {
     if (this.state === "stopping") return;
     this.log("Restarting");
     await this.stop();
-    await this.start();
+    this.start();
   }
 
   toJSON() {
