@@ -1,12 +1,12 @@
 const path = require('path');
-const { saveFrame, retry } = require('server/utils');
+const { saveFrame, retry, createLogger } = require('server/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
 const M3u8Fetcher = require("server/M3u8Fetcher");
 const { createStreamPage } = require('server/stream-page');
 const { EventEmitter } = require('events');
-const { mkdirSync, appendFileSync } = require('fs');
+const { mkdirSync } = require('fs');
 const { nanoid } = require('nanoid');
 
 const {
@@ -37,30 +37,16 @@ class StreamRecording extends EventEmitter {
     this.createdDate = new Date();
     this.name = this.buildName(this.createdDate);
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
+    this.logger = createLogger({
+      badges: [this.nameSuffix],
+      logPath: LOG_PATH,
+    });
     this.setState("idle");
     mkdirSync(path.join(RECORDINGS_ROOT, this.name));
   }
 
   buildName(date = new Date()) {
     return `${formatDate(date, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`.trim();
-  }
-
-  log(message) {
-    const dateStr = formatDate(new Date(), "d MMM, HH:mm:ss");
-    const prefix = `[${dateStr}] ${this.nameSuffix}: `;
-    let messageStr;
-
-    if (message instanceof Error) {
-      messageStr = message.stack;
-    } else if (message && typeof message == "object") {
-      messageStr = JSON.stringify(message);
-    } else {
-      messageStr = message;
-    }
-
-    const out = prefix + messageStr;
-    console.log(out);
-    appendFileSync(LOG_PATH, `${out}\n`);
   }
 
   prolong(duration) {
@@ -74,7 +60,7 @@ class StreamRecording extends EventEmitter {
       async () => {
         if (this.state !== "starting") return;
 
-        this.log("Starting");
+        this.logger.log("Starting");
 
         this.postStartPromise = new Promise((resolve) => {
           this.postStartCallback = resolve;
@@ -97,7 +83,7 @@ class StreamRecording extends EventEmitter {
         this.m3u8Fetcher.start();
         this.m3u8Fetcher.once("durationearn", () => {
           this.setState("recording");
-          this.log(`Started with quality: ${JSON.stringify(this.quality)}`);
+          this.logger.log(`Started with quality: ${JSON.stringify(this.quality)}`);
           this.postStartCallback();
         });
       },
@@ -107,9 +93,9 @@ class StreamRecording extends EventEmitter {
           15 * 60 * 1000
         );
         this.postStartCallback();
-        this.log("Can't start:");
-        this.log(err);
-        this.log(`Restart in ${delay / 1000} s`);
+        this.logger.log("Can't start:");
+        this.logger.log(err);
+        this.logger.log(`Restart in ${delay / 1000} s`);
         return delay;
       }
     );
@@ -124,13 +110,13 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.on("durationearn", throttle(() => {
       saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
         .catch(err => {
-          this.log("Can't take screenshot:");
-          this.log(err);
+          this.logger.log("Can't take screenshot:");
+          this.logger.log(err);
         });
     }, SCREENSHOT_FREQ));
 
     this.m3u8Fetcher.once("stop", () => {
-      this.log("M3u8Fetcher stopped");
+      this.logger.log("M3u8Fetcher stopped");
       this.restart();
     });
   }
@@ -151,22 +137,22 @@ class StreamRecording extends EventEmitter {
 
   async stop() {
     this.setState("stopping");
-    this.log("Stopping");
+    this.logger.log("Stopping");
     await this.postStartPromise;
     if (this.m3u8Fetcher) {
       this.removeM3u8FetcherEventHandlers();
       this.m3u8Fetcher.stop().catch((err) => {
-        this.log("Can't stop m3u8Fetcher:");
-        this.log(err);
+        this.logger.log("Can't stop m3u8Fetcher:");
+        this.logger.log(err);
       });
     }
     this.setState("stopped");
-    this.log("Stopped");
+    this.logger.log("Stopped");
   }
 
   async restart() {
     if (this.state === "stopping") return;
-    this.log("Restarting");
+    this.logger.log("Restarting");
     await this.stop();
     this.start();
   }
