@@ -12,7 +12,7 @@ const FETCH_HEADERS = {
 };
 const STATIC_ROOT = path.join(__dirname, "..", "client", "build");
 const SCREENSHOTS_ROOT = path.join(STATIC_ROOT, "screenshots");
-const LOG_PATH = "./server.log";
+const LOG_PATH = process.env.LOG_PATH;
 const RECORDINGS_ROOT = process.env.RECORDINGS_ROOT;
 const BROWSER_PATH = process.env.BROWSER_PATH;
 const SERVER_PORT = process.env.SERVER_PORT || 5370;
