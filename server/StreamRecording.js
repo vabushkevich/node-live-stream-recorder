@@ -45,22 +45,20 @@ class StreamRecording extends EventEmitter {
     return `${formatDate(date, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`.trim();
   }
 
-  log(...messages) {
+  log(message) {
     const dateStr = formatDate(new Date(), "d MMM, HH:mm:ss");
-    const prefix = `[${dateStr}] ${this.nameSuffix}:`;
-    const out = messages.reduce((res, message, i) => {
-      let messageStr;
-      if (message instanceof Error) {
-        messageStr = message.stack;
-      } else if (message && typeof message == "object") {
-        messageStr = JSON.stringify(message);
-      } else {
-        messageStr = message;
-      }
-      res += (i > 0 ? "\n" : " ");
-      res += messageStr;
-      return res;
-    }, prefix);
+    const prefix = `[${dateStr}] ${this.nameSuffix}: `;
+    let messageStr;
+
+    if (message instanceof Error) {
+      messageStr = message.stack;
+    } else if (message && typeof message == "object") {
+      messageStr = JSON.stringify(message);
+    } else {
+      messageStr = message;
+    }
+
+    const out = prefix + messageStr;
     console.log(out);
     appendFileSync(LOG_PATH, `${out}\n`);
   }
@@ -109,7 +107,8 @@ class StreamRecording extends EventEmitter {
           15 * 60 * 1000
         );
         this.postStartCallback();
-        this.log("Can't start:", err);
+        this.log("Can't start:");
+        this.log(err);
         this.log(`Restart in ${delay / 1000} s`);
         return delay;
       }
@@ -124,7 +123,10 @@ class StreamRecording extends EventEmitter {
 
     this.m3u8Fetcher.on("durationearn", throttle(() => {
       saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
-        .catch(err => this.log("Can't take screenshot:", err));
+        .catch(err => {
+          this.log("Can't take screenshot:");
+          this.log(err);
+        });
     }, SCREENSHOT_FREQ));
 
     this.m3u8Fetcher.once("stop", () => {
@@ -154,7 +156,8 @@ class StreamRecording extends EventEmitter {
     if (this.m3u8Fetcher) {
       this.removeM3u8FetcherEventHandlers();
       this.m3u8Fetcher.stop().catch((err) => {
-        this.log("Can't stop m3u8Fetcher:", err);
+        this.log("Can't stop m3u8Fetcher:");
+        this.log(err);
       });
     }
     this.setState("stopped");
