@@ -41,8 +41,9 @@ class StreamRecording extends EventEmitter {
       badges: [this.nameSuffix],
       logPath: LOG_PATH,
     });
+    this.dirPath = path.join(RECORDINGS_ROOT, this.name);
     this.setState("idle");
-    mkdirSync(path.join(RECORDINGS_ROOT, this.name));
+    mkdirSync(this.dirPath);
   }
 
   buildName(date = new Date()) {
@@ -72,7 +73,7 @@ class StreamRecording extends EventEmitter {
         this.quality = { resolution: stream.height };
 
         const fileStem = this.buildName(new Date());
-        const outFilePath = path.join(RECORDINGS_ROOT, this.name, `${fileStem}.mkv`);
+        const outFilePath = path.join(this.dirPath, `${fileStem}.mkv`);
 
         this.m3u8Fetcher = new M3u8Fetcher(
           stream.url,
