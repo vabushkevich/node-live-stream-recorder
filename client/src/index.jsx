@@ -41,7 +41,7 @@ class App extends React.Component {
       body: JSON.stringify({
         url,
         duration: duration,
-        nameSuffix: getSiteName(url),
+        name: getSiteName(url),
       }),
       headers: { "Content-Type": "application/json" },
     })

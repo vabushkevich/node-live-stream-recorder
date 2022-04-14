@@ -24,7 +24,7 @@ class StreamRecording extends EventEmitter {
     {
       duration = 60 * 60 * 1000,
       quality = { height: 400 },
-      nameSuffix = "",
+      name = "",
     } = {}
   ) {
     super();
@@ -33,21 +33,22 @@ class StreamRecording extends EventEmitter {
     this.maxDuration = duration;
     this.duration = 0;
     this.preferredQuality = quality;
-    this.nameSuffix = sanitizePath(nameSuffix, { replacement: "-" }).trim();
     this.createdDate = new Date();
-    this.name = this.buildName(this.createdDate);
+    this.name = String(name).trim().slice(0, 50) || `unnamed-${this.id.slice(0, 4)}`;
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
     this.logger = createLogger({
-      badges: [this.nameSuffix],
+      badges: [this.name],
       logPath: LOG_PATH,
     });
-    this.dirPath = path.join(RECORDINGS_ROOT, this.name);
+
+    const nameSanitized = sanitizePath(this.name, { replacement: "-" });
+    this.dirPath = path.join(
+      RECORDINGS_ROOT,
+      `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${nameSanitized}`
+    );
+
     this.setState("idle");
     mkdirSync(this.dirPath);
-  }
-
-  buildName(date = new Date()) {
-    return `${formatDate(date, "yyyy-MM-dd HH-mm-ss")} ${this.nameSuffix}`.trim();
   }
 
   prolong(duration) {
@@ -72,9 +73,10 @@ class StreamRecording extends EventEmitter {
         this.m3u8Url = stream.url;
         this.quality = { resolution: stream.height };
 
-        const fileStem = this.buildName(new Date());
-        const outFilePath = path.join(this.dirPath, `${fileStem}.mkv`);
-
+        const outFilePath = path.join(
+          this.dirPath,
+          `${formatDate(new Date(), "yyyy-MM-dd HH-mm-ss")}.mkv`
+        );
         this.m3u8Fetcher = new M3u8Fetcher(
           stream.url,
           outFilePath,
