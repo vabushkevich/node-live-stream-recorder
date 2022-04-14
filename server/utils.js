@@ -33,7 +33,7 @@ function saveFrame(inPath, outPath, {
 }
 
 function resolveIn(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function parseM3u8(m3u8, url) {

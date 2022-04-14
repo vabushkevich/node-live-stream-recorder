@@ -112,7 +112,7 @@ class StreamRecording extends EventEmitter {
 
     this.m3u8Fetcher.on("durationearn", throttle(() => {
       saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
-        .catch(err => {
+        .catch((err) => {
           this.logger.log("Can't take screenshot:");
           this.logger.log(err);
         });
