@@ -8,8 +8,14 @@ import RecordingList from "./components/RecordingList.jsx";
 import { API_BASE_URL } from "../constants";
 
 function getRecordingName(url) {
-  if (url.includes("youtube.com")) return "youtube";
-  if (url.includes("twitch.tv")) return "twitch";
+  if (url.includes("youtube.com")) {
+    const streamId = url.match(/(?<=\/watch\?v=)[\w-]+/)?.[0] || "";
+    return `${streamId}@youtube`;
+  }
+  if (url.includes("twitch.tv")) {
+    const userName = url.match(/(?<=twitch\.tv\/)\w+/)?.[0] || "";
+    return `${userName}@twitch`;
+  }
 }
 
 class App extends React.Component {
