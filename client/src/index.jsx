@@ -7,7 +7,7 @@ import RecordingList from "./components/RecordingList.jsx";
 
 import { API_BASE_URL } from "../constants";
 
-function getSiteName(url) {
+function getRecordingName(url) {
   if (url.includes("youtube.com")) return "youtube";
   if (url.includes("twitch.tv")) return "twitch";
 }
@@ -41,7 +41,7 @@ class App extends React.Component {
       body: JSON.stringify({
         url,
         duration: duration,
-        name: getSiteName(url),
+        name: getRecordingName(url),
       }),
       headers: { "Content-Type": "application/json" },
     })
