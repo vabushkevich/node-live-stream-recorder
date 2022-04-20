@@ -15,7 +15,6 @@ class StreamPage {
   constructor(url) {
     this.url = url;
     this.page = null;
-    this.closed = true;
   }
 
   async getStream(quality) {
@@ -25,7 +24,7 @@ class StreamPage {
       resolveIn(NO_DATA_TIMEOUT).then(() => Promise.reject(new Error("Timeout while getting a playlist url")))
     ])
       .finally(() => {
-        if (!this.closed) this.close();
+        this.close();
         pageQuota.release();
       });
     const m3u8 = await fetch(m3u8Url, { headers: FETCH_HEADERS })
@@ -38,7 +37,6 @@ class StreamPage {
   async open() {
     const browser = await getBrowser();
     const page = this.page || (this.page = await browser.newPage());
-    this.closed = false;
     await page.goto(this.url, { waitUntil: "domcontentloaded" });
     await page.evaluate(() => {
       document.documentElement.style.setProperty("display", "none", "important");
@@ -47,9 +45,8 @@ class StreamPage {
   }
 
   close() {
-    if (this.page && !this.closed) {
+    if (this.page && !this.page.isClosed()) {
       this.page.close().catch(() => { });
-      this.closed = true;
     }
   }
 
