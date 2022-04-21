@@ -36,12 +36,12 @@ class StreamPage {
 
   async open() {
     const browser = await getBrowser();
-    const page = this.page || (this.page = await browser.newPage());
-    await page.goto(this.url, { waitUntil: "domcontentloaded" });
-    await page.evaluate(() => {
+    this.page = await browser.newPage();
+    await this.page.goto(this.url, { waitUntil: "domcontentloaded" });
+    await this.page.evaluate(() => {
       document.documentElement.style.setProperty("display", "none", "important");
     });
-    return page;
+    return this.page;
   }
 
   close() {
