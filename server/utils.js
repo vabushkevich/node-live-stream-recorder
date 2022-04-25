@@ -1,6 +1,4 @@
 const { exec } = require('child_process');
-const { format: formatDate } = require('date-fns');
-const { appendFileSync } = require('fs');
 
 function isMpegUrlData(res) {
   const contentType = res.headers()["content-type"];
@@ -92,32 +90,10 @@ function isValidUrl(url) {
   }
 }
 
-function createLogger({ badges = [], logPath } = {}) {
-  function log(message) {
-    const dateStr = formatDate(new Date(), "d MMM, HH:mm:ss");
-    const prefix = [dateStr, ...badges].map((tag) => `[${tag}]`).join(" ");
-    let messageStr;
-
-    if (message instanceof Error) {
-      messageStr = message.stack;
-    } else if (message && typeof message == "object") {
-      messageStr = JSON.stringify(message);
-    } else {
-      messageStr = message;
-    }
-
-    const out = `${prefix}: ${messageStr}`;
-    console.log(out);
-    if (logPath) appendFileSync(logPath, `${out}\n`);
-  }
-  return { log };
-}
-
 module.exports = {
   saveFrame,
   resolveIn,
   isMpegUrlData,
   parseM3u8,
   retry,
-  createLogger,
 };

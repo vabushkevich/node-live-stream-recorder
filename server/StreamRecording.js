@@ -1,5 +1,5 @@
 const path = require('path');
-const { saveFrame, retry, createLogger } = require('server/utils');
+const { saveFrame, retry } = require('server/utils');
 const { throttle } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
@@ -8,6 +8,7 @@ const { createStreamPage } = require('server/stream-page');
 const { EventEmitter } = require('events');
 const { mkdirSync } = require('fs');
 const { nanoid } = require('nanoid');
+const Logger = require("server/Logger");
 
 const {
   SCREENSHOT_FREQ,
@@ -36,7 +37,7 @@ class StreamRecording extends EventEmitter {
     this.createdDate = new Date();
     this.name = String(name).trim().slice(0, 50) || `unnamed-${this.id.slice(0, 4)}`;
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
-    this.logger = createLogger({
+    this.logger = new Logger({
       badges: [this.name],
       logPath: LOG_PATH,
     });
