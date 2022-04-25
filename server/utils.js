@@ -39,17 +39,21 @@ function parseM3u8(m3u8, url) {
     .map((match) => match[1]);
   const streams = [...m3u8.matchAll(/(^#EXT-X-STREAM-INF:.+)\n(.+)/gm)]
     .map(([, meta, name]) => {
-      const stream = {};
-      stream.name = name;
-      stream.bandwidth = +meta.match(/(?<=BANDWIDTH=)\d+/)[0];
-      stream.resolution = meta.match(/(?<=RESOLUTION=)\d+x\d+/)[0];
-      stream.width = +stream.resolution.match(/(\d+)x(\d+)/)[1];
-      stream.height = +stream.resolution.match(/(\d+)x(\d+)/)[2];
-      if (isValidUrl(name)) {
-        stream.url = name;
-      } else if (isValidUrl(url)) {
-        stream.url = new URL(name, url).href;
-      }
+      const bandwidth = meta.match(/(?<=BANDWIDTH=)\d+/)[0];
+      const resolution = meta.match(/(?<=RESOLUTION=)\d+x\d+/)[0];
+      const [width, height] = resolution.split("x");
+      const frameRate = meta.match(/(?<=FRAME-RATE=)\d+(\.\d+)?/)?.[0];
+      const streamUrl = isValidUrl(name) ? name : new URL(name, url).href;
+
+      const stream = {
+        name,
+        bandwidth: +bandwidth,
+        resolution,
+        width: +width,
+        height: +height,
+        url: streamUrl,
+      };
+      if (frameRate) stream.frameRate = +frameRate;
       return stream;
     });
   return { chunkNames, streams };
