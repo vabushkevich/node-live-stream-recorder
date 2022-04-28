@@ -1,5 +1,5 @@
 const { getBrowser } = require('server/browser');
-const { resolveIn, parseM3u8 } = require('server/utils');
+const { resolveIn, parseM3u8, findClosest } = require('server/utils');
 const fetch = require('node-fetch');
 const QuotaAllocator = require('server/QuotaAllocator');
 
@@ -30,7 +30,9 @@ class StreamPage {
     const m3u8 = await fetch(m3u8Url, { headers: FETCH_HEADERS })
       .then((res) => res.text());
     const { streams } = parseM3u8(m3u8, m3u8Url);
-    const stream = this.findStream(streams, quality);
+    const stream = findClosest(streams, (stream) =>
+      1 / (1 + Math.abs(quality.height - stream.height))
+    );
     return stream;
   }
 
@@ -48,16 +50,6 @@ class StreamPage {
     if (this.page && !this.page.isClosed()) {
       this.page.close().catch(() => { });
     }
-  }
-
-  findStream(streams, target) {
-    const key = Object.keys(target)[0];
-    const distances = streams.map((stream) =>
-      ({ [key]: Math.abs(stream[key] - target[key]) })
-    );
-    const minDistance = [...distances].sort((a, b) => a[key] - b[key])[0];
-    const i = distances.indexOf(minDistance)
-    return streams[i];
   }
 }
 

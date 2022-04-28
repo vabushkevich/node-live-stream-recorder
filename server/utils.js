@@ -94,10 +94,32 @@ function isValidUrl(url) {
   }
 }
 
+/**
+ * Returns the element in `array` for which `callback` returned the highest
+ * rating.
+ *
+ * @param {Array} array The array to inspect.
+ * @param {Function} callback The function called for each element.
+ * @returns {*} The element with the highest rating.
+ */
+function findClosest(array, callback) {
+  let bestRating = 0;
+  let closest;
+  for (const v of array) {
+    const rating = callback(v);
+    if (rating > bestRating) {
+      bestRating = rating;
+      closest = v;
+    }
+  }
+  return closest;
+}
+
 module.exports = {
   saveFrame,
   resolveIn,
   isMpegUrlData,
   parseM3u8,
   retry,
+  findClosest,
 };
