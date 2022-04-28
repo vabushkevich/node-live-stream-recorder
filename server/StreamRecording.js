@@ -24,7 +24,7 @@ class StreamRecording extends EventEmitter {
     url,
     {
       duration = 60 * 60 * 1000,
-      quality = { height: 400 },
+      quality = { height: 720 },
       name = "",
     } = {}
   ) {
