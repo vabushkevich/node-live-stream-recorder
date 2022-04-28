@@ -23,8 +23,15 @@ app.get("/api/v1/recordings", (req, res) => {
 });
 
 app.post("/api/v1/recordings", (req, res) => {
-  const { url, duration, name } = req.body;
-  const recording = recorder.createRecording(url, { duration: +duration, name });
+  const { url, duration, resolution, name } = req.body;
+  const recording = recorder.createRecording(
+    url,
+    {
+      duration: +duration,
+      quality: { height: +resolution },
+      name,
+    }
+  );
   recording.start();
   res.send(recording.id);
 });

@@ -7,6 +7,7 @@ export default class CreateStreamForm extends React.Component {
     this.state = {
       url: "",
       duration: 120,
+      resolution: 10000,
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -22,6 +23,7 @@ export default class CreateStreamForm extends React.Component {
     this.props.onRecordingCreate(
       this.state.url,
       this.state.duration * 60 * 1000,
+      this.state.resolution,
     );
   }
 
@@ -29,6 +31,7 @@ export default class CreateStreamForm extends React.Component {
     const {
       url,
       duration,
+      resolution,
     } = this.state;
 
     return (
@@ -61,6 +64,23 @@ export default class CreateStreamForm extends React.Component {
                       value={duration}
                       onChange={this.handleInputChange}
                     />
+                  </div>
+                  <div className="form-group col-4 col-md-3">
+                    <label htmlFor="selectResolution">Resolution</label>
+                    <select
+                      className="form-control"
+                      name="resolution"
+                      id="selectResolution"
+                      value={resolution}
+                      onChange={this.handleInputChange}
+                    >
+                      <option value="10000">Highest</option>
+                      <option value="1080">1080p</option>
+                      <option value="720">720p</option>
+                      <option value="480">480p</option>
+                      <option value="360">360p</option>
+                      <option value="0">Lowest</option>
+                    </select>
                   </div>
                 </div>
                 <button type="submit" className="btn btn-primary">Record</button>

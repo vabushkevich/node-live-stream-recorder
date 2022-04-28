@@ -41,12 +41,13 @@ class App extends React.Component {
     this.stopPeriodicSync();
   }
 
-  createRecording(url, duration) {
+  createRecording(url, duration, resolution) {
     fetch(`${API_BASE_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({
         url,
         duration: duration,
+        resolution,
         name: getRecordingName(url),
       }),
       headers: { "Content-Type": "application/json" },
