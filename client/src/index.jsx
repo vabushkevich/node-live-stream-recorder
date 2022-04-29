@@ -46,7 +46,7 @@ class App extends React.Component {
       method: "POST",
       body: JSON.stringify({
         url,
-        duration: duration,
+        duration,
         resolution,
         name: getRecordingName(url),
       }),
