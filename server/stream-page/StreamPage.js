@@ -17,7 +17,7 @@ class StreamPage {
     this.page = null;
   }
 
-  async getStream(quality) {
+  async getStream(resolution) {
     const pageQuota = await pageQuotaAllocator.request();
     const m3u8Url = await Promise.race([
       this.getM3u8Url(),
@@ -31,7 +31,7 @@ class StreamPage {
       .then((res) => res.text());
     const { streams } = parseM3u8(m3u8, m3u8Url);
     const stream = findClosest(streams, (stream) =>
-      1 / (1 + Math.abs(quality.height - stream.height))
+      1 / (1 + Math.abs(resolution - stream.height))
     );
     return stream;
   }

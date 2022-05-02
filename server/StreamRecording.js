@@ -24,7 +24,7 @@ class StreamRecording extends EventEmitter {
     url,
     {
       duration = 60 * 60 * 1000,
-      quality = { height: 720 },
+      resolution = 720,
       name = "",
     } = {}
   ) {
@@ -33,7 +33,7 @@ class StreamRecording extends EventEmitter {
     this.url = url;
     this.maxDuration = duration;
     this.duration = 0;
-    this.preferredQuality = quality;
+    this.preferredResolution = resolution;
     this.createdDate = new Date();
     this.name = String(name).trim().slice(0, 50) || `unnamed-${this.id.slice(0, 4)}`;
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
@@ -70,9 +70,9 @@ class StreamRecording extends EventEmitter {
         });
 
         const streamPage = createStreamPage(this.url);
-        const stream = await streamPage.getStream(this.preferredQuality);
+        const stream = await streamPage.getStream(this.preferredResolution);
         this.m3u8Url = stream.url;
-        this.quality = { resolution: stream.height };
+        this.resolution = stream.height;
 
         const outFilePath = path.join(
           this.dirPath,
@@ -87,7 +87,7 @@ class StreamRecording extends EventEmitter {
         this.m3u8Fetcher.start();
         this.m3u8Fetcher.once("durationearn", () => {
           this.setState("recording");
-          this.logger.log(`Started with quality: ${JSON.stringify(this.quality)}`);
+          this.logger.log(`Started with resolution: ${this.resolution}p`);
           this.postStartCallback();
         });
       },
@@ -169,7 +169,7 @@ class StreamRecording extends EventEmitter {
       screenshotURL: path.relative(STATIC_ROOT, this.screenshotPath),
       createdDate: this.createdDate,
       timeLeft: this.getTimeLeft(),
-      quality: this.quality,
+      resolution: this.resolution,
     };
   }
 }

@@ -28,7 +28,7 @@ app.post("/api/v1/recordings", (req, res) => {
     url,
     {
       duration: +duration,
-      quality: { height: +resolution },
+      resolution: +resolution,
       name,
     }
   );

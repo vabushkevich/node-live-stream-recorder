@@ -3,7 +3,7 @@ import { capitalize } from "lodash";
 import { formatDuration } from "../utils";
 
 export default function Recording({
-  quality,
+  resolution,
   screenshotURL,
   state,
   timeLeft,
@@ -35,7 +35,7 @@ export default function Recording({
             <div className="d-flex flex-md-nowrap flex-wrap align-items-center mb-2">
               <h5 className="mr-2 mb-md-0 mb-1 text-truncate">{url}</h5>
               <div className="d-flex">
-                {quality && <span className="mr-2 badge badge-dark">{quality.resolution}p</span>}
+                {resolution && <span className="mr-2 badge badge-dark">{resolution}p</span>}
                 <span className={`badge badge-${badgeType}`}>{capitalize(state)}</span>
               </div>
             </div>
