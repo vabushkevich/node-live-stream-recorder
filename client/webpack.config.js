@@ -41,7 +41,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "src/index.html",
+      template: "src/assets/index.html",
       favicon: "src/assets/favicon.ico",
       title: "Stream Recorder",
     }),
