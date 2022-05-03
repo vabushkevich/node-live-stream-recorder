@@ -46,4 +46,7 @@ module.exports = {
       title: "Stream Recorder",
     }),
   ],
+  resolve: {
+    extensions: [".js", ".json", ".jsx"],
+  },
 };
