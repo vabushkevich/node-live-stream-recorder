@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./index.scss";
+import "./sass/_global.scss";
 import CreateStreamForm from "./components/CreateStreamForm.jsx";
 import RecordingList from "./components/RecordingList.jsx";
 
