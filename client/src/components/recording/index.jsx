@@ -1,8 +1,8 @@
 import React from "react";
 import { capitalize } from "lodash";
-import { formatDuration } from "../utils";
+import { formatDuration } from "../../utils";
 
-export default function Recording({
+export function Recording({
   resolution,
   screenshotURL,
   state,

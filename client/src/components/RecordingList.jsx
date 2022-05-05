@@ -1,5 +1,5 @@
 import React from "react";
-import Recording from "./Recording.jsx";
+import { Recording } from "./recording";
 
 export default function RecordingList({
   recordings,
