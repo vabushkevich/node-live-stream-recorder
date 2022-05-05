@@ -1,7 +1,7 @@
 import React from "react";
-import { Recording } from "./recording";
+import { Recording } from "../recording";
 
-export default function RecordingList({
+export function RecordingList({
   recordings,
   onRecordingStop,
   onRecordingProlong,
