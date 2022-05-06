@@ -1,6 +1,6 @@
 import React from "react";
 
-import CreateStreamForm from "./components/CreateStreamForm.jsx";
+import { CreateStreamForm } from "./components/create-stream-form";
 import { RecordingList } from "./components/recording-list";
 
 import { API_BASE_URL } from "../constants";

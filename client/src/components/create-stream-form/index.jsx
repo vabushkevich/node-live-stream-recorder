@@ -1,6 +1,6 @@
 import React from "react";
 
-export default class CreateStreamForm extends React.Component {
+export class CreateStreamForm extends React.Component {
   constructor(props) {
     super(props);
 
