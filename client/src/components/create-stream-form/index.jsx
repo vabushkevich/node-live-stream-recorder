@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "../button";
 
 export class CreateStreamForm extends React.Component {
   constructor(props) {
@@ -83,7 +84,7 @@ export class CreateStreamForm extends React.Component {
                     </select>
                   </div>
                 </div>
-                <button type="submit" className="btn btn-primary">Record</button>
+                <Button type="submit">Record</Button>
               </form>
             </div>
           </div>

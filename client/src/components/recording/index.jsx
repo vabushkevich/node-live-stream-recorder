@@ -1,6 +1,7 @@
 import React from "react";
 import { capitalize } from "lodash";
 import { formatDuration } from "../../utils";
+import { Button } from "../button";
 
 export function Recording({
   resolution,
@@ -46,13 +47,7 @@ export function Recording({
             )}
             {state != "stopped" && (
               <div className="d-flex flex-row">
-                <button
-                  type="button"
-                  className="btn mr-1 btn-primary btn-sm"
-                  onClick={onStop}
-                >
-                  Stop
-                </button>
+                <Button size="small" onClick={onStop}>Stop</Button>
                 <div className="input-group w-auto">
                   <input
                     type="number"
@@ -63,13 +58,7 @@ export function Recording({
                     ref={inputRef}
                   />
                   <div className="input-group-append">
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm"
-                      onClick={handleProlong}
-                    >
-                      Prolong
-                    </button>
+                    <Button size="small" onClick={handleProlong}>Prolong</Button>
                   </div>
                 </div>
               </div>
