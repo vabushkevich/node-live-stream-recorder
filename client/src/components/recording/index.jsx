@@ -2,6 +2,7 @@ import React from "react";
 import { capitalize } from "lodash";
 import { formatDuration } from "../../utils";
 import { Button } from "../button";
+import { CloseButton } from "../close-button";
 
 export function Recording({
   resolution,
@@ -66,9 +67,9 @@ export function Recording({
           </div>
         </div>
         {state == "stopped" && (
-          <button type="button" className="close recording__close-btn" onClick={onClose}>
-            <span>&times;</span>
-          </button>
+          <div className="recording__close-btn">
+            <CloseButton onClick={onClose} />
+          </div>
         )}
       </div>
     </li>

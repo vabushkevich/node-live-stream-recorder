@@ -1,0 +1,16 @@
+.close-btn {
+  background: url("../../assets/cross.svg") center/10px no-repeat;
+  border-radius: 3px;
+  border: none;
+  box-sizing: content-box;
+  cursor: pointer;
+  height: 10px;
+  opacity: 0.6;
+  padding: 3px;
+  width: 10px;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}
