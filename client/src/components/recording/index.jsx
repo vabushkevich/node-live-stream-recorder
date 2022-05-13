@@ -3,6 +3,7 @@ import { capitalize } from "lodash";
 import { formatDuration } from "../../utils";
 import { Button } from "../button";
 import { CloseButton } from "../close-button";
+import { Input } from "../input";
 
 export function Recording({
   resolution,
@@ -50,13 +51,11 @@ export function Recording({
               <div className="d-flex flex-row">
                 <Button size="small" onClick={onStop}>Stop</Button>
                 <div className="input-group w-auto">
-                  <input
+                  <Input
                     type="number"
                     min="1"
-                    max="999"
                     defaultValue="120"
-                    className="form-control form-control-sm"
-                    ref={inputRef}
+                    size="small"
                   />
                   <div className="input-group-append">
                     <Button size="small" onClick={handleProlong}>Prolong</Button>

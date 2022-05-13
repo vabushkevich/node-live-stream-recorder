@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "../button";
+import { Input } from "../input";
 
 export class CreateStreamForm extends React.Component {
   constructor(props) {
@@ -44,24 +45,22 @@ export class CreateStreamForm extends React.Component {
               <form onSubmit={this.handleSubmit}>
                 <div className="form-row">
                   <div className="form-group col">
-                    <label htmlFor="inputURL">URL</label>
-                    <input
-                      type="url"
-                      className="form-control"
+                    <Input
                       id="inputURL"
+                      label="URL"
                       name="url"
+                      type="url"
                       value={url}
                       onChange={this.handleInputChange}
                     />
                   </div>
                   <div className="form-group col-3 col-md-2">
-                    <label htmlFor="inputDuration">Minutes</label>
-                    <input
-                      type="number"
-                      min="1"
-                      className="form-control"
+                    <Input
                       id="inputDuration"
+                      label="Minutes"
+                      min="1"
                       name="duration"
+                      type="number"
                       value={duration}
                       onChange={this.handleInputChange}
                     />
