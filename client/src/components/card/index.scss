@@ -1,0 +1,17 @@
+@use "../../sass/variables" as *;
+
+$border-color: $gray-400;
+
+.card {
+  padding: 20px;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  margin-top: 0px;
+}

@@ -5,6 +5,7 @@ import { Button } from "../button";
 import { CloseButton } from "../close-button";
 import { Input } from "../input";
 import { Badge } from "../badge";
+import { Card } from "../card";
 
 export function Recording({
   resolution,
@@ -25,8 +26,8 @@ export function Recording({
   }
 
   return (
-    <li className="card recorder-items__item">
-      <div className="card-body position-relative">
+    <Card>
+      <div className="position-relative">
         <div className="row no-gutters">
           <div className="col-md col-md-4 col-lg-3 pr-md-3 pb-2 pb-md-0 col-6 mx-auto min-w-0">
             <img
@@ -78,6 +79,6 @@ export function Recording({
           </div>
         )}
       </div>
-    </li>
+    </Card>
   );
 }

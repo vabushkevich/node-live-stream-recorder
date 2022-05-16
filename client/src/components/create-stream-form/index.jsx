@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "../button";
 import { Input } from "../input";
 import { Select } from "../select";
+import { Card } from "../card";
 
 export class CreateStreamForm extends React.Component {
   constructor(props) {
@@ -40,53 +41,50 @@ export class CreateStreamForm extends React.Component {
     return (
       <div className="row mb-3">
         <div className="col-lg-7">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Record new stream</h5>
-              <form onSubmit={this.handleSubmit}>
-                <div className="form-row">
-                  <div className="form-group col">
-                    <Input
-                      id="inputURL"
-                      label="URL"
-                      name="url"
-                      type="url"
-                      value={url}
-                      onChange={this.handleInputChange}
-                    />
-                  </div>
-                  <div className="form-group col-3 col-md-2">
-                    <Input
-                      id="inputDuration"
-                      label="Minutes"
-                      min="1"
-                      name="duration"
-                      type="number"
-                      value={duration}
-                      onChange={this.handleInputChange}
-                    />
-                  </div>
-                  <div className="form-group col-4 col-md-3">
-                    <Select
-                      id="selectResolution"
-                      name="resolution"
-                      value={resolution}
-                      label="Resolution"
-                      onChange={this.handleInputChange}
-                    >
-                      <option value="10000">Highest</option>
-                      <option value="1080">1080p</option>
-                      <option value="720">720p</option>
-                      <option value="480">480p</option>
-                      <option value="360">360p</option>
-                      <option value="0">Lowest</option>
-                    </Select>
-                  </div>
+          <Card title="Record new stream">
+            <form onSubmit={this.handleSubmit}>
+              <div className="form-row">
+                <div className="form-group col">
+                  <Input
+                    id="inputURL"
+                    label="URL"
+                    name="url"
+                    type="url"
+                    value={url}
+                    onChange={this.handleInputChange}
+                  />
                 </div>
-                <Button type="submit">Record</Button>
-              </form>
-            </div>
-          </div>
+                <div className="form-group col-3 col-md-2">
+                  <Input
+                    id="inputDuration"
+                    label="Minutes"
+                    min="1"
+                    name="duration"
+                    type="number"
+                    value={duration}
+                    onChange={this.handleInputChange}
+                  />
+                </div>
+                <div className="form-group col-4 col-md-3">
+                  <Select
+                    id="selectResolution"
+                    name="resolution"
+                    value={resolution}
+                    label="Resolution"
+                    onChange={this.handleInputChange}
+                  >
+                    <option value="10000">Highest</option>
+                    <option value="1080">1080p</option>
+                    <option value="720">720p</option>
+                    <option value="480">480p</option>
+                    <option value="360">360p</option>
+                    <option value="0">Lowest</option>
+                  </Select>
+                </div>
+              </div>
+              <Button type="submit">Record</Button>
+            </form>
+          </Card>
         </div>
       </div>
     );
