@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "../button";
 import { Input } from "../input";
+import { Select } from "../select";
 
 export class CreateStreamForm extends React.Component {
   constructor(props) {
@@ -66,12 +67,11 @@ export class CreateStreamForm extends React.Component {
                     />
                   </div>
                   <div className="form-group col-4 col-md-3">
-                    <label htmlFor="selectResolution">Resolution</label>
-                    <select
-                      className="form-control"
-                      name="resolution"
+                    <Select
                       id="selectResolution"
+                      name="resolution"
                       value={resolution}
+                      label="Resolution"
                       onChange={this.handleInputChange}
                     >
                       <option value="10000">Highest</option>
@@ -80,7 +80,7 @@ export class CreateStreamForm extends React.Component {
                       <option value="480">480p</option>
                       <option value="360">360p</option>
                       <option value="0">Lowest</option>
-                    </select>
+                    </Select>
                   </div>
                 </div>
                 <Button type="submit">Record</Button>
