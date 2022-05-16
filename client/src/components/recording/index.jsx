@@ -4,6 +4,7 @@ import { formatDuration } from "../../utils";
 import { Button } from "../button";
 import { CloseButton } from "../close-button";
 import { Input } from "../input";
+import { Badge } from "../badge";
 
 export function Recording({
   resolution,
@@ -38,8 +39,14 @@ export function Recording({
             <div className="d-flex flex-md-nowrap flex-wrap align-items-center mb-2">
               <h5 className="mr-2 mb-md-0 mb-1 text-truncate">{url}</h5>
               <div className="d-flex">
-                {resolution && <span className="mr-2 badge badge-dark">{resolution}p</span>}
-                <span className={`badge badge-${badgeType}`}>{capitalize(state)}</span>
+                {resolution && (
+                  <div className="mr-2 recording__badge">
+                    <Badge color="dark">{resolution}p</Badge>
+                  </div>
+                )}
+                <div className="recording__badge">
+                  <Badge color={badgeType}>{capitalize(state)}</Badge>
+                </div>
               </div>
             </div>
             {timeLeft > 0 && (

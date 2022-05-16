@@ -1,0 +1,26 @@
+@use "../../sass/variables" as *;
+
+.badge {
+  border-radius: 4px;
+  color: $white;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 5px;
+  text-align: center;
+  vertical-align: baseline;
+  white-space: nowrap;
+
+  &--primary {
+    background-color: $primary;
+  }
+
+  &--secondary {
+    background-color: $secondary;
+  }
+
+  &--dark {
+    background-color: $dark;
+  }
+}
