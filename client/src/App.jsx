@@ -2,6 +2,7 @@ import React from "react";
 
 import { CreateStreamForm } from "./components/create-stream-form";
 import { RecordingList } from "./components/recording-list";
+import { Container } from "./components/container";
 
 import { API_BASE_URL } from "../constants";
 
@@ -96,7 +97,7 @@ export class App extends React.Component {
     const { recordings } = this.state;
 
     return (
-      <div className="container my-4">
+      <Container>
         <CreateStreamForm onRecordingCreate={this.createRecording} />
         <RecordingList
           recordings={recordings}
@@ -104,7 +105,7 @@ export class App extends React.Component {
           onRecordingProlong={this.prolongRecording}
           onRecordingClose={this.closeRecording}
         />
-      </div>
+      </Container>
     );
   }
 }
