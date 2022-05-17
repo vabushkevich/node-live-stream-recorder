@@ -1,0 +1,48 @@
+@mixin reset-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+%heading {
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  margin-top: 0px;
+}
+
+@mixin h1 {
+  @extend %heading;
+  font-size: 40px;
+}
+
+@mixin h2 {
+  @extend %heading;
+  font-size: 32px;
+}
+
+@mixin h3 {
+  @extend %heading;
+  font-size: 28px;
+}
+
+@mixin h4 {
+  @extend %heading;
+  font-size: 24px;
+}
+
+@mixin h5 {
+  @extend %heading;
+  font-size: 20px;
+}
+
+@mixin h6 {
+  @extend %heading;
+  font-size: 16px;
+}
