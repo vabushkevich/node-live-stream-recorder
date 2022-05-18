@@ -1,0 +1,13 @@
+@use "../../sass/mixins" as *;
+
+.recording-list {
+  margin-top: 16px;
+
+  ol {
+    @include reset-list;
+  }
+
+  &__item:not(:last-child) {
+    margin-bottom: 10px;
+  }
+}
