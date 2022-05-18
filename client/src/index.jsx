@@ -6,6 +6,7 @@ import { App } from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./sass/_global.scss";
 import "./sass/_forms.scss";
+import "./sass/_typography.scss";
 
 ReactDOM.render(
   <App />,
