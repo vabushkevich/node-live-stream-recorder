@@ -1,4 +1,5 @@
 @use "../../sass/variables" as *;
+@use "../../sass/mixins" as *;
 
 $border-color: $gray-400;
 
@@ -9,9 +10,6 @@ $border-color: $gray-400;
 }
 
 .card-title {
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1.2;
+  @include h5;
   margin-bottom: 12px;
-  margin-top: 0px;
 }
