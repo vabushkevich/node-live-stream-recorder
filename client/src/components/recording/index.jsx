@@ -6,6 +6,7 @@ import { CloseButton } from "../close-button";
 import { Input } from "../input";
 import { Badge } from "../badge";
 import { Card } from "../card";
+import "./index.scss";
 
 export class Recording extends React.Component {
   constructor(props) {
@@ -43,58 +44,53 @@ export class Recording extends React.Component {
 
     return (
       <Card>
-        <div className="position-relative">
-          <div className="row no-gutters">
-            <div className="col-md col-md-4 col-lg-3 pr-md-3 pb-2 pb-md-0 col-6 mx-auto min-w-0">
-              <img
-                src={`${screenshotURL}?${Date.now()}`}
-                className="rounded w-100"
-                alt="Screenshot"
-              />
-            </div>
-            <div className="col-md min-w-0">
-              <div className="d-flex flex-md-nowrap flex-wrap align-items-center mb-2">
-                <h5 className="mr-2 mb-md-0 mb-1 text-truncate">{url}</h5>
-                <div className="d-flex">
-                  {resolution && (
-                    <div className="mr-2 recording__badge">
-                      <Badge color="dark">{resolution}p</Badge>
-                    </div>
-                  )}
+        <div className="recording">
+          <div className="recording__screenshot">
+            <img
+              src={`${screenshotURL}?${Date.now()}`}
+              alt="Screenshot"
+            />
+          </div>
+          <div className="recording__body">
+            {state == "stopped" && (
+              <div className="recording__close-btn">
+                <CloseButton onClick={onClose} />
+              </div>
+            )}
+            <div className="recording__head recording__row">
+              <div className="recording__title">{url}</div>
+              <div className="recording__badges">
+                {resolution && (
                   <div className="recording__badge">
-                    <Badge color={badgeType}>{capitalize(state)}</Badge>
+                    <Badge color="dark">{resolution}p</Badge>
                   </div>
+                )}
+                <div className="recording__badge">
+                  <Badge color={badgeType}>{capitalize(state)}</Badge>
                 </div>
               </div>
-              {timeLeft > 0 && (
-                <p className={`${state != "stopped" ? "mb-2" : "mb-0"}`}>
-                  <b>Left:</b> {formatDuration(timeLeft)}
-                </p>
-              )}
-              {state != "stopped" && (
-                <div className="d-flex flex-row">
+            </div>
+            {timeLeft > 0 && (
+              <div className="recording__row">
+                <b>Left:</b> {formatDuration(timeLeft)}
+              </div>
+            )}
+            {state != "stopped" && (
+              <div className="recording__controls recording__row">
+                <div className="recording__stop-btn">
                   <Button size="small" onClick={onStop}>Stop</Button>
-                  <div className="input-group w-auto">
-                    <Input
-                      type="number"
-                      min="1"
-                      value={prolongDuration}
-                      size="small"
-                      onChange={this.handleInputChange}
-                    />
-                    <div className="input-group-append">
-                      <Button size="small" onClick={this.handleProlong}>Prolong</Button>
-                    </div>
-                  </div>
                 </div>
-              )}
-            </div>
+                <Input
+                  type="number"
+                  min="1"
+                  value={prolongDuration}
+                  size="small"
+                  onChange={this.handleInputChange}
+                />
+                <Button size="small" onClick={this.handleProlong}>Prolong</Button>
+              </div>
+            )}
           </div>
-          {state == "stopped" && (
-            <div className="recording__close-btn">
-              <CloseButton onClick={onClose} />
-            </div>
-          )}
         </div>
       </Card>
     );

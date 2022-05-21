@@ -1,0 +1,92 @@
+@use "../../sass/mixins" as *;
+@use "../../sass/variables" as *;
+
+.recording {
+  display: flex;
+  flex-wrap: nowrap;
+  position: relative;
+
+  @media (max-width: $screen-md) {
+    flex-wrap: wrap;
+  }
+
+  &__screenshot {
+    flex-shrink: 0;
+    height: 135px;
+    margin-right: 16px;
+    width: 240px;
+
+    @media (max-width: $screen-md) {
+      margin: 0px auto 8px;
+    }
+
+    @media (max-width: $screen-lg) {
+      height: 113px;
+      width: 200px;
+    }
+
+    img {
+      border-radius: 4px;
+      display: block;
+      height: 100%;
+      object-fit: cover;
+      width: 100%;
+    }
+  }
+
+  &__body {
+    min-width: 0px;
+  }
+
+  &__row:not(:last-child) {
+    margin-bottom: 8px;
+  }
+
+  &__head {
+    align-items: center;
+    display: flex;
+
+    @media (max-width: $screen-md) {
+      flex-wrap: wrap;
+    }
+  }
+
+  &__title {
+    @include h5;
+    @include text-truncate;
+    margin-bottom: 0px;
+    margin-right: 8px;
+
+    @media (max-width: $screen-md) {
+      margin-bottom: 4px;
+    }
+  }
+
+  &__badges {
+    display: flex;
+  }
+
+  &__badge {
+    display: flex;
+
+    &:not(:last-child) {
+      margin-right: 4px;
+    }
+  }
+
+  &__controls {
+    display: flex;
+    width: 200px;
+  }
+
+  &__stop-btn {
+    margin-right: 6px;
+  }
+
+  &__close-btn {
+    line-height: 0px;
+    position: absolute;
+    right: -12px;
+    top: -12px;
+  }
+}
