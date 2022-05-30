@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 
 export function Select({
   label,
@@ -8,7 +9,10 @@ export function Select({
 }) {
   const selectElem = (
     <select
-      className={`form-control form-control--${size}`}
+      className={classNames(
+        "form-control",
+        size && `form-control--${size}`,
+      )}
       id={id}
       {...other}
     >

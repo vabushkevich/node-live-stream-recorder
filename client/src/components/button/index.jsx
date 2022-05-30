@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import "./index.scss";
 
 export function Button({
@@ -8,7 +9,7 @@ export function Button({
 }) {
   return (
     <button
-      className={`button button--${size}`}
+      className={classNames("button", size && `button--${size}`)}
       type={type}
       {...other}
     >
