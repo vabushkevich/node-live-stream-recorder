@@ -46,6 +46,7 @@ export class CreateStreamForm extends React.Component {
             <div className="create-stream-form__row">
               <div className="create-stream-form__url">
                 <Input
+                  autoComplete="off"
                   id="inputURL"
                   label="URL"
                   name="url"
