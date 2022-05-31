@@ -1,6 +1,7 @@
 {
   "name": "node-live-stream-recorder",
   "version": "0.1.0",
+  "description": "Record live streams from YouTube, Twitch, etc.",
   "dependencies": {
     "@babel/preset-react": "^7.16.7",
     "babel-loader": "^8.2.4",
@@ -45,5 +46,6 @@
   },
   "engines": {
     "node": ">=12.0.0"
-  }
+  },
+  "repository": "github:vabushkevich/node-live-stream-recorder"
 }
