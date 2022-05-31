@@ -49,7 +49,7 @@ class StreamRecording extends EventEmitter {
     );
 
     this.setState("idle");
-    mkdirSync(this.dirPath);
+    mkdirSync(this.dirPath, { recursive: true });
   }
 
   prolong(duration) {
