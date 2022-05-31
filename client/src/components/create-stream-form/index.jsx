@@ -50,6 +50,7 @@ export class CreateStreamForm extends React.Component {
                   id="inputURL"
                   label="URL"
                   name="url"
+                  required
                   type="url"
                   value={url}
                   onChange={this.handleInputChange}
@@ -61,6 +62,7 @@ export class CreateStreamForm extends React.Component {
                   label="Minutes"
                   min="1"
                   name="duration"
+                  required
                   type="number"
                   value={duration}
                   onChange={this.handleInputChange}
