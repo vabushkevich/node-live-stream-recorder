@@ -31,6 +31,7 @@ class StreamRecording extends EventEmitter {
     super();
     this.id = nanoid();
     this.url = url;
+    this.state = "idle";
     this.maxDuration = duration;
     this.duration = 0;
     this.preferredResolution = resolution;
@@ -47,8 +48,6 @@ class StreamRecording extends EventEmitter {
       RECORDINGS_ROOT,
       `${formatDate(this.createdDate, "yyyy-MM-dd HH-mm-ss")} ${nameSanitized}`
     );
-
-    this.setState("idle");
     mkdirSync(this.dirPath, { recursive: true });
   }
 
@@ -57,7 +56,7 @@ class StreamRecording extends EventEmitter {
   }
 
   start() {
-    this.setState("starting");
+    this.state = "starting";
 
     retry(
       async () => {
@@ -86,7 +85,7 @@ class StreamRecording extends EventEmitter {
         this.setUpM3u8FetcherEventHandlers();
         this.m3u8Fetcher.start();
         this.m3u8Fetcher.once("durationearn", () => {
-          this.setState("recording");
+          this.state = "recording";
           this.logger.log(`Started with resolution: ${this.resolution}p`);
           this.postStartCallback();
         });
@@ -130,17 +129,13 @@ class StreamRecording extends EventEmitter {
     this.m3u8Fetcher.removeAllListeners("stop");
   }
 
-  setState(state) {
-    this.state = state;
-  }
-
   getTimeLeft() {
     const timeLeft = this.maxDuration - this.duration;
     return timeLeft > 0 ? timeLeft : 0;
   }
 
   async stop() {
-    this.setState("stopping");
+    this.state = "stopping";
     this.logger.log("Stopping");
     await this.postStartPromise;
     if (this.m3u8Fetcher) {
@@ -150,7 +145,7 @@ class StreamRecording extends EventEmitter {
         this.logger.log(err);
       });
     }
-    this.setState("stopped");
+    this.state = "stopped";
     this.logger.log("Stopped");
   }
 
