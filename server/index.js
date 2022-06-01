@@ -55,4 +55,16 @@ app.delete("/api/v1/recordings/:recordingId", (req, res) => {
   res.end();
 });
 
+app.get("/api/v1/events", (req, res) => {
+  res.set("Content-Type", "text/event-stream");
+  const handleRecordingUpdate = (update) => {
+    res.write(`event: recordingupdate\n`);
+    res.write(`data: ${JSON.stringify(update)}\n\n`);
+  };
+  recorder.on("recordingupdate", handleRecordingUpdate);
+  res.on("close", () => {
+    recorder.off("recordingupdate", handleRecordingUpdate);
+  });
+});
+
 app.listen(SERVER_PORT, () => console.log(`Live stream recorder web server has been started on port ${SERVER_PORT}`));

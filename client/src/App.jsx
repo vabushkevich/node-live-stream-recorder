@@ -33,11 +33,11 @@ export class App extends React.Component {
 
   componentDidMount() {
     this.syncRecordings();
-    this.startPeriodicSync();
+    this.startSSEHandling();
   }
 
   componentWillUnmount() {
-    this.stopPeriodicSync();
+    this.stopSSEHandling();
   }
 
   createRecording(url, duration, resolution) {
@@ -85,12 +85,25 @@ export class App extends React.Component {
       .then(() => this.syncRecordings());
   }
 
-  startPeriodicSync() {
-    this.syncInterval = setInterval(() => this.syncRecordings(), 5000);
+  startSSEHandling() {
+    this.eventSource = new EventSource(`${API_BASE_URL}/events`);
+    this.eventSource.addEventListener("recordingupdate", (e) => {
+      this.updateRecording(JSON.parse(e.data));
+    });
   }
 
-  stopPeriodicSync() {
-    clearInterval(this.syncInterval);
+  stopSSEHandling() {
+    this.eventSource.close();
+  }
+
+  updateRecording(update) {
+    const recording = this.state.recordings.find((item) => item.id == update.id);
+    if (!recording) return;
+    this.setState((state) => ({
+      recordings: state.recordings.map((item) =>
+        item == recording ? { ...recording, ...update } : item
+      )
+    }));
   }
 
   render() {

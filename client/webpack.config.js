@@ -11,6 +11,7 @@ module.exports = {
     path: BUILD_OUT_ROOT,
   },
   devServer: {
+    compress: false,
     static: {
       directory: path.join(BUILD_OUT_ROOT, "screenshots"),
       publicPath: "/screenshots",

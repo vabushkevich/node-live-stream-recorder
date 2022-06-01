@@ -1,7 +1,9 @@
 const StreamRecording = require('server/StreamRecording');
+const { EventEmitter } = require('events');
 
-class StreamRecorder {
+class StreamRecorder extends EventEmitter {
   constructor() {
+    super();
     this.recordings = new Map();
   }
 
@@ -14,6 +16,9 @@ class StreamRecorder {
   createRecording(url, opts) {
     const recording = new StreamRecording(url, { ...opts });
     this.recordings.set(recording.id, recording);
+    recording.on("update", (update) => {
+      this.emit("recordingupdate", { ...update, id: recording.id });
+    });
     return recording;
   }
 

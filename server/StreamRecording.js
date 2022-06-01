@@ -1,6 +1,6 @@
 const path = require('path');
 const { saveFrame, retry } = require('server/utils');
-const { throttle } = require('lodash');
+const { throttle, pickBy } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
 const M3u8Fetcher = require("server/M3u8Fetcher");
@@ -51,12 +51,19 @@ class StreamRecording extends EventEmitter {
     mkdirSync(this.dirPath, { recursive: true });
   }
 
+  update(updaterObj) {
+    const state = this.toJSON();
+    Object.assign(this, updaterObj);
+    const updatedProps = pickBy(this.toJSON(), (v, k) => v !== state[k]);
+    this.emit("update", updatedProps);
+  }
+
   prolong(duration) {
-    this.maxDuration += duration;
+    this.update({ maxDuration: this.maxDuration + duration });
   }
 
   start() {
-    this.state = "starting";
+    this.update({ state: "starting" });
 
     retry(
       async () => {
@@ -71,7 +78,7 @@ class StreamRecording extends EventEmitter {
         const streamPage = createStreamPage(this.url);
         const stream = await streamPage.getStream(this.preferredResolution);
         this.m3u8Url = stream.url;
-        this.resolution = stream.height;
+        this.update({ resolution: stream.height });
 
         const outFilePath = path.join(
           this.dirPath,
@@ -85,7 +92,7 @@ class StreamRecording extends EventEmitter {
         this.setUpM3u8FetcherEventHandlers();
         this.m3u8Fetcher.start();
         this.m3u8Fetcher.once("durationearn", () => {
-          this.state = "recording";
+          this.update({ state: "recording" });
           this.logger.log(`Started with resolution: ${this.resolution}p`);
           this.postStartCallback();
         });
@@ -106,7 +113,7 @@ class StreamRecording extends EventEmitter {
 
   setUpM3u8FetcherEventHandlers() {
     this.m3u8Fetcher.on("durationearn", (durationEarned) => {
-      this.duration += durationEarned;
+      this.update({ duration: this.duration + durationEarned });
       if (this.getTimeLeft() <= 0) this.stop();
     });
 
@@ -135,7 +142,7 @@ class StreamRecording extends EventEmitter {
   }
 
   async stop() {
-    this.state = "stopping";
+    this.update({ state: "stopping" });
     this.logger.log("Stopping");
     await this.postStartPromise;
     if (this.m3u8Fetcher) {
@@ -145,7 +152,7 @@ class StreamRecording extends EventEmitter {
         this.logger.log(err);
       });
     }
-    this.state = "stopped";
+    this.update({ state: "stopped" });
     this.logger.log("Stopped");
   }
 
