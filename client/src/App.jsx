@@ -95,11 +95,9 @@ export class App extends React.Component {
   }
 
   updateRecording(update) {
-    const recording = this.state.recordings.find((item) => item.id == update.id);
-    if (!recording) return;
     this.setState((state) => ({
       recordings: state.recordings.map((item) =>
-        item == recording ? { ...recording, ...update } : item
+        item.id == update.id ? { ...item, ...update } : item
       )
     }));
   }
