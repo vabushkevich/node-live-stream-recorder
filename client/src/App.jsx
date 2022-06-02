@@ -86,7 +86,8 @@ export class App extends React.Component {
   startSSEHandling() {
     this.eventSource = new EventSource(`${API_BASE_URL}/events`);
     this.eventSource.addEventListener("recordingupdate", (e) => {
-      this.updateRecording(JSON.parse(e.data));
+      const { id, ...other } = JSON.parse(e.data);
+      this.updateRecording(id, other);
     });
   }
 
@@ -94,10 +95,10 @@ export class App extends React.Component {
     this.eventSource.close();
   }
 
-  updateRecording(update) {
+  updateRecording(id, update) {
     this.setState((state) => ({
       recordings: state.recordings.map((item) =>
-        item.id == update.id ? { ...item, ...update } : item
+        item.id == id ? { ...item, ...update } : item
       )
     }));
   }
