@@ -55,9 +55,7 @@ export class App extends React.Component {
   }
 
   syncRecordings() {
-    fetch(`${API_BASE_URL}/recordings`, {
-      method: "GET",
-    })
+    fetch(`${API_BASE_URL}/recordings`)
       .then((req) => req.json())
       .then((recordings) => {
         this.setState({ recordings });
