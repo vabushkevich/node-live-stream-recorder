@@ -32,7 +32,7 @@ export class App extends React.Component {
   }
 
   componentDidMount() {
-    this.syncRecordings();
+    this.fetchRecordings();
     this.startSSEHandling();
   }
 
@@ -51,10 +51,10 @@ export class App extends React.Component {
       }),
       headers: { "Content-Type": "application/json" },
     })
-      .then(() => this.syncRecordings());
+      .then(() => this.fetchRecordings());
   }
 
-  syncRecordings() {
+  fetchRecordings() {
     fetch(`${API_BASE_URL}/recordings`)
       .then((req) => req.json())
       .then((recordings) => {
@@ -66,21 +66,21 @@ export class App extends React.Component {
     fetch(`${API_BASE_URL}/recordings/${id}/stop`, {
       method: "PUT",
     })
-      .then(() => this.syncRecordings());
+      .then(() => this.fetchRecordings());
   }
 
   prolongRecording(id, duration) {
     fetch(`${API_BASE_URL}/recordings/${id}/prolong?duration=${duration}`, {
       method: "PUT",
     })
-      .then(() => this.syncRecordings());
+      .then(() => this.fetchRecordings());
   }
 
   closeRecording(id) {
     fetch(`${API_BASE_URL}/recordings/${id}`, {
       method: "DELETE",
     })
-      .then(() => this.syncRecordings());
+      .then(() => this.fetchRecordings());
   }
 
   startSSEHandling() {
