@@ -1,4 +1,5 @@
 import React from "react";
+import { nanoid } from "nanoid";
 
 import { CreateStreamForm } from "./components/create-stream-form";
 import { RecordingList } from "./components/recording-list";
@@ -41,6 +42,14 @@ export class App extends React.Component {
   }
 
   createRecording(url, duration, resolution) {
+    const tmpId = nanoid();
+    this.addRecording({
+      id: tmpId,
+      url,
+      state: "idle",
+      timeLeft: duration,
+    });
+
     fetch(`${API_BASE_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({
@@ -51,7 +60,10 @@ export class App extends React.Component {
       }),
       headers: { "Content-Type": "application/json" },
     })
-      .then(() => this.fetchRecordings());
+      .then((res) => res.json())
+      .then((recording) => {
+        this.updateRecording(tmpId, recording);
+      });
   }
 
   fetchRecordings() {
@@ -62,25 +74,44 @@ export class App extends React.Component {
       });
   }
 
+  addRecording(recording) {
+    this.setState((state) => ({
+      recordings: [...state.recordings, recording]
+    }));
+  }
+
   stopRecording(id) {
+    this.setState((state) => ({
+      recordings: state.recordings.map((item) =>
+        item.id == id ? { ...item, state: "stopped" } : item
+      )
+    }));
+
     fetch(`${API_BASE_URL}/recordings/${id}/stop`, {
       method: "PUT",
-    })
-      .then(() => this.fetchRecordings());
+    });
   }
 
   prolongRecording(id, duration) {
+    this.setState((state) => ({
+      recordings: state.recordings.map((item) =>
+        item.id == id ? { ...item, timeLeft: item.timeLeft + duration } : item
+      )
+    }));
+
     fetch(`${API_BASE_URL}/recordings/${id}/prolong?duration=${duration}`, {
       method: "PUT",
-    })
-      .then(() => this.fetchRecordings());
+    });
   }
 
   closeRecording(id) {
+    this.setState((state) => ({
+      recordings: state.recordings.filter((item) => item.id != id)
+    }));
+
     fetch(`${API_BASE_URL}/recordings/${id}`, {
       method: "DELETE",
-    })
-      .then(() => this.fetchRecordings());
+    });
   }
 
   startSSEHandling() {
