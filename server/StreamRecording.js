@@ -119,6 +119,9 @@ class StreamRecording extends EventEmitter {
 
     this.m3u8Fetcher.on("durationearn", throttle(() => {
       saveFrame(this.m3u8Url, this.screenshotPath, { quality: 31 })
+        .then(() => {
+          this.update({ screenshotDate: Math.floor(Date.now() / 1000) });
+        })
         .catch((err) => {
           this.logger.log("Can't take screenshot:");
           this.logger.log(err);
@@ -169,7 +172,7 @@ class StreamRecording extends EventEmitter {
         id: this.id,
         url: this.url,
         state: this.state,
-        thumbnail: path.relative(STATIC_ROOT, this.screenshotPath),
+        thumbnail: this.screenshotDate && `${path.relative(STATIC_ROOT, this.screenshotPath)}?date=${this.screenshotDate}`,
         createdDate: this.createdDate,
         timeLeft: this.getTimeLeft(),
         resolution: this.resolution,

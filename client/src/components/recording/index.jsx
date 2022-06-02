@@ -46,10 +46,7 @@ export class Recording extends React.Component {
       <Card>
         <div className="recording">
           <div className="recording__thumbnail">
-            <img
-              src={`${thumbnail}?${Date.now()}`}
-              alt="Thumbnail"
-            />
+            <img src={thumbnail} alt="Thumbnail" />
           </div>
           <div className="recording__body">
             {state == "stopped" && (
