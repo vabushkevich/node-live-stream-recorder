@@ -6,6 +6,7 @@ import { CloseButton } from "../close-button";
 import { Input } from "../input";
 import { Badge } from "../badge";
 import { Card } from "../card";
+import placeholderImage from "./images/thumbnail.png";
 import "./index.scss";
 
 export class Recording extends React.Component {
@@ -33,7 +34,7 @@ export class Recording extends React.Component {
     const { prolongDuration } = this.state;
     const {
       resolution,
-      thumbnail,
+      thumbnail = placeholderImage,
       state,
       timeLeft,
       url,
