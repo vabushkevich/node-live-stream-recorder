@@ -11,7 +11,7 @@ export function RecordingList({
 }) {
   return (
     <div className="recording-list">
-      <Card title="Recorders">
+      <Card title="Recordings">
         <ol>
           {recordings.map((recording) => {
             const { id } = recording;
