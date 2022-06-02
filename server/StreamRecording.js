@@ -164,15 +164,18 @@ class StreamRecording extends EventEmitter {
   }
 
   toJSON() {
-    return {
-      id: this.id,
-      url: this.url,
-      state: this.state,
-      thumbnail: path.relative(STATIC_ROOT, this.screenshotPath),
-      createdDate: this.createdDate,
-      timeLeft: this.getTimeLeft(),
-      resolution: this.resolution,
-    };
+    return pickBy(
+      {
+        id: this.id,
+        url: this.url,
+        state: this.state,
+        thumbnail: path.relative(STATIC_ROOT, this.screenshotPath),
+        createdDate: this.createdDate,
+        timeLeft: this.getTimeLeft(),
+        resolution: this.resolution,
+      },
+      (v) => v != null
+    );
   }
 }
 
