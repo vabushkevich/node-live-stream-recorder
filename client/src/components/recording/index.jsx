@@ -33,7 +33,7 @@ export class Recording extends React.Component {
     const { prolongDuration } = this.state;
     const {
       resolution,
-      screenshotURL,
+      thumbnail,
       state,
       timeLeft,
       url,
@@ -45,10 +45,10 @@ export class Recording extends React.Component {
     return (
       <Card>
         <div className="recording">
-          <div className="recording__screenshot">
+          <div className="recording__thumbnail">
             <img
-              src={`${screenshotURL}?${Date.now()}`}
-              alt="Screenshot"
+              src={`${thumbnail}?${Date.now()}`}
+              alt="Thumbnail"
             />
           </div>
           <div className="recording__body">
