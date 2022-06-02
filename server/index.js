@@ -33,7 +33,7 @@ app.post("/api/v1/recordings", (req, res) => {
     }
   );
   recording.start();
-  res.send(recording.id);
+  res.send(recording.toJSON());
 });
 
 app.put("/api/v1/recordings/:recordingId/stop", (req, res) => {
