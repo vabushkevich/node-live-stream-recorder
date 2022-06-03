@@ -32,7 +32,7 @@ class StreamRecording extends EventEmitter {
     this.id = nanoid();
     this.url = url;
     this.state = "idle";
-    this.maxDuration = duration;
+    this.targetDuration = duration;
     this.duration = 0;
     this.preferredResolution = resolution;
     this.createdDate = new Date();
@@ -59,7 +59,7 @@ class StreamRecording extends EventEmitter {
   }
 
   prolong(duration) {
-    this.update({ maxDuration: this.maxDuration + duration });
+    this.update({ targetDuration: this.targetDuration + duration });
   }
 
   start() {
@@ -140,7 +140,7 @@ class StreamRecording extends EventEmitter {
   }
 
   getTimeLeft() {
-    const timeLeft = this.maxDuration - this.duration;
+    const timeLeft = this.targetDuration - this.duration;
     return timeLeft > 0 ? timeLeft : 0;
   }
 
