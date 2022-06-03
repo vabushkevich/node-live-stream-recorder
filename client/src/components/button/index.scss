@@ -2,14 +2,14 @@
 
 .button {
   background-color: $primary;
-  border-radius: 3px;
+  border-radius: 6px;
   border: none;
   color: $white;
   cursor: pointer;
   font-family: inherit;
   font-size: 16px;
-  height: 38px;
-  padding: 0px 12px;
+  height: 42px;
+  padding: 0px 18px;
   transition: background-color .15s ease-in-out;
 
   &:hover,
@@ -18,8 +18,9 @@
   }
 
   &--small {
+    border-radius: 5px;
     font-size: 14px;
     height: 31px;
-    padding: 0px 8px;
+    padding: 0px 10px;
   }
 }
