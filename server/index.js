@@ -38,14 +38,16 @@ app.post("/api/v1/recordings", (req, res) => {
 
 app.put("/api/v1/recordings/:recordingId/stop", (req, res) => {
   const { recordingId } = req.params;
-  recorder.getRecording(recordingId).stop();
+  const recording = recorder.getRecording(recordingId);
+  if (recording) recording.stop();
   res.end();
 });
 
 app.put("/api/v1/recordings/:recordingId/prolong", (req, res) => {
   const { recordingId } = req.params;
   const { duration } = req.query;
-  recorder.getRecording(recordingId).prolong(+duration);
+  const recording = recorder.getRecording(recordingId);
+  if (recording) recording.prolong(+duration);
   res.end();
 });
 
