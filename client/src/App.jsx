@@ -47,7 +47,7 @@ export class App extends React.Component {
       id: tmpId,
       url,
       state: "idle",
-      timeLeft: duration,
+      targetDuration: duration,
     });
 
     fetch(`${API_BASE_URL}/recordings`, {
@@ -95,7 +95,7 @@ export class App extends React.Component {
   prolongRecording(id, duration) {
     this.setState((state) => ({
       recordings: state.recordings.map((item) =>
-        item.id == id ? { ...item, timeLeft: item.timeLeft + duration } : item
+        item.id == id ? { ...item, targetDuration: item.targetDuration + duration } : item
       )
     }));
 

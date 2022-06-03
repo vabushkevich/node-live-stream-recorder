@@ -33,10 +33,11 @@ export class Recording extends React.Component {
   render() {
     const { prolongDuration } = this.state;
     const {
+      duration = 0,
       resolution,
-      thumbnail = placeholderImage,
       state,
-      timeLeft,
+      targetDuration,
+      thumbnail = placeholderImage,
       url,
       onClose,
       onStop,
@@ -68,11 +69,9 @@ export class Recording extends React.Component {
                 </div>
               </div>
             </div>
-            {timeLeft > 0 && (
-              <div className="recording__row">
-                <b>Left:</b> {formatDuration(timeLeft)}
-              </div>
-            )}
+            <div className="recording__row">
+              <b>Recorded:</b> {formatDuration(duration)} / {formatDuration(targetDuration)}
+            </div>
             {state != "stopped" && (
               <div className="recording__controls recording__row">
                 <div className="recording__stop-btn">

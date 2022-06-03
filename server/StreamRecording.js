@@ -174,7 +174,8 @@ class StreamRecording extends EventEmitter {
         state: this.state,
         thumbnail: this.screenshotDate && `${path.relative(STATIC_ROOT, this.screenshotPath)}?date=${this.screenshotDate}`,
         createdDate: this.createdDate,
-        timeLeft: this.getTimeLeft(),
+        duration: this.duration,
+        targetDuration: this.targetDuration,
         resolution: this.resolution,
       },
       (v) => v != null
