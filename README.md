@@ -3,6 +3,8 @@
 Self-hosted solution for recording live streams from websites such as YouTube,
 Twitch, etc.
 
+![Screenshot](https://user-images.githubusercontent.com/23465488/172434417-10aec8ee-096d-4c64-ae9b-9cb7d1a0bd3f.jpg)
+
 ## Prerequisites
 
 Before starting, you should make sure that you have installed
