@@ -2,12 +2,12 @@ import React from "react";
 import classNames from "classnames";
 
 export function Select({
+  id,
   label,
   size,
-  id,
   ...other
 }) {
-  const selectElem = (
+  let out = (
     <select
       className={classNames(
         "form-control",
@@ -19,12 +19,12 @@ export function Select({
     </select>
   );
 
-  if (label) return (
+  if (label) out = (
     <div className="form-group">
       <label className="input-label" htmlFor={id}>{label}</label>
-      {selectElem}
+      {out}
     </div>
   );
 
-  return selectElem;
+  return out;
 }
