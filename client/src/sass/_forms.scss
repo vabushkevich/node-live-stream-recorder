@@ -17,10 +17,39 @@
     height: 31px;
     padding: 0px 8px;
   }
+
+  &--has-addon-before {
+    border-bottom-left-radius: 0px;
+    border-left: none;
+    border-top-left-radius: 0px;
+  }
+
+  &--has-addon-after {
+    border-bottom-right-radius: 0px;
+    border-right: none;
+    border-top-right-radius: 0px;
+  }
 }
 
-.form-group {
+.form-group,
+.input-group {
   width: 100%;
+}
+
+.input-group {
+  display: flex;
+
+  >*:first-child:not(.form-control) {
+    border-bottom-right-radius: 0px;
+    border-right: none;
+    border-top-right-radius: 0px;
+  }
+
+  >*:last-child:not(.form-control) {
+    border-bottom-left-radius: 0px;
+    border-left: none;
+    border-top-left-radius: 0px;
+  }
 }
 
 .input-label {

@@ -78,13 +78,15 @@ export class Recording extends React.Component {
                   <Button size="small" onClick={onStop}>Stop</Button>
                 </div>
                 <Input
+                  addonAfter={
+                    <Button size="small" onClick={this.handleProlong}>Prolong</Button>
+                  }
                   type="number"
                   min="1"
                   value={prolongDuration}
                   size="small"
                   onChange={this.handleInputChange}
                 />
-                <Button size="small" onClick={this.handleProlong}>Prolong</Button>
               </div>
             )}
           </div>
