@@ -9,11 +9,11 @@ import { API_BASE_URL } from "../constants";
 
 function getRecordingName(url) {
   if (url.includes("youtube.com")) {
-    const streamId = url.match(/(?<=\/watch\?v=)[\w-]+/)?.[0] || "";
+    const streamId = url.match(/(?:\/watch\?v=)([\w-]+)/)?.[1] || "";
     return `${streamId}@youtube`;
   }
   if (url.includes("twitch.tv")) {
-    const userName = url.match(/(?<=twitch\.tv\/)\w+/)?.[0] || "";
+    const userName = url.match(/(?:twitch\.tv\/)(\w+)/)?.[1] || "";
     return `${userName}@twitch`;
   }
 }
