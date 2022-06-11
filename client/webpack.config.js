@@ -1,9 +1,12 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 require("dotenv").config({ path: "../.env" });
 
 const BUILD_OUT_ROOT = path.resolve(__dirname, "build");
 const SERVER_PORT = process.env.SERVER_PORT || 5370;
+
+const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
   entry: "./src/index.jsx",
@@ -25,7 +28,11 @@ module.exports = {
     rules: [
       {
         test: /\.(css|s[ac]ss)$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
+        use: [
+          devMode ? "style-loader" : MiniCssExtractPlugin.loader,
+          "css-loader",
+          "sass-loader",
+        ],
       },
       {
         test: /\.jsx$/i,
@@ -50,7 +57,8 @@ module.exports = {
       favicon: "src/assets/favicon.ico",
       title: "Stream Recorder",
     }),
-  ],
+  ]
+    .concat(devMode ? [] : [new MiniCssExtractPlugin()]),
   resolve: {
     extensions: [".js", ".json", ".jsx"],
   },
