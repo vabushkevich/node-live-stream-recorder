@@ -1,6 +1,5 @@
 node_modules/
 client/build/
 package-lock.json
-debug.log
+*.log
 .env
-server.log
