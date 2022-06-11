@@ -8,7 +8,8 @@ Twitch, etc.
 ## Prerequisites
 
 Before starting, you should make sure that you have installed
-[git](https://git-scm.com), [Node.js](https://nodejs.org) (>=12.0.0) and npm.
+[git](https://git-scm.com), [Node.js](https://nodejs.org) (>=12.0.0), npm and a
+web browser (preferably latest Chrome or Firefox).
 
 ## How to start
 
