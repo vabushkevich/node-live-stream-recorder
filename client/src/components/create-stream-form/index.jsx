@@ -1,8 +1,8 @@
 import React from "react";
-import { Button } from "../button";
-import { Input } from "../input";
-import { Select } from "../select";
-import { Card } from "../card";
+import { Button } from "@components/button";
+import { Input } from "@components/input";
+import { Select } from "@components/select";
+import { Card } from "@components/card";
 import "./index.scss";
 
 export class CreateStreamForm extends React.Component {

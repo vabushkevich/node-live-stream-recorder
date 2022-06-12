@@ -1,6 +1,6 @@
 import React from "react";
-import { Recording } from "../recording";
-import { Card } from "../card";
+import { Recording } from "@components/recording";
+import { Card } from "@components/card";
 import "./index.scss";
 
 export function RecordingList({

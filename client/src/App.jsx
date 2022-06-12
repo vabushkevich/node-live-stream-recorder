@@ -1,11 +1,11 @@
 import React from "react";
 import { nanoid } from "nanoid";
 
-import { CreateStreamForm } from "./components/create-stream-form";
-import { RecordingList } from "./components/recording-list";
-import { Container } from "./components/container";
+import { CreateStreamForm } from "@components/create-stream-form";
+import { RecordingList } from "@components/recording-list";
+import { Container } from "@components/container";
 
-import { API_BASE_URL } from "../constants";
+import { API_BASE_URL } from "@constants";
 
 function getRecordingName(url) {
   if (url.includes("youtube.com")) {

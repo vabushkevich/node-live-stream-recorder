@@ -60,6 +60,12 @@ module.exports = {
   ]
     .concat(devMode ? [] : [new MiniCssExtractPlugin()]),
   resolve: {
+    alias: {
+      "@components": path.resolve(__dirname, "src/components"),
+      "@constants": path.resolve(__dirname, "constants.js"),
+      "@sass": path.resolve(__dirname, "src/sass"),
+      "@utils": path.resolve(__dirname, "src/utils.js"),
+    },
     extensions: [".js", ".json", ".jsx"],
   },
 };

@@ -1,11 +1,11 @@
 import React from "react";
 import { capitalize } from "lodash";
-import { formatDuration } from "../../utils";
-import { Button } from "../button";
-import { CloseButton } from "../close-button";
-import { Input } from "../input";
-import { Badge } from "../badge";
-import { Card } from "../card";
+import { formatDuration } from "@utils";
+import { Button } from "@components/button";
+import { CloseButton } from "@components/close-button";
+import { Input } from "@components/input";
+import { Badge } from "@components/badge";
+import { Card } from "@components/card";
 import placeholderImage from "./images/thumbnail.png";
 import "./index.scss";
 
