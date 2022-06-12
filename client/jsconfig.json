@@ -6,7 +6,7 @@
         "src/components/*"
       ],
       "@constants": [
-        "constants.js"
+        "src/constants.js"
       ],
       "@sass/*": [
         "src/sass/*"

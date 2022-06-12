@@ -62,7 +62,7 @@ module.exports = {
   resolve: {
     alias: {
       "@components": path.resolve(__dirname, "src/components"),
-      "@constants": path.resolve(__dirname, "constants.js"),
+      "@constants": path.resolve(__dirname, "src/constants.js"),
       "@sass": path.resolve(__dirname, "src/sass"),
       "@utils": path.resolve(__dirname, "src/utils.js"),
     },
