@@ -1,6 +1,7 @@
 @use "./variables" as *;
 
 .form-control {
+  appearance: none;
   background-color: $white;
   border-radius: 6px;
   border: 1.5px solid $gray-300;
@@ -29,6 +30,12 @@
     border-right: none;
     border-top-right-radius: 0px;
   }
+}
+
+.form-select {
+  @extend .form-control;
+  background: no-repeat right 9px center/11px url("../assets/arrow-down.svg");
+  padding-right: 24px;
 }
 
 .form-group,

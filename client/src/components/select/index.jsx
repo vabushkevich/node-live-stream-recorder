@@ -10,8 +10,8 @@ export function Select({
   let out = (
     <select
       className={classNames(
-        "form-control",
-        size && `form-control--${size}`,
+        "form-select",
+        size && `form-select--${size}`,
       )}
       id={id}
       {...other}
