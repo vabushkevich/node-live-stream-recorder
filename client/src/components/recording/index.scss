@@ -3,11 +3,10 @@
 
 .recording {
   display: flex;
-  flex-wrap: nowrap;
   position: relative;
 
   @media (max-width: $screen-md) {
-    flex-wrap: wrap;
+    flex-direction: column;
   }
 
   &__thumbnail {
