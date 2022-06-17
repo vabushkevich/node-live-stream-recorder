@@ -1,5 +1,5 @@
 import React from "react";
-import { capitalize } from "lodash";
+import { capitalize } from "lodash-es";
 import { formatDuration } from "@utils";
 import { Button } from "@components/button";
 import { CloseButton } from "@components/close-button";
