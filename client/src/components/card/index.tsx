@@ -4,7 +4,7 @@ import "./index.scss";
 export function Card({
   title,
   children,
-}) {
+} : any) {
   return (
     <div className="card">
       {title && <div className="card-title">{title}</div>}

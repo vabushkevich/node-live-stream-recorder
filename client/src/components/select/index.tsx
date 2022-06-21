@@ -6,7 +6,7 @@ export function Select({
   label,
   size,
   ...other
-}) {
+} : any) {
   let out = (
     <select
       className={classNames(

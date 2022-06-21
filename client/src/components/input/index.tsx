@@ -8,7 +8,7 @@ export function Input({
   label,
   size,
   ...other
-}) {
+} : any) {
   let out = (
     <input
       className={classNames(

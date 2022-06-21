@@ -9,7 +9,7 @@ const SERVER_PORT = process.env.SERVER_PORT || 5370;
 const devMode = process.env.NODE_ENV !== "production";
 
 module.exports = {
-  entry: "./src/index.jsx",
+  entry: "./src/index.tsx",
   output: {
     path: BUILD_OUT_ROOT,
   },
@@ -36,15 +36,9 @@ module.exports = {
         ],
       },
       {
-        test: /\.jsx$/i,
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              presets: ["@babel/preset-react"],
-            }
-          }
-        ]
+        test: /\.tsx?$/i,
+        use: "ts-loader",
+        exclude: /node_modules/,
       },
       {
         test: /\.png$/i,
@@ -63,10 +57,10 @@ module.exports = {
   resolve: {
     alias: {
       "@components": path.resolve(__dirname, "src/components"),
-      "@constants": path.resolve(__dirname, "src/constants.js"),
+      "@constants": path.resolve(__dirname, "src/constants.ts"),
       "@sass": path.resolve(__dirname, "src/sass"),
-      "@utils": path.resolve(__dirname, "src/utils.js"),
+      "@utils": path.resolve(__dirname, "src/utils.ts"),
     },
-    extensions: [".js", ".json", ".jsx"],
+    extensions: [".tsx", ".ts", ".js", ".json"],
   },
 };

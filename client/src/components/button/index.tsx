@@ -6,7 +6,7 @@ export function Button({
   size,
   type = "button",
   ...other
-}) {
+} : any) {
   return (
     <button
       className={classNames("button", size && `button--${size}`)}
