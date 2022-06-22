@@ -22,7 +22,7 @@ export function CreateStreamForm(props: CreateStreamFormProps) {
     setFormData({
       ...formData,
       [name]: value,
-    })
+    });
   }
 
   function handleSubmit(e: React.FormEvent) {
