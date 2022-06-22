@@ -1,6 +1,6 @@
 {
   "name": "node-live-stream-recorder",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Record live streams from YouTube, Twitch, etc.",
   "dependencies": {
     "@types/lodash-es": "^4.17.6",
