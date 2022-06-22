@@ -1,4 +1,4 @@
-export function formatDuration(ms) {
+export function formatDuration(ms: number) {
   const seconds = Math.round(ms / 1000) || 0;
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);

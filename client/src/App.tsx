@@ -4,10 +4,11 @@ import { nanoid } from "nanoid";
 import { CreateStreamForm } from "@components/create-stream-form";
 import { RecordingList } from "@components/recording-list";
 import { Container } from "@components/container";
+import { Recording } from "@types";
 
 import { API_BASE_URL } from "@constants";
 
-function getRecordingName(url) {
+function getRecordingName(url: string) {
   if (url.includes("youtube.com")) {
     const streamId = url.match(/(?:\/watch\?v=)([\w-]+)/)?.[1] || "";
     return `${streamId}@youtube`;
@@ -41,13 +42,14 @@ export function App() {
       });
   }
 
-  function createRecording(url, duration, resolution) {
+  function createRecording(url: string, duration: number, resolution: number) {
     const tmpId = nanoid();
     addRecording({
       id: tmpId,
       url,
       state: "idle",
       targetDuration: duration,
+      createdDate: Date.now(),
     });
 
     fetch(`${API_BASE_URL}/recordings`, {
@@ -66,17 +68,17 @@ export function App() {
       });
   }
 
-  function addRecording(recording) {
+  function addRecording(recording: Recording) {
     setRecordings((recordings) => ([...recordings, recording]));
   }
 
-  function updateRecording(id, update) {
+  function updateRecording(id: string, update: Partial<Recording>) {
     setRecordings((recordings) => recordings.map((item) =>
       item.id == id ? { ...item, ...update } : item
     ));
   }
 
-  function prolongRecording(id, duration) {
+  function prolongRecording(id: string, duration: number) {
     setRecordings((recordings) => recordings.map((item) =>
       item.id == id ? { ...item, targetDuration: item.targetDuration + duration } : item
     ));
@@ -86,7 +88,7 @@ export function App() {
     });
   }
 
-  function stopRecording(id) {
+  function stopRecording(id: string) {
     setRecordings((recordings) => recordings.map((item) =>
       item.id == id ? { ...item, state: "stopped" } : item
     ));
@@ -96,7 +98,7 @@ export function App() {
     });
   }
 
-  function closeRecording(id) {
+  function closeRecording(id: string) {
     setRecordings((recordings) => recordings.filter((item) => item.id != id));
 
     fetch(`${API_BASE_URL}/recordings/${id}`, {

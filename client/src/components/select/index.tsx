@@ -1,12 +1,22 @@
 import React from "react";
 import classNames from "classnames";
 
+type SelectProps = {
+  id?: string;
+  label?: string;
+  name?: string;
+  size?: "small";
+  value?: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children?: React.ReactNode;
+};
+
 export function Select({
   id,
   label,
   size,
   ...other
-} : any) {
+}: SelectProps) {
   let out = (
     <select
       className={classNames(

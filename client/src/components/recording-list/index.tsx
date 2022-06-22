@@ -1,14 +1,22 @@
 import React from "react";
 import { Recording } from "@components/recording";
 import { Card } from "@components/card";
+import { Recording as RecordingType  } from "@types";
 import "./index.scss";
+
+type RecordingListProps = {
+  recordings: RecordingType[];
+  onRecordingClose: (id: string) => void;
+  onRecordingProlong: (id: string, duration: number) => void;
+  onRecordingStop: (id: string) => void;
+};
 
 export function RecordingList({
   recordings,
   onRecordingStop,
   onRecordingProlong,
   onRecordingClose,
-}) {
+}: RecordingListProps) {
   return (
     <div className="recording-list">
       <Card title="Recordings">

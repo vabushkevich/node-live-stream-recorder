@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "jsx": "react",
     "moduleResolution": "node",
+    "noImplicitAny": true,
     "outDir": "./build/",
     "paths": {
       "@components/*": [
@@ -15,6 +16,9 @@
       ],
       "@sass/*": [
         "src/sass/*"
+      ],
+      "@types": [
+        "src/types"
       ],
       "@utils": [
         "src/utils.ts"

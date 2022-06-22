@@ -1,6 +1,22 @@
 import React from "react";
 import classNames from "classnames";
 
+type InputProps = {
+  addonAfter?: React.ReactNode;
+  addonBefore?: React.ReactNode;
+  autoComplete?: string;
+  id?: string;
+  label?: string;
+  max?: string | number;
+  min?: string | number;
+  name?: string;
+  required?: boolean;
+  size?: "small";
+  type?: React.HTMLInputTypeAttribute;
+  value?: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
 export function Input({
   addonAfter,
   addonBefore,
@@ -8,7 +24,7 @@ export function Input({
   label,
   size,
   ...other
-} : any) {
+}: InputProps) {
   let out = (
     <input
       className={classNames(

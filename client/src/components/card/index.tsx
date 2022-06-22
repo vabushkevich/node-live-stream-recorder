@@ -1,10 +1,15 @@
 import React from "react";
 import "./index.scss";
 
+type CardProps = {
+  title?: string;
+  children?: React.ReactNode;
+};
+
 export function Card({
   title,
   children,
-} : any) {
+}: CardProps) {
   return (
     <div className="card">
       {title && <div className="card-title">{title}</div>}

@@ -6,10 +6,17 @@ import { CloseButton } from "@components/close-button";
 import { Input } from "@components/input";
 import { Badge } from "@components/badge";
 import { Card } from "@components/card";
+import { Recording as RecordingType } from "@types";
 import placeholderImage from "./images/thumbnail.png";
 import "./index.scss";
 
-export function Recording(props) {
+type RecordingProps = RecordingType & {
+  onClose: () => void;
+  onProlong: (duration: number) => void;
+  onStop: () => void;
+};
+
+export function Recording(props: RecordingProps) {
   const {
     duration = 0,
     resolution,
@@ -24,8 +31,8 @@ export function Recording(props) {
   const badgeType = state == "recording" ? "primary" : "secondary";
   const [prolongDuration, setProlongDuration] = useState(120);
 
-  function handleInputChange(e) {
-    setProlongDuration(e.target.value);
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setProlongDuration(Number(e.target.value));
   }
 
   function handleProlong() {

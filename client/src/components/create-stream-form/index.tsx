@@ -5,7 +5,11 @@ import { Select } from "@components/select";
 import { Card } from "@components/card";
 import "./index.scss";
 
-export function CreateStreamForm(props) {
+type CreateStreamFormProps = {
+  onRecordingCreate: (url: string, duration: number, resolution: number) => void;
+};
+
+export function CreateStreamForm(props: CreateStreamFormProps) {
   const { onRecordingCreate } = props;
   const [formData, setFormData] = useState({
     url: "",
@@ -13,14 +17,15 @@ export function CreateStreamForm(props) {
     resolution: 10000,
   });
 
-  function handleInputChange({ target: { name, value } }) {
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
+    const { target: { name, value } } = e;
     setFormData({
       ...formData,
       [name]: value,
     })
   }
 
-  function handleSubmit(e) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onRecordingCreate(
       formData.url,
