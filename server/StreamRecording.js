@@ -173,7 +173,7 @@ class StreamRecording extends EventEmitter {
         url: this.url,
         state: this.state,
         thumbnail: this.screenshotDate && `${path.relative(STATIC_ROOT, this.screenshotPath)}?date=${this.screenshotDate}`,
-        createdDate: this.createdDate,
+        createdDate: Number(this.createdDate),
         duration: this.duration,
         targetDuration: this.targetDuration,
         resolution: this.resolution,
