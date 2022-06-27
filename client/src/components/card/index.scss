@@ -5,9 +5,9 @@
   padding: 20px;
   border: 1.5px solid $gray-200;
   border-radius: 12px;
-}
 
-.card-title {
-  @include h5;
-  margin-bottom: 12px;
+  &__title {
+    @include h5;
+    margin-bottom: 12px;
+  }
 }
