@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
+import { getRecordingName } from "@utils";
 
 import { CreateStreamForm } from "@components/create-stream-form";
 import { RecordingList } from "@components/recording-list";
@@ -7,17 +8,6 @@ import { Container } from "@components/container";
 import { Recording } from "@types";
 
 import { API_BASE_URL } from "@constants";
-
-function getRecordingName(url: string) {
-  if (url.includes("youtube.com")) {
-    const streamId = url.match(/(?:\/watch\?v=)([\w-]+)/)?.[1] || "";
-    return `${streamId}@youtube`;
-  }
-  if (url.includes("twitch.tv")) {
-    const userName = url.match(/(?:twitch\.tv\/)(\w+)/)?.[1] || "";
-    return `${userName}@twitch`;
-  }
-}
 
 export function App() {
   const [recordings, setRecordings] = useState([]);

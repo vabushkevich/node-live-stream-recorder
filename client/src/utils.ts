@@ -11,3 +11,14 @@ export function formatDuration(ms: number) {
 
   return out;
 }
+
+export function getRecordingName(url: string) {
+  if (url.includes("youtube.com")) {
+    const streamId = url.match(/(?:\/watch\?v=)([\w-]+)/)?.[1] || "";
+    return `${streamId}@youtube`;
+  }
+  if (url.includes("twitch.tv")) {
+    const userName = url.match(/(?:twitch\.tv\/)(\w+)/)?.[1] || "";
+    return `${userName}@twitch`;
+  }
+}
