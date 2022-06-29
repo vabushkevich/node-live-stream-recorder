@@ -3,12 +3,12 @@ const { saveFrame, retry } = require('server/utils');
 const { throttle, pickBy } = require('lodash');
 const { format: formatDate } = require('date-fns');
 const sanitizePath = require("sanitize-filename");
-const M3u8Fetcher = require("server/M3u8Fetcher");
-const { createStreamPage } = require('server/stream-page');
+const M3u8Fetcher = require("server/services/m3u8-fetcher");
+const { createStreamPage } = require('server/services/stream-page');
 const { EventEmitter } = require('events');
 const { mkdirSync } = require('fs');
 const { nanoid } = require('nanoid');
-const Logger = require("server/Logger");
+const Logger = require("server/services/logger");
 
 const {
   SCREENSHOT_FREQ,

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const StreamRecorder = require('server/StreamRecorder');
+const StreamRecorder = require('server/services/stream-recorder');
 const { mkdirSync } = require('fs');
 
 const {

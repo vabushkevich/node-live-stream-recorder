@@ -1,4 +1,4 @@
-const StreamRecording = require('server/StreamRecording');
+const StreamRecording = require('server/services/stream-recording');
 const { EventEmitter } = require('events');
 
 class StreamRecorder extends EventEmitter {

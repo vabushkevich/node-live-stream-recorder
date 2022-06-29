@@ -1,4 +1,4 @@
-const StreamPage = require('server/stream-page/StreamPage');
+const StreamPage = require('./StreamPage');
 const fetch = require('node-fetch');
 
 const { FETCH_HEADERS } = require('server/constants');

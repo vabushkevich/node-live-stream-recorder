@@ -1,7 +1,7 @@
 const path = require("path");
 
 require("dotenv").config({
-  path: path.join(__dirname, "..", ".env"),
+  path: path.join(__dirname, "..", "..", ".env"),
 });
 
 const NO_DATA_TIMEOUT = 30 * 1000;
@@ -10,7 +10,7 @@ const MAX_OPEN_PAGES = 5;
 const FETCH_HEADERS = {
   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
 };
-const STATIC_ROOT = path.join(__dirname, "..", "client", "build");
+const STATIC_ROOT = path.join(__dirname, "..", "..", "client", "build");
 const SCREENSHOTS_ROOT = path.join(STATIC_ROOT, "screenshots");
 const LOG_PATH = process.env.LOG_PATH;
 const RECORDINGS_ROOT = process.env.RECORDINGS_ROOT;

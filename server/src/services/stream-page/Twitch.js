@@ -1,4 +1,4 @@
-const StreamPage = require('server/stream-page/StreamPage');
+const StreamPage = require('./StreamPage');
 
 class Twitch extends StreamPage {
   async getM3u8Url() {

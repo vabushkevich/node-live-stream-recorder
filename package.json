@@ -41,13 +41,13 @@
     "dev": "concurrently -n server,web -c green,cyan 'npm:start:dev-server' 'npm:start:dev-client'",
     "start": "npm run build && npm run start:server",
     "start:dev-client": "cd client && webpack serve --mode development --port 3000",
-    "start:dev-server": "nodemon server -w server",
-    "start:server": "node server"
+    "start:dev-server": "nodemon --watch server/src server/src",
+    "start:server": "node server/src"
   },
   "author": "Vyacheslav Abushkevich <abshkvch@gmail.com>",
   "license": "MIT",
   "workspaces": [
-    "./server"
+    "./server/src"
   ],
   "devDependencies": {
     "nodemon": "^2.0.15",

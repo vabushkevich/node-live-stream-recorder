@@ -1,7 +1,7 @@
 const { getBrowser } = require('server/browser');
 const { resolveIn, parseM3u8, findClosest } = require('server/utils');
 const fetch = require('node-fetch');
-const QuotaAllocator = require('server/QuotaAllocator');
+const QuotaAllocator = require('server/services/quota-allocator');
 
 const {
   MAX_OPEN_PAGES,
