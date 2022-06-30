@@ -1,22 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useTypedSelector } from "../../hooks";
+import {
+  fetchRecordings,
+  updateRecording,
+  stopRecording,
+  prolongRecording,
+  removeRecording,
+} from "../../store/recorder/actions";
+
 import { Recording } from "@components/recording";
 import { Card } from "@components/card";
-import { Recording as RecordingType  } from "@types";
 import "./index.scss";
 
-type RecordingListProps = {
-  recordings: RecordingType[];
-  onRecordingClose: (id: string) => void;
-  onRecordingProlong: (id: string, duration: number) => void;
-  onRecordingStop: (id: string) => void;
-};
+import { API_BASE_URL } from "@constants";
 
-export function RecordingList({
-  recordings,
-  onRecordingStop,
-  onRecordingProlong,
-  onRecordingClose,
-}: RecordingListProps) {
+export function RecordingList() {
+  const recordings = useTypedSelector((state) => state.recordings);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchRecordings());
+
+    const eventSource = new EventSource(`${API_BASE_URL}/events`);
+    eventSource.addEventListener("recordingupdate", (e) => {
+      const { id, ...other } = JSON.parse(e.data);
+      dispatch(updateRecording(id, other));
+    });
+
+    return () => eventSource.close();
+  }, []);
+
   return (
     <div className="recording-list">
       <Card title="Recordings">
@@ -28,9 +42,9 @@ export function RecordingList({
                 <li className="recording-list__item" key={id}>
                   <Recording
                     {...recording}
-                    onStop={onRecordingStop.bind(null, id)}
-                    onProlong={onRecordingProlong.bind(null, id)}
-                    onClose={onRecordingClose.bind(null, id)}
+                    onStop={() => dispatch(stopRecording(id))}
+                    onProlong={(duration) => dispatch(prolongRecording(id, duration))}
+                    onClose={() => dispatch(removeRecording(id))}
                   />
                 </li>
               );
