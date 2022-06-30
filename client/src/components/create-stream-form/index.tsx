@@ -1,21 +1,19 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { createRecording } from "../../store/recorder/actions";
 import { Button } from "@components/button";
 import { Input } from "@components/input";
 import { Select } from "@components/select";
 import { Card } from "@components/card";
 import "./index.scss";
 
-type CreateStreamFormProps = {
-  onRecordingCreate: (url: string, duration: number, resolution: number) => void;
-};
-
-export function CreateStreamForm(props: CreateStreamFormProps) {
-  const { onRecordingCreate } = props;
+export function CreateStreamForm() {
   const [formData, setFormData] = useState({
     url: "",
     duration: 120,
     resolution: 10000,
   });
+  const dispatch = useDispatch();
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { target: { name, value } } = e;
@@ -27,10 +25,12 @@ export function CreateStreamForm(props: CreateStreamFormProps) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onRecordingCreate(
-      formData.url,
-      formData.duration * 60 * 1000,
-      formData.resolution,
+    dispatch(
+      createRecording(
+        formData.url,
+        formData.duration * 60 * 1000,
+        formData.resolution,
+      )
     );
   }
 

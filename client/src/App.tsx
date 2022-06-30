@@ -25,10 +25,6 @@ export function App() {
     return () => eventSource.close();
   }, []);
 
-  function createRecording(url: string, duration: number, resolution: number) {
-    dispatch(actions.createRecording(url, duration, resolution));
-  }
-
   function prolongRecording(id: string, duration: number) {
     dispatch(actions.prolongRecording(id, duration));
   }
@@ -43,7 +39,7 @@ export function App() {
 
   return (
     <Container>
-      <CreateStreamForm onRecordingCreate={createRecording} />
+      <CreateStreamForm />
       <RecordingList
         recordings={recordings}
         onRecordingStop={stopRecording}
