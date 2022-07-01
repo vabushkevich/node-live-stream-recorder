@@ -1,20 +1,11 @@
+import type { Recording } from "@types";
+
 export const SET_RECORDINGS = "SET_RECORDINGS";
 export const ADD_RECORDING = "ADD_RECORDING";
 export const UPDATE_RECORDING = "UPDATE_RECORDING";
 export const PROLONG_RECORDING = "PROLONG_RECORDING";
 export const STOP_RECORDING = "STOP_RECORDING";
 export const CLOSE_RECORDING = "CLOSE_RECORDING";
-
-export interface Recording {
-  createdDate: number;
-  duration?: number;
-  id: string;
-  resolution?: number;
-  state: string;
-  targetDuration: number;
-  thumbnail?: string;
-  url: string;
-}
 
 export interface RecorderState {
   recordings: Recording[];

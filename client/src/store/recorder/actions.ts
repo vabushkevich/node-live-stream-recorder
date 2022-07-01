@@ -1,5 +1,5 @@
+import type { Recording } from "@types";
 import {
-  Recording,
   RecorderActionTypes,
   SET_RECORDINGS,
   ADD_RECORDING,
