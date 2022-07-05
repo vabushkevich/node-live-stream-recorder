@@ -7,7 +7,7 @@ import {
   stopRecording,
   prolongRecording,
   deleteRecording,
-} from "../../store/recorder/actions";
+} from "@store/recorder/actions";
 
 import { Recording } from "@components/recording";
 import { Card } from "@components/card";

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { createRecording } from "../../store/recorder/actions";
+import { createRecording } from "@store/recorder/actions";
 import { Button } from "@components/button";
 import { Input } from "@components/input";
 import { Select } from "@components/select";

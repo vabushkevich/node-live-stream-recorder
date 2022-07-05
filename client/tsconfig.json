@@ -20,6 +20,9 @@
       "@sass/*": [
         "src/sass/*"
       ],
+      "@store/*": [
+        "src/store/*"
+      ],
       "@types": [
         "src/types"
       ],
