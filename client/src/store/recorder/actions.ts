@@ -6,7 +6,7 @@ import {
   UPDATE_RECORDING,
   PROLONG_RECORDING,
   STOP_RECORDING,
-  CLOSE_RECORDING,
+  DELETE_RECORDING,
 } from "./types";
 import { Dispatch } from "redux";
 import { nanoid } from "nanoid";
@@ -103,10 +103,10 @@ export function stopRecording(id: string) {
   }
 }
 
-export function closeRecording(id: string) {
+export function deleteRecording(id: string) {
   return (dispatch: Dispatch<RecorderActionTypes>) => {
     dispatch({
-      type: CLOSE_RECORDING,
+      type: DELETE_RECORDING,
       payload: id
     });
     fetch(`${API_BASE_URL}/recordings/${id}`, {

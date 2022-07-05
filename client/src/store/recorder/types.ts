@@ -5,7 +5,7 @@ export const ADD_RECORDING = "ADD_RECORDING";
 export const UPDATE_RECORDING = "UPDATE_RECORDING";
 export const PROLONG_RECORDING = "PROLONG_RECORDING";
 export const STOP_RECORDING = "STOP_RECORDING";
-export const CLOSE_RECORDING = "CLOSE_RECORDING";
+export const DELETE_RECORDING = "DELETE_RECORDING";
 
 export interface RecorderState {
   recordings: Recording[];
@@ -42,8 +42,8 @@ interface stopRecordingAction {
   payload: string;
 }
 
-interface closeRecordingAction {
-  type: typeof CLOSE_RECORDING;
+interface deleteRecordingAction {
+  type: typeof DELETE_RECORDING;
   payload: string;
 }
 
@@ -52,4 +52,4 @@ export type RecorderActionTypes = setRecordingsAction
   | updateRecordingAction
   | prolongRecordingAction
   | stopRecordingAction
-  | closeRecordingAction;
+  | deleteRecordingAction;

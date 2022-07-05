@@ -6,7 +6,7 @@ import {
   UPDATE_RECORDING,
   PROLONG_RECORDING,
   STOP_RECORDING,
-  CLOSE_RECORDING,
+  DELETE_RECORDING,
 } from "./types";
 
 const initialState: RecorderState = {
@@ -42,7 +42,7 @@ export function recorderReducer(
           item.id == action.payload ? { ...item, state: "stopped" } : item
         )
       };
-    case CLOSE_RECORDING:
+    case DELETE_RECORDING:
       return {
         recordings: state.recordings.filter((item) => item.id != action.payload)
       };

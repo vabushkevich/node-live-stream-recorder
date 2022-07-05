@@ -6,7 +6,7 @@ import {
   updateRecording,
   stopRecording,
   prolongRecording,
-  removeRecording,
+  deleteRecording,
 } from "../../store/recorder/actions";
 
 import { Recording } from "@components/recording";
@@ -44,7 +44,7 @@ export function RecordingList() {
                     {...recording}
                     onStop={() => dispatch(stopRecording(id))}
                     onProlong={(duration) => dispatch(prolongRecording(id, duration))}
-                    onClose={() => dispatch(removeRecording(id))}
+                    onClose={() => dispatch(deleteRecording(id))}
                   />
                 </li>
               );
