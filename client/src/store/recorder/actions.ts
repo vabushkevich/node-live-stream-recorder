@@ -25,7 +25,7 @@ export function fetchRecordings() {
 export function createRecording(url: string, duration: number, resolution: number) {
   return (dispatch: Dispatch<RecorderActionTypes>) => {
     const tmpId = nanoid();
-    const tmpRecording = {
+    const tmpRecording: Recording = {
       createdDate: Date.now(),
       id: tmpId,
       state: "idle",

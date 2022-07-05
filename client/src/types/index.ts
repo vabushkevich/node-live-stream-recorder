@@ -3,7 +3,7 @@ export interface Recording {
   duration?: number;
   id: string;
   resolution?: number;
-  state: string;
+  state: "idle" | "starting" | "recording" | "stopping" | "stopped";
   targetDuration: number;
   thumbnail?: string;
   url: string;
