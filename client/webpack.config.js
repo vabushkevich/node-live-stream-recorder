@@ -58,6 +58,7 @@ module.exports = {
     alias: {
       "@components": path.resolve(__dirname, "src/components"),
       "@constants": path.resolve(__dirname, "src/constants.ts"),
+      "@hooks": path.resolve(__dirname, "src/hooks.ts"),
       "@sass": path.resolve(__dirname, "src/sass"),
       "@types": path.resolve(__dirname, "src/types"),
       "@utils": path.resolve(__dirname, "src/utils.ts"),

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useTypedSelector } from "../../hooks";
+import { useTypedSelector } from "@hooks";
 import {
   fetchRecordings,
   updateRecording,

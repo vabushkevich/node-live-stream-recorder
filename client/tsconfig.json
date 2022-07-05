@@ -14,6 +14,9 @@
       "@constants": [
         "src/constants.ts"
       ],
+      "@hooks": [
+        "src/hooks.ts"
+      ],      
       "@sass/*": [
         "src/sass/*"
       ],
