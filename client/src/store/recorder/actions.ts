@@ -16,14 +16,14 @@ import { API_BASE_URL } from "@constants";
 
 export function fetchRecordings() {
   return async (dispatch: Dispatch<RecorderActionTypes>) => {
-    fetch(`${API_BASE_URL}/recordings`)
-      .then((res) => res.json())
-      .then((recordings) => dispatch(setRecordings(recordings)));
+    const res = await fetch(`${API_BASE_URL}/recordings`);
+    const recordings = await res.json();
+    dispatch(setRecordings(recordings));
   };
 }
 
 export function createRecording(url: string, duration: number, resolution: number) {
-  return (dispatch: Dispatch<RecorderActionTypes>) => {
+  return async (dispatch: Dispatch<RecorderActionTypes>) => {
     const tmpId = nanoid();
     const tmpRecording: Recording = {
       createdDate: Date.now(),
@@ -35,7 +35,7 @@ export function createRecording(url: string, duration: number, resolution: numbe
 
     dispatch(addRecording(tmpRecording));
 
-    fetch(`${API_BASE_URL}/recordings`, {
+    const res = await fetch(`${API_BASE_URL}/recordings`, {
       method: "POST",
       body: JSON.stringify({
         duration,
@@ -44,11 +44,9 @@ export function createRecording(url: string, duration: number, resolution: numbe
         url,
       }),
       headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => res.json())
-      .then((recording) => {
-        dispatch(updateRecording(tmpId, recording))
-      });
+    });
+    const recording = await res.json();
+    dispatch(updateRecording(tmpId, recording))
   }
 }
 
