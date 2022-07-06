@@ -24,8 +24,8 @@ export function RecordingList() {
 
     const eventSource = new EventSource(`${API_BASE_URL}/events`);
     eventSource.addEventListener("recordingupdate", (e) => {
-      const { id, ...other } = JSON.parse(e.data);
-      dispatch(updateRecording(id, other));
+      const { id, ...update } = JSON.parse(e.data);
+      dispatch(updateRecording(id, update));
     });
 
     return () => eventSource.close();
