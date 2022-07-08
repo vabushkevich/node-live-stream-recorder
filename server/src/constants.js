@@ -5,7 +5,7 @@ require("dotenv").config({
 });
 
 const NO_DATA_TIMEOUT = 30 * 1000;
-const SCREENSHOT_FREQ = 20 * 1000;
+const SCREENSHOT_FREQ = 15 * 1000;
 const MAX_OPEN_PAGES = 5;
 const FETCH_HEADERS = {
   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
