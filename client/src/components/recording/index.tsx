@@ -16,18 +16,17 @@ type RecordingProps = RecordingType & {
   onStop: () => void;
 };
 
-export function Recording(props: RecordingProps) {
-  const {
-    duration = 0,
-    resolution,
-    state,
-    targetDuration,
-    thumbnail = placeholderImage,
-    url,
-    onClose,
-    onProlong,
-    onStop,
-  } = props;
+export function Recording({
+  duration = 0,
+  resolution,
+  state,
+  targetDuration,
+  thumbnail = placeholderImage,
+  url,
+  onClose,
+  onProlong,
+  onStop,
+}: RecordingProps) {
   const badgeType = state == "recording" ? "primary" : "secondary";
   const [prolongDuration, setProlongDuration] = useState(120);
 
