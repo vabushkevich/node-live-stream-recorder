@@ -1,5 +1,8 @@
-class QuotaAllocator {
-  constructor(limit) {
+export class QuotaAllocator {
+  free: number;
+  queue: Function[];
+
+  constructor(limit: number) {
     this.free = limit;
     this.queue = [];
   }
@@ -22,5 +25,3 @@ class QuotaAllocator {
     };
   }
 }
-
-module.exports = QuotaAllocator;

@@ -1,10 +1,24 @@
-const { EventEmitter } = require('events');
-const { spawn } = require('child_process');
-const { resolveIn } = require('server/utils');
-const { last } = require('lodash');
+import { EventEmitter } from "events";
+import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { resolveIn } from "@utils";
+import { last } from "lodash";
 
-class M3u8Fetcher extends EventEmitter {
-  constructor(url, outPath, { timeout = 30000 } = {}) {
+export class M3u8Fetcher extends EventEmitter {
+  stopped: boolean;
+  finished: boolean;
+  url: string;
+  outPath: string;
+  duration: number;
+  emitter: EventEmitter;
+  timeout: number;
+  ffmpeg: ChildProcessWithoutNullStreams;
+  exitPromise: Promise<unknown>;
+
+  constructor(
+    url: string,
+    outPath: string,
+    { timeout = 30000 } = {}
+  ) {
     super();
     this.stopped = false;
     this.finished = false;
@@ -20,16 +34,16 @@ class M3u8Fetcher extends EventEmitter {
     this.emitter.on("stop", () => this.emit("stop"));
   }
 
-  parseDurations(data) {
+  parseDurations(data: any) {
     const matches = String(data).matchAll(/^frame=.+fps=.+size=.+time=\s*(?<h>\d{2}):(?<m>\d{2}):(?<s>\d{2})(\.(?<S>\d+))?/gm);
     return [...matches].map((match) => {
       const { h, m, s, S = 0 } = match.groups;
-      const duration = (h * 60 * 60 + m * 60 + +s) * 1000 + +S;
+      const duration = (+h * 60 * 60 + +m * 60 + +s) * 1000 + +S;
       return duration;
     });
   }
 
-  parseRequests(data) {
+  parseRequests(data: any) {
     const matches = String(data).matchAll(/^\[http.+Opening '(.+)' for reading/gm);
     const urls = [...matches].map((match) => match[1]);
     return urls;
@@ -75,7 +89,7 @@ class M3u8Fetcher extends EventEmitter {
   async stop() {
     if (this.finished) return;
     this.finished = true;
-    for (const signal of ["SIGTERM", "SIGKILL"]) {
+    for (const signal of (["SIGTERM", "SIGKILL"] as NodeJS.Signals[])) {
       this.ffmpeg.kill(signal);
       const terminated = await Promise.race([
         this.exitPromise.then(() => true),
@@ -100,5 +114,3 @@ class M3u8Fetcher extends EventEmitter {
     }
   }
 }
-
-module.exports = M3u8Fetcher;

@@ -1,9 +1,9 @@
-const StreamPage = require('./StreamPage');
-const fetch = require('node-fetch');
+import { StreamPage } from "./StreamPage";
+import fetch from "node-fetch";
 
-const { FETCH_HEADERS } = require('server/constants');
+import { FETCH_HEADERS } from "@constants";
 
-class YouTube extends StreamPage {
+export class YouTube extends StreamPage {
   async getM3u8Url() {
     const res = await fetch(this.url, { headers: FETCH_HEADERS });
     const body = await res.text();
@@ -13,5 +13,3 @@ class YouTube extends StreamPage {
     return url;
   }
 }
-
-module.exports = YouTube;

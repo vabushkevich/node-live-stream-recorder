@@ -1,6 +1,6 @@
-const StreamPage = require('./StreamPage');
+import { StreamPage } from "./StreamPage";
 
-class Twitch extends StreamPage {
+export class Twitch extends StreamPage {
   async getM3u8Url() {
     const page = await this.open();
     const res = await page.waitForResponse((res) =>
@@ -10,5 +10,3 @@ class Twitch extends StreamPage {
     return res.url();
   }
 }
-
-module.exports = Twitch;

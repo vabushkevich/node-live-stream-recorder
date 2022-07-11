@@ -1,13 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const StreamRecorder = require('server/services/stream-recorder');
-const { mkdirSync } = require('fs');
+import express from "express";
+import cors from "cors";
+import { StreamRecorder } from "@services/stream-recorder";
+import { mkdirSync } from "fs";
+import { RecordingSerialized } from "@types";
 
-const {
+import {
   SCREENSHOTS_ROOT,
   SERVER_PORT,
   STATIC_ROOT,
-} = require('server/constants');
+} from "@constants";
 
 const app = express();
 const recorder = new StreamRecorder();
@@ -59,7 +60,7 @@ app.delete("/api/v1/recordings/:recordingId", (req, res) => {
 
 app.get("/api/v1/events", (req, res) => {
   res.set("Content-Type", "text/event-stream");
-  const handleRecordingUpdate = (update) => {
+  let handleRecordingUpdate = (update: RecordingSerialized) => {
     res.write(`event: recordingupdate\n`);
     res.write(`data: ${JSON.stringify(update)}\n\n`);
   };

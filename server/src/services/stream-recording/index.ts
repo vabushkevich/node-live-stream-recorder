@@ -1,27 +1,46 @@
-const path = require('path');
-const { saveFrame, retry } = require('server/utils');
-const { throttle, pickBy } = require('lodash');
-const { format: formatDate } = require('date-fns');
-const sanitizePath = require("sanitize-filename");
-const M3u8Fetcher = require("server/services/m3u8-fetcher");
-const { createStreamPage } = require('server/services/stream-page');
-const { EventEmitter } = require('events');
-const { mkdirSync } = require('fs');
-const { nanoid } = require('nanoid');
-const Logger = require("server/services/logger");
+import path from "path";
+import { saveFrame, retry } from "@utils";
+import { throttle, pickBy } from "lodash";
+import { format as formatDate } from "date-fns";
+import sanitizePath from "sanitize-filename";
+import { M3u8Fetcher } from "@services/m3u8-fetcher";
+import { createStreamPage } from "@services/stream-page";
+import { EventEmitter } from "events";
+import { mkdirSync } from "fs";
+import { nanoid } from "nanoid";
+import { Logger } from "@services/logger";
+import { RecordingSerialized } from "@types";
 
-const {
+import {
   SCREENSHOT_FREQ,
   RECORDINGS_ROOT,
   STATIC_ROOT,
   SCREENSHOTS_ROOT,
   NO_DATA_TIMEOUT,
   LOG_PATH,
-} = require('server/constants');
+} from "@constants";
 
-class StreamRecording extends EventEmitter {
+export class StreamRecording extends EventEmitter {
+  id: string;
+  url: string;
+  state: "idle" | "starting" | "recording" | "stopping" | "stopped";
+  targetDuration: number;
+  duration: number;
+  preferredResolution: number;
+  createdDate: Date;
+  name: string;
+  screenshotPath: string;
+  logger: Logger;
+  dirPath: string;
+  postStartPromise?: Promise<void>;
+  postStartCallback?: Function;
+  m3u8Url?: string;
+  m3u8Fetcher?: M3u8Fetcher;
+  resolution?: number;
+  screenshotDate?: number;
+
   constructor(
-    url,
+    url: string,
     {
       duration = 60 * 60 * 1000,
       resolution = 720,
@@ -51,14 +70,14 @@ class StreamRecording extends EventEmitter {
     mkdirSync(this.dirPath, { recursive: true });
   }
 
-  update(updaterObj) {
+  update(updaterObj: Partial<StreamRecording>) {
     const state = this.toJSON();
     Object.assign(this, updaterObj);
-    const updatedProps = pickBy(this.toJSON(), (v, k) => v !== state[k]);
+    const updatedProps = pickBy(this.toJSON(), (v, k: keyof typeof state) => v !== state[k]);
     this.emit("update", updatedProps);
   }
 
-  prolong(duration) {
+  prolong(duration: number) {
     this.update({ targetDuration: this.targetDuration + duration });
   }
 
@@ -166,21 +185,16 @@ class StreamRecording extends EventEmitter {
     this.start();
   }
 
-  toJSON() {
-    return pickBy(
-      {
-        id: this.id,
-        url: this.url,
-        state: this.state,
-        thumbnail: this.screenshotDate && `${path.relative(STATIC_ROOT, this.screenshotPath)}?date=${this.screenshotDate}`,
-        createdDate: Number(this.createdDate),
-        duration: this.duration,
-        targetDuration: this.targetDuration,
-        resolution: this.resolution,
-      },
-      (v) => v != null
-    );
+  toJSON(): RecordingSerialized {
+    return {
+      id: this.id,
+      url: this.url,
+      state: this.state,
+      thumbnail: this.screenshotDate && `${path.relative(STATIC_ROOT, this.screenshotPath)}?date=${this.screenshotDate}`,
+      createdDate: this.createdDate,
+      duration: this.duration,
+      targetDuration: this.targetDuration,
+      resolution: this.resolution,
+    };
   }
 }
-
-module.exports = StreamRecording;

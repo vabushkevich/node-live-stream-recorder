@@ -1,13 +1,24 @@
-const { format: formatDate } = require('date-fns');
-const { appendFileSync } = require('fs');
+import { format as formatDate } from "date-fns";
+import { appendFileSync } from "fs";
 
-class Logger {
-  constructor({ badges = [], logPath } = {}) {
+export class Logger {
+  badges: any[];
+  logPath?: string;
+
+  constructor(
+    {
+      badges = [],
+      logPath,
+    }: {
+      badges?: any[];
+      logPath?: string;
+    } = {}
+  ) {
     this.badges = badges;
     this.logPath = logPath;
   }
 
-  log(message) {
+  log(message: any) {
     const dateStr = formatDate(new Date(), "d MMM, HH:mm:ss");
     const prefix = [dateStr, ...this.badges].map((v) => `[${v}]`).join(" ");
     let messageStr;
@@ -25,5 +36,3 @@ class Logger {
     if (this.logPath) appendFileSync(this.logPath, `${out}\n`);
   }
 }
-
-module.exports = Logger;

@@ -4,7 +4,11 @@
   "description": "Record live streams from YouTube, Twitch, etc.",
   "dependencies": {
     "@redux-devtools/extension": "^3.2.2",
+    "@types/cors": "^2.8.12",
+    "@types/lodash": "^4.14.182",
     "@types/lodash-es": "^4.17.6",
+    "@types/node": "^12.20.55",
+    "@types/node-fetch": "^2.6.2",
     "@types/react": "^17.0.47",
     "@types/react-dom": "^17.0.17",
     "@types/react-redux": "^7.1.24",
@@ -37,25 +41,26 @@
     "sass-loader": "^13.0.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.0",
+    "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.6.11",
+    "tsconfig-paths": "^4.0.0",
     "typescript": "^4.7.4",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
   },
   "scripts": {
-    "build": "cd client && cross-env NODE_ENV=production webpack",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && cross-env NODE_ENV=production webpack",
+    "build:server": "cd server && tsc && tsc-alias",
     "dev": "concurrently -n server,web -c green,cyan 'npm:start:dev-server' 'npm:start:dev-client'",
     "start": "npm run build && npm run start:server",
     "start:dev-client": "cd client && webpack serve --mode development --port 3000",
-    "start:dev-server": "nodemon --watch server/src server/src",
-    "start:server": "node server/src"
+    "start:dev-server": "cd server && ts-node-dev --respawn -r tsconfig-paths/register src",
+    "start:server": "node server/build"
   },
   "author": "Vyacheslav Abushkevich <abshkvch@gmail.com>",
   "license": "MIT",
-  "workspaces": [
-    "./server/src"
-  ],
   "devDependencies": {
-    "nodemon": "^2.0.15",
     "webpack-dev-server": "^4.8.1"
   },
   "engines": {

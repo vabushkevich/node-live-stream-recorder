@@ -1,15 +1,23 @@
-const { exec } = require('child_process');
+import { exec } from "child_process";
+import { Response } from "playwright-core";
 
-function isMpegUrlData(res) {
+export function isMpegUrlData(res: Response) {
   const contentType = res.headers()["content-type"];
   if (contentType && contentType.includes("mpegurl")) return true;
   return false;
 }
 
-function saveFrame(inPath, outPath, {
-  position,
-  quality,
-} = {}) {
+export function saveFrame(
+  inPath: string,
+  outPath: string,
+  {
+    position,
+    quality,
+  }: {
+    position?: string;
+    quality?: number;
+  } = {}
+) {
   let seekParam = "";
   const qualityParam = isNaN(quality) ? "" : `-q ${+quality}`;
 
@@ -17,7 +25,7 @@ function saveFrame(inPath, outPath, {
     seekParam = (position[0] == "-" ? "-sseof " : "-ss ") + position;
   }
 
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     exec(
       `ffmpeg -y -v error ${seekParam} -i "${inPath}" -frames 1 ${qualityParam} "${outPath}"`,
       { timeout: 3000 },
@@ -30,11 +38,11 @@ function saveFrame(inPath, outPath, {
   });
 }
 
-function resolveIn(ms) {
+export function resolveIn(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function parseM3u8(m3u8, url) {
+export function parseM3u8(m3u8: string, url: string) {
   const chunkNames = [...m3u8.matchAll(/(?:#EXTINF.*\n)(.+)/ig)]
     .map((match) => match[1]);
   const streams = [...m3u8.matchAll(/(^#EXT-X-STREAM-INF:.+)\n(.+)/gm)]
@@ -45,7 +53,15 @@ function parseM3u8(m3u8, url) {
       const frameRate = meta.match(/(?<=FRAME-RATE=)\d+(\.\d+)?/)?.[0];
       const streamUrl = isValidUrl(name) ? name : new URL(name, url).href;
 
-      const stream = {
+      const stream: {
+        name: string;
+        bandwidth: number;
+        resolution: string;
+        width: number;
+        height: number;
+        url: string;
+        frameRate?: number;
+      } = {
         name,
         bandwidth: +bandwidth,
         resolution,
@@ -71,7 +87,10 @@ function parseM3u8(m3u8, url) {
  * @returns {Promise} The promise that resolves with `func`'s returned value or
  * rejects with a error thrown during last unsuccessful `func` execution.
  */
-async function retry(func, delayReducer) {
+export async function retry(
+  func: Function,
+  delayReducer: (prevDelay: number | null, err: Error) => number
+) {
   let prevDelay = null;
   while (true) {
     try {
@@ -85,7 +104,7 @@ async function retry(func, delayReducer) {
   }
 }
 
-function isValidUrl(url) {
+export function isValidUrl(url: string) {
   try {
     new URL(url);
     return true;
@@ -102,7 +121,7 @@ function isValidUrl(url) {
  * @param {Function} callback The function called for each element.
  * @returns {*} The element with the highest rating.
  */
-function findClosest(array, callback) {
+export function findClosest<T>(array: T[], callback: (v: T) => number): T {
   let bestRating = 0;
   let closest;
   for (const v of array) {
@@ -114,12 +133,3 @@ function findClosest(array, callback) {
   }
   return closest;
 }
-
-module.exports = {
-  saveFrame,
-  resolveIn,
-  isMpegUrlData,
-  parseM3u8,
-  retry,
-  findClosest,
-};
