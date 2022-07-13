@@ -27,7 +27,7 @@ export function Recording({
   onProlong,
   onStop,
 }: RecordingProps) {
-  const badgeType = state == "recording" ? "primary" : "secondary";
+  const stateBadgeColor = state == "recording" ? "primary" : "secondary";
   const [prolongDuration, setProlongDuration] = useState(120);
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -60,7 +60,7 @@ export function Recording({
                 </div>
               )}
               <div className="recording__badge">
-                <Badge color={badgeType}>{capitalize(state)}</Badge>
+                <Badge color={stateBadgeColor}>{capitalize(state)}</Badge>
               </div>
             </div>
           </div>
