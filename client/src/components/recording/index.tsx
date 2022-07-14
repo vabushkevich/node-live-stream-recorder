@@ -67,7 +67,7 @@ export function Recording({
           <div className="recording__row">
             <b>Recorded:</b> {formatDuration(duration)} / {formatDuration(targetDuration)}
           </div>
-          {state != "stopped" && (
+          {!state.startsWith("stop") && (
             <div className="recording__controls recording__row">
               <div className="recording__stop-btn">
                 <Button size="small" onClick={onStop}>Stop</Button>
