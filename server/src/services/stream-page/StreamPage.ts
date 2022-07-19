@@ -1,4 +1,4 @@
-import { getBrowser } from "@/browser";
+import { getBrowser } from "@services/browser";
 import { resolveIn, parseM3u8, findClosest } from "@utils";
 import fetch from "node-fetch";
 import { QuotaAllocator } from "@services/quota-allocator";
