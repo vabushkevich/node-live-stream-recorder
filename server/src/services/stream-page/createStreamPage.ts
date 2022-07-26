@@ -1,4 +1,4 @@
-import { YouTube } from ".";
+import { YouTube } from "./YouTube";
 import { StreamPage } from "./StreamPage";
 
 export function createStreamPage(url: string) {
