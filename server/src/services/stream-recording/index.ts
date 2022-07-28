@@ -121,8 +121,8 @@ export class StreamRecording extends EventEmitter {
         this.m3u8Fetcher.once("durationearn", () => {
           this.update({ state: "recording" });
           this.logger.log(`Started with resolution: ${this.resolution}p`);
-          this.postStartCallback();
         });
+        this.postStartCallback();
       },
       (prevDelay, err) => {
         const delay = Math.min(
