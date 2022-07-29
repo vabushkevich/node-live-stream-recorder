@@ -13,12 +13,13 @@ export function formatDuration(ms: number) {
 }
 
 export function getRecordingName(url: string) {
-  if (url.includes("youtube.com")) {
-    const streamId = url.match(/(?:\/watch\?v=)([\w-]+)/)?.[1] || "";
-    return `${streamId}@youtube`;
+  const urlObj = new URL(url);
+  const siteName = urlObj.hostname.split(".").slice(-2)[0];
+  let prefix = urlObj.pathname.split("/")[1];
+
+  if (siteName == "youtube") {
+    prefix = urlObj.searchParams.get("v");
   }
-  if (url.includes("twitch.tv")) {
-    const userName = url.match(/(?:twitch\.tv\/)(\w+)/)?.[1] || "";
-    return `${userName}@twitch`;
-  }
+
+  return `${prefix || "unnamed"}@${siteName}`;
 }

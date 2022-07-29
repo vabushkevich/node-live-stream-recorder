@@ -56,14 +56,7 @@ export class StreamRecording extends EventEmitter {
     this.preferredResolution = resolution;
     this.createdDate = new Date();
     this.screenshotPath = path.join(SCREENSHOTS_ROOT, `${this.id}.jpg`);
-
-    if (name) {
-      this.name = String(name);
-    } else {
-      const siteName = new URL(url).hostname.split(".").slice(-2).join(".");
-      this.name = `unnamed-${this.id.slice(0, 4)}@${siteName}`;
-    }
-    this.name = this.name.trim().slice(0, 50);
+    this.name = name.trim().slice(0, 50) || `unnamed-${this.id.slice(0, 4)}`;
 
     this.logger = new Logger({
       badges: [this.name],
